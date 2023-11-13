@@ -35,6 +35,8 @@ var (
 
 // Default config values.
 func main() {
+	log.Println("Starting Livepeer exporter...")
+
 	// Retrieve orchestrator address.
 	orchAddr := os.Getenv("ORCHESTRATOR_ADDRESS")
 	if orchAddr == "" {
@@ -85,18 +87,21 @@ func main() {
 	}
 
 	// Setup exporters.
+	log.Println("Setting up exporters...")
 	orchInfoExporter := orch_info_exporter.NewOrchInfoExporter(orchAddr, fetchInterval, updateInterval, orchAddrSecondary)
 	orchScoreExporter := orch_score_exporter.NewOrchScoreExporter(orchAddr, fetchInterval, updateInterval)
 	orchDelegatorsExporter := orch_delegators_exporter.NewOrchDelegatorsExporter(orchAddr, fetchInterval, updateInterval)
 	orchTestStreamsExporter := orch_test_streams_exporter.NewOrchTestStreamsExporter(orchAddr, fetchTestStreamsInterval, updateInterval)
 
 	// Start exporters.
+	log.Println("Starting exporters...")
 	orchInfoExporter.Start()
 	orchScoreExporter.Start()
 	orchDelegatorsExporter.Start()
 	orchTestStreamsExporter.Start()
 
 	// Expose the registered metrics via HTTP.
+	log.Println("Exposing metrics via HTTP...")
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":9153", nil)
 }
