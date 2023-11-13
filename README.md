@@ -48,6 +48,7 @@ Fetches metrics about the Livepeer orchestrator from the [Livepeer Orchestrator 
 - `livepeer_orch_total_volume_eth`: Total volume of ETH.
 - `livepeer_orch_total_reward`: Total reward of the orchestrator.
 - `livepeer_orch_stake`: Stake provided by the orchestrator.
+- `livepeer_orch_reward_call_ratio`: Ratio of reward calls to total active rounds.
 
 ### orch_score_exporter
 

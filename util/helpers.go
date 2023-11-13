@@ -18,9 +18,20 @@ func BoolToFloat64(b bool) float64 {
 	return 0.0
 }
 
+// StringToFloat64 parses a string to a float64.
+// If the string cannot be parsed, it returns an error.
+func StringToFloat64(s string) (float64, error) {
+	f, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		log.Printf("Error parsing value %v: %v", s, err)
+		return 0.0, err
+	}
+	return f, nil
+}
+
 // ParseFloatAndSetGauge parses a string to a float64 and sets the value of the given gauge.
 func ParseFloatAndSetGauge(value string, gauge prometheus.Gauge) {
-	parsed, err := strconv.ParseFloat(value, 64)
+	parsed, err := StringToFloat64(value)
 	if err != nil {
 		log.Printf("Error parsing value %v: %v", value, err)
 		return

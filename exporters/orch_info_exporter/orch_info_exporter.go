@@ -94,6 +94,7 @@ type OrchInfoExporter struct {
 	TotalVolumeETH     prometheus.Gauge
 	TotalReward        prometheus.Gauge
 	OrchStake          prometheus.Gauge
+	RewardCallRatio    prometheus.Gauge
 
 	// Config settings.
 	fetchInterval          time.Duration // How often to fetch data.
@@ -209,6 +210,12 @@ func (m *OrchInfoExporter) initMetrics() {
 			Help: "The stake provided by the orchestrator.",
 		},
 	)
+	m.RewardCallRatio = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_reward_call_ratio",
+			Help: "Ratio of reward calls to total active rounds.",
+		},
+	)
 }
 
 // registerMetrics registers the orchestrator info metrics with Prometheus.
@@ -230,23 +237,23 @@ func (m *OrchInfoExporter) registerMetrics() {
 		m.TotalVolumeETH,
 		m.TotalReward,
 		m.OrchStake,
+		m.RewardCallRatio,
 	)
 }
 
 // updateMetrics updates the metrics with the data fetched from the Livepeer orchestrator info API.
 func (m *OrchInfoExporter) updateMetrics() {
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.BondedAmount, m.BondedAmount)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.Delegate.TotalStake, m.TotalStake)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.LastClaimRound.Id, m.LastClaimRound)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.StartRound, m.StartRound)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.WithdrawnFees, m.WithdrawnFees)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Protocol.CurrentRound.Id, m.CurrentRound)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.ActivationRound, m.ActivationRound)
-	m.Active.Set(util.BoolToFloat64(m.orchInfo.PageProps.Account.Transcoder.Active))
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.LastRewardRound.Id, m.LastRewardRound)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.NinetyDayVolumeETH, m.NinetyDayVolumeETH)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.ThirtyDayVolumeETH, m.ThirtyDayVolumeETH)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.TotalVolumeETH, m.TotalVolumeETH)
+	// Parse and set the current round and activation round.
+	currentRound, err := util.StringToFloat64(m.orchInfo.PageProps.Account.Protocol.CurrentRound.Id)
+	if err != nil {
+		log.Printf("Error parsing CurrentRound: %v", err)
+	}
+	activationRound, err := util.StringToFloat64(m.orchInfo.PageProps.Account.Transcoder.ActivationRound)
+	if err != nil {
+		log.Printf("Error parsing Active: %v", err)
+	}
+	m.CurrentRound.Set(currentRound)
+	m.ActivationRound.Set(activationRound)
 
 	// Convert the fee cut and reward cut to fractions.
 	feeCut, err := strconv.ParseFloat(m.orchInfo.PageProps.Account.Transcoder.FeeShare, 64)
@@ -272,6 +279,10 @@ func (m *OrchInfoExporter) updateMetrics() {
 	}
 	m.TotalReward.Set(totalReward)
 
+	// Calculate the orchestrator's reward call ratio.
+	rewardCallRatio := len(m.orchInfo.PageProps.Account.Transcoder.Pools) / int(currentRound-activationRound)
+	m.RewardCallRatio.Set(float64(rewardCallRatio))
+
 	// Calculate the total LPT that is staked by the orchestrator.
 	// NOTE: This uses the orchestrator bonded amount and the secondary orchestrator bonded amount.
 	orchBondedAmount, err := strconv.ParseFloat(m.orchInfo.PageProps.Account.Delegator.BondedAmount, 64)
@@ -286,6 +297,18 @@ func (m *OrchInfoExporter) updateMetrics() {
 		}
 	}
 	m.OrchStake.Set(orchBondedAmount + orchSecondaryBondedAmount)
+
+	// Update other metrics.
+	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.BondedAmount, m.BondedAmount)
+	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.Delegate.TotalStake, m.TotalStake)
+	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.LastClaimRound.Id, m.LastClaimRound)
+	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.StartRound, m.StartRound)
+	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.WithdrawnFees, m.WithdrawnFees)
+	m.Active.Set(util.BoolToFloat64(m.orchInfo.PageProps.Account.Transcoder.Active))
+	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.LastRewardRound.Id, m.LastRewardRound)
+	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.NinetyDayVolumeETH, m.NinetyDayVolumeETH)
+	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.ThirtyDayVolumeETH, m.ThirtyDayVolumeETH)
+	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.TotalVolumeETH, m.TotalVolumeETH)
 }
 
 // NewOrchInfoExporter creates a new OrchInfoExporter.
