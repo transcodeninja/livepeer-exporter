@@ -1,0 +1,21 @@
+version: "3.8"
+
+name: livepeer-exporter
+
+services:
+  livepeer-exporter:
+    build: .
+    image: livepeer-exporter
+    container_name: livepeer-exporter
+    restart: unless-stopped
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro" # Set timezone to host timezone.
+      - "/etc/localtime:/etc/localtime:ro" # Set time to host time.
+    ports:
+      - "9153:9153"
+    environment:
+      - ORCHESTRATOR_ADDRESS=<YOUR_ORCHESTRATOR_ADDRESS>
+      - ORCHESTRATOR_ADDRESS_SECONDARY=<YOUR_SECONDARY_ORCHESTRATOR_ADDRESS>
+      - FETCH_INTERVAL=5m
+      - FETCH_TEST_STREAMS_INTERVAL=15m
+      - UPDATE_INTERVAL=30s
