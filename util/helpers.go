@@ -3,6 +3,7 @@ package util
 
 import (
 	"log"
+	"math"
 	"strconv"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -25,4 +26,10 @@ func ParseFloatAndSetGauge(value string, gauge prometheus.Gauge) {
 		return
 	}
 	gauge.Set(parsed)
+}
+
+// Round rounds a float64 to a given number of decimal places.
+func Round(value float64, decimals int) float64 {
+	shift := math.Pow(10, float64(decimals))
+	return math.Round(value*shift) / shift
 }

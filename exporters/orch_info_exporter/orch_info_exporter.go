@@ -243,12 +243,22 @@ func (m *OrchInfoExporter) updateMetrics() {
 	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Protocol.CurrentRound.Id, m.CurrentRound)
 	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.ActivationRound, m.ActivationRound)
 	m.Active.Set(util.BoolToFloat64(m.orchInfo.PageProps.Account.Transcoder.Active))
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.FeeShare, m.FeeCut)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.RewardCut, m.RewardCut)
 	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.LastRewardRound.Id, m.LastRewardRound)
 	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.NinetyDayVolumeETH, m.NinetyDayVolumeETH)
 	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.ThirtyDayVolumeETH, m.ThirtyDayVolumeETH)
 	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.TotalVolumeETH, m.TotalVolumeETH)
+
+	// Convert the fee cut and reward cut to fractions.
+	feeCut, err := strconv.ParseFloat(m.orchInfo.PageProps.Account.Transcoder.FeeShare, 64)
+	if err != nil {
+		log.Printf("Error parsing FeeShare: %v", err)
+	}
+	rewardCut, err := strconv.ParseFloat(m.orchInfo.PageProps.Account.Transcoder.RewardCut, 64)
+	if err != nil {
+		log.Printf("Error parsing RewardCut: %v", err)
+	}
+	m.FeeCut.Set(util.Round(1-feeCut*1e-6, 2))
+	m.RewardCut.Set(util.Round(rewardCut*1e-6, 2))
 
 	// Calculate and set the total LPT reward received by the orchestrator.
 	totalReward := 0.0
