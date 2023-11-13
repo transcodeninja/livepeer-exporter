@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/rickstaa/livepeer-exporter/compare/v1.1.1...v1.1.2) (2023-11-13)
+
+
+### Bug Fixes
+
+* fix reward and fee cut format ([#14](https://github.com/rickstaa/livepeer-exporter/issues/14)) ([695683a](https://github.com/rickstaa/livepeer-exporter/commit/695683a7d0af3d1c72dc9cc21c441e066a56e667))
+
 ## [1.1.0](https://github.com/rickstaa/livepeer-exporter/compare/v1.0.0...v1.1.0) (2023-11-13)
 
 
