@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/rickstaa/livepeer-exporter/compare/v1.1.2...v1.2.0) (2023-11-13)
+
+
+### Features
+
+* add reward call ratio ([#17](https://github.com/rickstaa/livepeer-exporter/issues/17)) ([ff4d85d](https://github.com/rickstaa/livepeer-exporter/commit/ff4d85d3b0bc49bdeea23a79f07af646bf6ef648))
+
 ## [1.1.2](https://github.com/rickstaa/livepeer-exporter/compare/v1.1.1...v1.1.2) (2023-11-13)
 
 
