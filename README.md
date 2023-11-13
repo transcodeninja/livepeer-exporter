@@ -110,15 +110,11 @@ You can run the exporter using the Docker image available on [Docker Hub](https:
 ```bash
 docker run --name livepeer-exporter \
     -e "ORCHESTRATOR_ADDRESS=<your-orchestrator-address>" \
-    -e "ORCHESTRATOR_ADDRESS_SECONDARY=<your-secondary-orchestrator-address>" \
-    -e "FETCH_INTERVAL=<your-fetch-interval>" \
-    -e "FETCH_TEST_STREAMS_INTERVAL=<your-test-streams-fetch-interval>" \
-    -e "UPDATE_INTERVAL=<your-update-interval>" \
     -p 9153:9153 \
     rickstaa/livepeer-exporter:latest
 ```
 
-This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape.
+This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. Additional environment variables can be passed to the exporter by adding them to the command above.
 
 > [!NOTE]
 > This repository provides a [Dockerfile](./Dockerfile) and a [docker-compose](./docker-compose.yml) file to facilitate running the exporter with Docker. To utilize these, ensure to first configure the necessary environment variables within the docker-compose file. Subsequently, initiate the exporter using the command `docker-compose up`.
