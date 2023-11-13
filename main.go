@@ -101,7 +101,7 @@ func main() {
 	orchTestStreamsExporter.Start()
 
 	// Expose the registered metrics via HTTP.
-	log.Println("Exposing metrics via HTTP...")
+	log.Println("Exposing metrics via HTTP on port 9153")
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":9153", nil)
 }
