@@ -125,7 +125,7 @@ For Prometheus to scrape the exporter, add the following to your `prometheus.yml
 
 ```yaml
 scrape_configs:
-  - job_name: livepeer
+  - job_name: livepeer-exporter
     static_configs:
       - targets: ['localhost:9153']
 ```
