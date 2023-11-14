@@ -1,6 +1,7 @@
-<a href="https://hub.docker.com/r/rickstaa/livepeer-exporter">
-  <img alt="Docker Image Version (latest semver)" src="https://img.shields.io/docker/v/rickstaa/livepeer-exporter?logo=docker">
-</a>
+[![Docker Build](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-build.yml/badge.svg)](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-build.yml)
+[![Publish Docker image](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-publish.yml)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/rickstaa/livepeer-exporter?logo=docker)
+](https://hub.docker.com/r/rickstaa/livepeer-exporter)
 
 # Livepeer Exporter
 
