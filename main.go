@@ -4,13 +4,13 @@
 // The server provides a '8954/metrics' endpoint for Prometheus to scrape.
 //
 // The exporter has the following configuration environment variables.
-//   - ORCHESTRATOR_ADDRESS - The address of the orchestrator to fetch data from.
-//   - ORCHESTRATOR_ADDRESS_SECONDARY - The address of the secondary orchestrator to fetch data from. Used to
+//   - LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS - The address of the orchestrator to fetch data from.
+//   - LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY - The address of the secondary orchestrator to fetch data from. Used to
 //     calculate the 'livepeer_orch_stake' metric. When set the LPT stake of this address is added to the LPT stake that is bonded by the orchestrator.
-//   - FETCH_INTERVAL - How often to fetch data from the orchestrator.
-//   - FETCH_TEST_STREAMS_INTERVAL - How often to fetch test streams data from the orchestrator. Implemented as a separate interval because the
+//   - LIVEPEER_EXPORTER_FETCH_INTERVAL - How often to fetch data from the orchestrator.
+//   - LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL - How often to fetch test streams data from the orchestrator. Implemented as a separate interval because the
 //     test streams API takes a long time to respond.
-//   - UPDATE_INTERVAL - How often to update metrics.
+//   - LIVEPEER_EXPORTER_UPDATE_INTERVAL - How often to update metrics.
 package main
 
 import (
@@ -38,16 +38,16 @@ func main() {
 	log.Println("Starting Livepeer exporter...")
 
 	// Retrieve orchestrator address.
-	orchAddr := os.Getenv("ORCHESTRATOR_ADDRESS")
+	orchAddr := os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS")
 	if orchAddr == "" {
-		log.Fatal("'ORCHESTRATOR_ADDRESS' environment variable should be set")
+		log.Fatal("'LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS' environment variable should be set")
 	}
 
 	// Retrieve secondary orchestrator address.
-	orchAddrSecondary := os.Getenv("ORCHESTRATOR_ADDRESS_SECONDARY")
+	orchAddrSecondary := os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY")
 
 	// Retrieve fetch interval.
-	fetchIntervalStr := os.Getenv("FETCH_INTERVAL")
+	fetchIntervalStr := os.Getenv("LIVEPEER_EXPORTER_FETCH_INTERVAL")
 	var fetchInterval time.Duration
 	if fetchIntervalStr == "" {
 		fetchInterval = fetchIntervalDefault
@@ -55,13 +55,13 @@ func main() {
 		var err error
 		fetchInterval, err = time.ParseDuration(fetchIntervalStr)
 		if err != nil {
-			log.Fatalf("failed to parse 'FETCH_INTERVAL' environment variable: %v", err)
+			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_FETCH_INTERVAL' environment variable: %v", err)
 		}
 	}
 
 	// Retrieve test stream fetch interval.
 	// NOTE: This is a separate interval because the test streams API takes a long time to respond.
-	fetchTestStreamsIntervalStr := os.Getenv("FETCH_TEST_STREAMS_INTERVAL")
+	fetchTestStreamsIntervalStr := os.Getenv("LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL")
 	var fetchTestStreamsInterval time.Duration
 	if fetchTestStreamsIntervalStr == "" {
 		fetchTestStreamsInterval = testStreamsFetchIntervalDefault
@@ -69,12 +69,12 @@ func main() {
 		var err error
 		fetchTestStreamsInterval, err = time.ParseDuration(fetchTestStreamsIntervalStr)
 		if err != nil {
-			log.Fatalf("failed to parse 'FETCH_TEST_STREAMS_INTERVAL' environment variable: %v", err)
+			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL' environment variable: %v", err)
 		}
 	}
 
 	// Retrieve update interval.
-	updateIntervalStr := os.Getenv("UPDATE_INTERVAL")
+	updateIntervalStr := os.Getenv("LIVEPEER_EXPORTER_UPDATE_INTERVAL")
 	var updateInterval time.Duration
 	if updateIntervalStr == "" {
 		updateInterval = updateIntervalDefault
@@ -82,7 +82,7 @@ func main() {
 		var err error
 		updateInterval, err = time.ParseDuration(updateIntervalStr)
 		if err != nil {
-			log.Fatalf("failed to parse 'UPDATE_INTERVAL' environment variable: %v", err)
+			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_UPDATE_INTERVAL' environment variable: %v", err)
 		}
 	}
 

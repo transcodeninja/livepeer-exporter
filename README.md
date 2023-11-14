@@ -80,11 +80,11 @@ Fetches metrics about the LivePeer orchestrator's test streams from the https://
 
 The exporter is configured via environment variables:
 
-- `ORCHESTRATOR_ADDRESS`: Address of the orchestrator to fetch data from. **Required**
-- `ORCHESTRATOR_ADDRESS_SECONDARY`: Address of the secondary orchestrator to fetch data from. This is used to calculate the `livepeer_orch_stake` metric. **Optional**
-- `FETCH_INTERVAL`: How often to fetch data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `5m`)
-- `FETCH_TEST_STREAMS_INTERVAL`: How often to fetch test streams data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch test data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `15n`)
-- `UPDATE_INTERVAL`: How often to update metrics. For example, if this is set to `5m`, the exporter will update metrics every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `30s`)
+- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS`: Address of the orchestrator to fetch data from. **Required**
+- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY`: Address of the secondary orchestrator to fetch data from. This is used to calculate the `livepeer_orch_stake` metric. **Optional**
+- `LIVEPEER_EXPORTER_FETCH_INTERVAL`: How often to fetch data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `5m`)
+- `LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL`: How often to fetch test streams data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch test data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `15n`)
+- `LIVEPEER_EXPORTER_UPDATE_INTERVAL`: How often to update metrics. For example, if this is set to `5m`, the exporter will update metrics every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `30s`)
 
 ## Usage
 
@@ -95,11 +95,11 @@ The exporter is configured via environment variables:
 To run the exporter, set the necessary environment variables and start the exporter:
 
 ```bash
-export ORCHESTRATOR_ADDRESS=your-orchestrator-address
-export ORCHESTRATOR_ADDRESS_SECONDARY=your-secondary-orchestrator-address
-export FETCH_INTERVAL=your-fetch-interval
-export FETCH_TEST_STREAMS_INTERVAL=your-test-streams-fetch-interval
-export UPDATE_INTERVAL=your-update-interval
+export LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS=your-orchestrator-address
+export LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY=your-secondary-orchestrator-address
+export LIVEPEER_EXPORTER_FETCH_INTERVAL=your-fetch-interval
+export LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL=your-test-streams-fetch-interval
+export LIVEPEER_EXPORTER_UPDATE_INTERVAL=your-update-interval
 go run main.go
 ```
 
@@ -110,7 +110,7 @@ You can run the exporter using the Docker image available on [Docker Hub](https:
 
 ```bash
 docker run --name livepeer-exporter \
-    -e "ORCHESTRATOR_ADDRESS=<your-orchestrator-address>" \
+    -e "LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS=<your-orchestrator-address>" \
     -p 9153:9153 \
     rickstaa/livepeer-exporter:latest
 ```
