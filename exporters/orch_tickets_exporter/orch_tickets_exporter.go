@@ -112,7 +112,7 @@ func (m *OrchTicketsExporter) updateMetrics() {
 
 		m.WinningTicketAmount.WithLabelValues(ticket.TransactionHash).Set(amount)
 		m.WinningTicketBlockNumber.WithLabelValues(ticket.TransactionHash).Set(blockNumber)
-		m.WinningTicketBlockTime.WithLabelValues(ticket.TransactionHash).Set(blockTime)
+		m.WinningTicketBlockTime.WithLabelValues(ticket.TransactionHash).Set(blockTime * 1000) // Grafana expects milliseconds.
 	}
 }
 

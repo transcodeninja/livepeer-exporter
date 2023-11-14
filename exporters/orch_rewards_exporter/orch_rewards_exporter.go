@@ -112,7 +112,7 @@ func (m *OrchRewardsExporter) updateMetrics() {
 
 		m.RewardAmount.WithLabelValues(reward.TransactionHash).Set(amount)
 		m.RewardBlockNumber.WithLabelValues(reward.TransactionHash).Set(blockNumber)
-		m.RewardBlockTime.WithLabelValues(reward.TransactionHash).Set(blockTime)
+		m.RewardBlockTime.WithLabelValues(reward.TransactionHash).Set(blockTime * 1000) // Grafana expects milliseconds.
 	}
 }
 
