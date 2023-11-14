@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/rickstaa/livepeer-exporter/compare/v1.1.0...v1.1.1) (2023-11-14)
+
+
+### Bug Fixes
+
+* fix empty string parse bug ([#34](https://github.com/rickstaa/livepeer-exporter/issues/34)) ([1f3e819](https://github.com/rickstaa/livepeer-exporter/commit/1f3e819acaa57d0598ce001c8a281400eebfbe11))
+
 ## [1.1.0](https://github.com/rickstaa/livepeer-exporter/compare/v1.0.1...v1.1.0) (2023-11-14)
 
 
