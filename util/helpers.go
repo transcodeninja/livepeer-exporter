@@ -34,15 +34,11 @@ func StringToFloat64(s string) (float64, error) {
 
 // SetFloatFromStr sets the value of a float64 pointer from a string.
 // If the string cannot be parsed to a float64, it logs an error and returns.
-// If significance is not -1, it rounds the float64 to the given number of decimal places.
-func SetFloatFromStr(dest *float64, source string, significance int) {
+func SetFloatFromStr(dest *float64, source string) {
 	temp, err := StringToFloat64(source)
 	if err != nil {
 		log.Printf("Error parsing string to float: %v", err)
 		return
-	}
-	if significance != -1 {
-		temp = Round(temp, significance)
 	}
 	*dest = temp
 }
