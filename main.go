@@ -7,10 +7,12 @@
 //   - LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS - The address of the orchestrator to fetch data from.
 //   - LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY - The address of the secondary orchestrator to fetch data from. Used to
 //     calculate the 'livepeer_orch_stake' metric. When set the LPT stake of this address is added to the LPT stake that is bonded by the orchestrator.
-//   - LIVEPEER_EXPORTER_FETCH_INTERVAL - How often to fetch data from the orchestrator.
-//   - LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL - How often to fetch test streams data from the orchestrator. Implemented as a separate interval because the
+//   - LIVEPEER_EXPORTER_FETCH_INTERVAL - How often to fetch data for the orchestrator.
+//   - LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL - How often to fetch test streams data for the orchestrator. Implemented as a separate interval because the
 //     test streams API takes a long time to respond.
-//   - LIVEPEER_EXPORTER_UPDATE_INTERVAL - How often to update metrics.
+//   - LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL - How often to fetch tickets data for the orchestrator. Implemented as a separate interval because the tickets data
+//     is relatively large.
+//   - LIVEPEER_EXPORTER_UPDATE_INTERVAL - How often to update the prometheus metrics.
 package main
 
 import (
@@ -31,6 +33,7 @@ import (
 var (
 	fetchIntervalDefault            = 1 * time.Minute
 	testStreamsFetchIntervalDefault = 15 * time.Minute
+	ticketsFetchIntervalDefault     = 1 * time.Hour
 	updateIntervalDefault           = 30 * time.Second
 )
 
@@ -74,6 +77,20 @@ func main() {
 		}
 	}
 
+	// Retrieve tickets fetch interval.
+	// NOTE: This is a separate interval because the tickets API response is relatively large.
+	ticketsFetchIntervalStr := os.Getenv("LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL")
+	var ticketsFetchInterval time.Duration
+	if ticketsFetchIntervalStr == "" {
+		ticketsFetchInterval = ticketsFetchIntervalDefault
+	} else {
+		var err error
+		ticketsFetchInterval, err = time.ParseDuration(ticketsFetchIntervalStr)
+		if err != nil {
+			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL' environment variable: %v", err)
+		}
+	}
+
 	// Retrieve update interval.
 	updateIntervalStr := os.Getenv("LIVEPEER_EXPORTER_UPDATE_INTERVAL")
 	var updateInterval time.Duration
@@ -93,7 +110,7 @@ func main() {
 	orchScoreExporter := orch_score_exporter.NewOrchScoreExporter(orchAddr, fetchInterval, updateInterval)
 	orchDelegatorsExporter := orch_delegators_exporter.NewOrchDelegatorsExporter(orchAddr, fetchInterval, updateInterval)
 	orchTestStreamsExporter := orch_test_streams_exporter.NewOrchTestStreamsExporter(orchAddr, fetchTestStreamsInterval, updateInterval)
-	orchTicketsExporter := orch_tickets_exporter.NewOrchTicketsExporter(orchAddr, fetchInterval, updateInterval)
+	orchTicketsExporter := orch_tickets_exporter.NewOrchTicketsExporter(orchAddr, ticketsFetchInterval, updateInterval)
 
 	// Start sub-exporters.
 	log.Println("Starting sub exporters...")
