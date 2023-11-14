@@ -15,7 +15,7 @@ This exporter comprises the following sub-exporters, each responsible for fetchi
 
 - [orch_delegators_exporter](./exporters/orch_delegators_exporter/): Gathers metrics related to the delegators of the designated Livepeer orchestrator.
 - [orch_info_exporter](./exporters/orch_info_exporter/): Collects metrics pertaining to the Livepeer orchestrator.
-- [orch_reward_exporter](./exporters/orch_reward_exporter/): Retrieves metrics about the Livepeer orchestrator's rewards.s
+- [orch_reward_exporter](./exporters/orch_reward_exporter/): Retrieves metrics about the Livepeer orchestrator's rewards.
 - [orch_score_exporter](./exporters/orch_score_exporter/): Retrieves metrics concerning the Livepeer orchestrator's score.
 - [orch_test_streams_exporter](./exporters/orch_test_streams_exporter/): Procures metrics about the Livepeer orchestrator's test streams.
 - [orch_tickets_exporter](./exporters/orch_tickets_exporter/): Fetches metrics about the Livepeer orchestrator's tickets.
@@ -61,7 +61,7 @@ Fetches metrics about the Livepeer orchestrator from the [Livepeer Orchestrator 
 
 ### orch_rewards_exporter
 
-Fetches reward data for the Livepeer orchestrator from the `https://stronk.rocks/api/livepeer/getAllRewardEvents` endpoint and filters it based on the orchestrator ID. It exposes the following metrics:
+Fetches reward data for the Livepeer orchestrator from the https://stronk.rocks/api/livepeer/getAllRewardEvents endpoint and filters it based on the orchestrator ID. It exposes the following metrics:
 
 **GaugeVector metrics:**
 
@@ -155,7 +155,7 @@ docker run --name livepeer-exporter \
 
 This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. Additional environment variables can be passed to the exporter by adding them to the command above.
 
-> [!NOTE]
+> [!IMPORTANT]\
 > This repository provides a [Dockerfile](./Dockerfile) and a [docker-compose](./docker-compose.yml) file to facilitate running the exporter with Docker. To utilize these, first configure the necessary environment variables within the docker-compose file. Subsequently, initiate the exporter using the command `docker-compose up`.
 
 ### Configure Prometheus
