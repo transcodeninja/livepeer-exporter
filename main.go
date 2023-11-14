@@ -12,12 +12,15 @@
 //     test streams API takes a long time to respond.
 //   - LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL - How often to fetch tickets data for the orchestrator. Implemented as a separate interval because the tickets data
 //     is relatively large.
+//   - LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL - How often to fetch rewards data for the orchestrator. Implemented as a separate interval because the rewards data is
+//     relatively large and only changes once per day.
 //   - LIVEPEER_EXPORTER_UPDATE_INTERVAL - How often to update the prometheus metrics.
 package main
 
 import (
 	"livepeer-exporter/exporters/orch_delegators_exporter"
 	"livepeer-exporter/exporters/orch_info_exporter"
+	"livepeer-exporter/exporters/orch_rewards_exporter"
 	"livepeer-exporter/exporters/orch_score_exporter"
 	"livepeer-exporter/exporters/orch_test_streams_exporter"
 	"livepeer-exporter/exporters/orch_tickets_exporter"
@@ -34,6 +37,7 @@ var (
 	fetchIntervalDefault            = 1 * time.Minute
 	testStreamsFetchIntervalDefault = 15 * time.Minute
 	ticketsFetchIntervalDefault     = 1 * time.Hour
+	rewardsFetchIntervalDefault     = 12 * time.Hour
 	updateIntervalDefault           = 30 * time.Second
 )
 
@@ -91,6 +95,19 @@ func main() {
 		}
 	}
 
+	// Retrieve rewards fetch interval.
+	rewardsFetchIntervalStr := os.Getenv("LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL")
+	var rewardsFetchInterval time.Duration
+	if rewardsFetchIntervalStr == "" {
+		rewardsFetchInterval = rewardsFetchIntervalDefault
+	} else {
+		var err error
+		rewardsFetchInterval, err = time.ParseDuration(rewardsFetchIntervalStr)
+		if err != nil {
+			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL' environment variable: %v", err)
+		}
+	}
+
 	// Retrieve update interval.
 	updateIntervalStr := os.Getenv("LIVEPEER_EXPORTER_UPDATE_INTERVAL")
 	var updateInterval time.Duration
@@ -111,6 +128,7 @@ func main() {
 	orchDelegatorsExporter := orch_delegators_exporter.NewOrchDelegatorsExporter(orchAddr, fetchInterval, updateInterval)
 	orchTestStreamsExporter := orch_test_streams_exporter.NewOrchTestStreamsExporter(orchAddr, fetchTestStreamsInterval, updateInterval)
 	orchTicketsExporter := orch_tickets_exporter.NewOrchTicketsExporter(orchAddr, ticketsFetchInterval, updateInterval)
+	orchRewardsExporter := orch_rewards_exporter.NewOrchRewardsExporter(orchAddr, rewardsFetchInterval, updateInterval)
 
 	// Start sub-exporters.
 	log.Println("Starting sub exporters...")
@@ -119,6 +137,7 @@ func main() {
 	go orchDelegatorsExporter.Start()
 	go orchTestStreamsExporter.Start()
 	go orchTicketsExporter.Start()
+	go orchRewardsExporter.Start()
 
 	// Expose the registered metrics via HTTP.
 	log.Println("Exposing metrics via HTTP on port 9153")
