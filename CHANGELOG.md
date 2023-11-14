@@ -17,6 +17,23 @@
 
 * fix incorrect tickets exporter folder name ([fd32192](https://github.com/rickstaa/livepeer-exporter/commit/fd32192a2ce791ee490bb5c47f6e7dd6a0c8c70d))
 
+## [1.1.0](https://github.com/rickstaa/livepeer-exporter/compare/v1.0.1...v1.1.0) (2023-11-14)
+
+
+### Features
+
+* add 'LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL' env variable ([f399f68](https://github.com/rickstaa/livepeer-exporter/commit/f399f684c819228f0e0816ba19cc9706d8e0c348))
+* add 'LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL' env variable ([#29](https://github.com/rickstaa/livepeer-exporter/issues/29)) ([33e5778](https://github.com/rickstaa/livepeer-exporter/commit/33e577845a45aef69e28eba75387d42a4fbdd998))
+* add orchestrator rewards sub-exporter ([#30](https://github.com/rickstaa/livepeer-exporter/issues/30)) ([8156e81](https://github.com/rickstaa/livepeer-exporter/commit/8156e817f817876ae959f9f0be9e8139aeecbd9b))
+* add orchestrator tickets sub-exporter ([980ad7d](https://github.com/rickstaa/livepeer-exporter/commit/980ad7dbc0502f357814e63465f401fa04328441))
+* add orchestrator tickets sub-exporter ([#26](https://github.com/rickstaa/livepeer-exporter/issues/26)) ([646c5e9](https://github.com/rickstaa/livepeer-exporter/commit/646c5e95405f126afbbb10acaed51b4f3f433e4b))
+* start sub-exporters in goroutines ([#28](https://github.com/rickstaa/livepeer-exporter/issues/28)) ([92880d8](https://github.com/rickstaa/livepeer-exporter/commit/92880d8d4945cbfb23973774c24ee517cb23aab2))
+
+
+### Bug Fixes
+
+* fix incorrect tickets exporter folder name ([fd32192](https://github.com/rickstaa/livepeer-exporter/commit/fd32192a2ce791ee490bb5c47f6e7dd6a0c8c70d))
+
 ## [1.0.1](https://github.com/rickstaa/livepeer-exporter/compare/v1.0.0...v1.0.1) (2023-11-14)
 
 
