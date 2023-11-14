@@ -23,8 +23,12 @@ func Round(value float64, decimals int) float64 {
 }
 
 // StringToFloat64 parses a string to a float64.
+// If the string is empty, it returns 0.0 and no error.
 // If the string cannot be parsed, it returns an error.
 func StringToFloat64(s string) (float64, error) {
+	if s == "" {
+		return 0.0, nil
+	}
 	f, err := strconv.ParseFloat(s, 64)
 	if err != nil {
 		log.Printf("Error parsing value %v: %v", s, err)
