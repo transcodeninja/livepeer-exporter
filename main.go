@@ -21,6 +21,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -31,6 +32,7 @@ var (
 	fetchIntervalDefault            = 1 * time.Minute
 	testStreamsFetchIntervalDefault = 15 * time.Minute
 	updateIntervalDefault           = 30 * time.Second
+	defaultPort                     = 9153
 )
 
 // Default config values.
@@ -86,6 +88,20 @@ func main() {
 		}
 	}
 
+	// Retrieve port to expose metrics on.
+	portStr := os.Getenv("LIVEPEER_EXPORTER_PORT")
+	var port int
+	if portStr == "" {
+		port = defaultPort
+	} else {
+		var err error
+		port, err = strconv.Atoi(portStr)
+		if err != nil {
+			log.Printf("Error parsing PORT environment variable: %v", err)
+			port = defaultPort
+		}
+	}
+
 	// Setup sub-exporters.
 	log.Println("Setting up sub exporters...")
 	orchInfoExporter := orch_info_exporter.NewOrchInfoExporter(orchAddr, fetchInterval, updateInterval, orchAddrSecondary)
@@ -101,7 +117,7 @@ func main() {
 	orchTestStreamsExporter.Start()
 
 	// Expose the registered metrics via HTTP.
-	log.Println("Exposing metrics via HTTP on port 9153")
+	log.Printf("Exposing metrics via HTTP on port %s", port)
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":9153", nil)
+	http.ListenAndServe(":"+port, nil)
 }

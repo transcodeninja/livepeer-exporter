@@ -85,6 +85,7 @@ The exporter is configured via environment variables:
 - `FETCH_INTERVAL`: How often to fetch data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `5m`)
 - `FETCH_TEST_STREAMS_INTERVAL`: How often to fetch test streams data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch test data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `15n`)
 - `UPDATE_INTERVAL`: How often to update metrics. For example, if this is set to `5m`, the exporter will update metrics every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `30s`)
+- `LIVEPEER_EXPORTER_PORT`: Port to expose the metrics on. **Optional** (default: `9153`)
 
 ## Usage
 
