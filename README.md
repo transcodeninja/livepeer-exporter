@@ -1,3 +1,7 @@
+<a href="https://hub.docker.com/r/rickstaa/livepeer-exporter">
+  <img alt="Docker Image Version (latest semver)" src="https://img.shields.io/docker/v/rickstaa/livepeer-exporter?logo=docker">
+</a>
+
 # Livepeer Exporter
 
 Livepeer Exporter is a lightweight tool designed to enhance the monitoring capabilities of [Livepeer](https://livepeer.org/). As a Prometheus exporter, it fetches various metrics from different Livepeer endpoints and exposes them via an HTTP server, ready for Prometheus to scrape. This tool is the perfect companion to the [Livepeer monitoring service](https://docs.livepeer.org/orchestrators/guides/monitor-metrics), extending the range of Livepeer metrics that can be monitored. By providing deeper insights into Livepeer's performance, Livepeer Exporter helps users optimize their streaming workflows and ensure reliable service delivery.
@@ -104,6 +108,7 @@ go run main.go
 ```
 
 The exporter will be available on port `9153`.
+
 #### Running the Exporter with Docker
 
 You can run the exporter using the Docker image available on [Docker Hub](https://hub.docker.com/r/rickstaa/livepeer-exporter).To pull and run the exporter from Docker Hub, use the following command:
@@ -128,7 +133,7 @@ For Prometheus to scrape the exporter, add the following to your `prometheus.yml
 scrape_configs:
   - job_name: livepeer-exporter
     static_configs:
-      - targets: ['localhost:9153']
+      - targets: ["localhost:9153"]
 ```
 
 ## Contributing
