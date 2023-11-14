@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"livepeer-exporter/fetcher"
 	"livepeer-exporter/util"
+	"log"
 	"sync"
 	"time"
 
@@ -265,27 +266,39 @@ func (m *OrchInfoExporter) registerMetrics() {
 // parseMetrics parses the metrics from the orchInfoResponse and delegatingInfoResponse and populates the orchInfo struct.
 func (m *OrchInfoExporter) parseMetrics() {
 	// Parse and set the orchestrator info.
-	util.SetFloatFromStr(&m.orchInfo.BondedAmount, m.orchInfoResponse.PageProps.Account.Delegator.BondedAmount, -1)
-	util.SetFloatFromStr(&m.orchInfo.TotalStake, m.orchInfoResponse.PageProps.Account.Delegator.Delegate.TotalStake, -1)
-	util.SetFloatFromStr(&m.orchInfo.LastClaimRound, m.orchInfoResponse.PageProps.Account.Delegator.LastClaimRound.Id, -1)
-	util.SetFloatFromStr(&m.orchInfo.StartRound, m.orchInfoResponse.PageProps.Account.Delegator.StartRound, -1)
-	util.SetFloatFromStr(&m.orchInfo.WithdrawnFees, m.orchInfoResponse.PageProps.Account.Delegator.WithdrawnFees, -1)
-	util.SetFloatFromStr(&m.orchInfo.CurrentRound, m.orchInfoResponse.PageProps.Account.Protocol.CurrentRound.Id, -1)
-	util.SetFloatFromStr(&m.orchInfo.ActivationRound, m.orchInfoResponse.PageProps.Account.Transcoder.ActivationRound, -1)
+	util.SetFloatFromStr(&m.orchInfo.BondedAmount, m.orchInfoResponse.PageProps.Account.Delegator.BondedAmount)
+	util.SetFloatFromStr(&m.orchInfo.TotalStake, m.orchInfoResponse.PageProps.Account.Delegator.Delegate.TotalStake)
+	util.SetFloatFromStr(&m.orchInfo.LastClaimRound, m.orchInfoResponse.PageProps.Account.Delegator.LastClaimRound.Id)
+	util.SetFloatFromStr(&m.orchInfo.StartRound, m.orchInfoResponse.PageProps.Account.Delegator.StartRound)
+	util.SetFloatFromStr(&m.orchInfo.WithdrawnFees, m.orchInfoResponse.PageProps.Account.Delegator.WithdrawnFees)
+	util.SetFloatFromStr(&m.orchInfo.CurrentRound, m.orchInfoResponse.PageProps.Account.Protocol.CurrentRound.Id)
+	util.SetFloatFromStr(&m.orchInfo.ActivationRound, m.orchInfoResponse.PageProps.Account.Transcoder.ActivationRound)
 	m.orchInfo.Active = util.BoolToFloat64(m.orchInfoResponse.PageProps.Account.Transcoder.Active)
-	util.SetFloatFromStr(&m.orchInfo.FeeCut, m.orchInfoResponse.PageProps.Account.Transcoder.FeeShare, 2)
-	util.SetFloatFromStr(&m.orchInfo.RewardCut, m.orchInfoResponse.PageProps.Account.Transcoder.RewardCut, 2)
-	util.SetFloatFromStr(&m.orchInfo.LastRewardRound, m.orchInfoResponse.PageProps.Account.Transcoder.LastRewardRound.Id, -1)
-	util.SetFloatFromStr(&m.orchInfo.NinetyDayVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.NinetyDayVolumeETH, -1)
-	util.SetFloatFromStr(&m.orchInfo.ThirtyDayVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.ThirtyDayVolumeETH, -1)
-	util.SetFloatFromStr(&m.orchInfo.TotalVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.TotalVolumeETH, -1)
+	util.SetFloatFromStr(&m.orchInfo.LastRewardRound, m.orchInfoResponse.PageProps.Account.Transcoder.LastRewardRound.Id)
+	util.SetFloatFromStr(&m.orchInfo.NinetyDayVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.NinetyDayVolumeETH)
+	util.SetFloatFromStr(&m.orchInfo.ThirtyDayVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.ThirtyDayVolumeETH)
+	util.SetFloatFromStr(&m.orchInfo.TotalVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.TotalVolumeETH)
+
+	// Calculate and set reward and fee cut proportions.
+	feeShare, err := util.StringToFloat64(m.orchInfoResponse.PageProps.Account.Transcoder.FeeShare)
+	if err != nil {
+		log.Printf("Error parsing fee share: %v", err)
+	} else {
+		m.orchInfo.FeeCut = util.Round(1-feeShare*1e-6, 2)
+	}
+	rewardCut, err := util.StringToFloat64(m.orchInfoResponse.PageProps.Account.Transcoder.RewardCut)
+	if err != nil {
+		log.Printf("Error parsing reward cut: %v", err)
+	} else {
+		m.orchInfo.RewardCut = util.Round(rewardCut*1e-6, 2)
+	}
 
 	// Calculate and set the orchestrator stake.
 	// NOTE: If the orchestrator has a secondary address, we need to add the stake from the secondary address to the stake from the primary address.
-	util.SetFloatFromStr(&m.orchInfo.OrchStake, m.orchInfoResponse.PageProps.Account.Delegator.BondedAmount, -1)
+	util.SetFloatFromStr(&m.orchInfo.OrchStake, m.orchInfoResponse.PageProps.Account.Delegator.BondedAmount)
 	if m.orchAddressSecondary != "" {
 		var secondaryStake float64
-		util.SetFloatFromStr(&secondaryStake, m.delegatingInfoResponse.PageProps.Account.Delegator.BondedAmount, -1)
+		util.SetFloatFromStr(&secondaryStake, m.delegatingInfoResponse.PageProps.Account.Delegator.BondedAmount)
 		m.orchInfo.OrchStake += secondaryStake
 	}
 
