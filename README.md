@@ -15,6 +15,7 @@ This exporter comprises the following sub-exporters, each responsible for fetchi
 
 - [orch_delegators_exporter](./exporters/orch_delegators_exporter/): Gathers metrics related to the delegators of the designated Livepeer orchestrator.
 - [orch_info_exporter](./exporters/orch_info_exporter/): Collects metrics pertaining to the Livepeer orchestrator.
+- [orch_reward_exporter](./exporters/orch_reward_exporter/): Retrieves metrics about the Livepeer orchestrator's rewards.s
 - [orch_score_exporter](./exporters/orch_score_exporter/): Retrieves metrics concerning the Livepeer orchestrator's score.
 - [orch_test_streams_exporter](./exporters/orch_test_streams_exporter/): Procures metrics about the Livepeer orchestrator's test streams.
 - [orch_tickets_exporter](./exporters/orch_tickets_exporter/): Fetches metrics about the Livepeer orchestrator's tickets.
@@ -57,6 +58,17 @@ Fetches metrics about the Livepeer orchestrator from the [Livepeer Orchestrator 
 - `livepeer_orch_stake`: Stake provided by the orchestrator.
 - `livepeer_orch_reward_call_ratio`: Ratio of reward calls to total active rounds.
 - `livepeer_orch_total_reward`: Total reward of the orchestrator.
+
+### orch_rewards_exporter
+
+Fetches reward data for the Livepeer orchestrator from the `https://stronk.rocks/api/livepeer/getAllRewardEvents` endpoint and filters it based on the orchestrator ID. It exposes the following metrics:
+
+**GaugeVector metrics:**
+
+- `livepeer_orch_reward_amount`: The amount of rewards earned by each transaction. The `id` label is a unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_transaction_hash`: The transaction hash for each rewarded transaction. The `id` label is a unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_block_number`: The block number for each rewarded transaction. The `id` label is a unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_block_time`: The block time for each rewarded transaction. The `id` label is a unique identifier of the transaction in which the ticket was won.
 
 ### orch_score_exporter
 
@@ -102,9 +114,13 @@ The exporter is configured using the following environment variables:
 - **LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS (Required):** Address of the primary orchestrator to fetch data for.
 - **LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY (Optional):** Address of the secondary orchestrator to fetch data for. This is used to calculate the `livepeer_orch_stake` metric.
 - **LIVEPEER_EXPORTER_FETCH_INTERVAL (Optional, default: 5m):** How often to fetch general orchestrator data. For example, if set to `5m`, the exporter fetches data every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
-- **LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL (Optional, default: 15m):** How often to fetch test streams data for the orchestrator. For example, if set to `5m`, the exporter fetches test data every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
-- **LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL (Optional, default: 5m):** How often to fetch ticket data for the orchestrator. For example, if set to `5m`, the exporter fetches ticket data every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+- **LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL (Optional, default: 15m):** How often to fetch test streams data for the orchestrator. For example, if set to `15m`, the exporter fetches test data every 15 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+- **LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL (Optional, default: 1h):** How often to fetch ticket data for the orchestrator. For example, if set to `1h`, the exporter fetches ticket data every hour. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+- **LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL (Optional, default: 12h):** How often to fetch reward data for the orchestrator. For example, if set to `12h`, the exporter fetches reward data every 12 hours. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
 - **LIVEPEER_EXPORTER_UPDATE_INTERVAL (Optional, default: 30s):** How often to update Prometheus metrics. For example, if set to `5m`, the exporter updates metrics every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+
+> [!NOTE]\
+> The `LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL`, `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`, `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`, and `LIVEPEER_EXPORTER_UPDATE_INTERVAL` environment variables have higher default values. This adjustment is made considering the nature of the endpoints they fetch—they might be slow or return a substantial amount of data. By setting these values to a higher interval, you can effectively reduce the load on the exporter, ensuring optimal performance.
 
 ## Usage
 

@@ -1,4 +1,6 @@
-// Package orch_test_streams_exporter implements a Livepeer Orchestrator Test streams exporter that fetches data from the https://leaderboard-serverless.vercel.app/api/raw_stats API endpoint and exposes data about the orchestrators test streams via Prometheus metrics.
+// Package orch_test_streams_exporter implements a Livepeer Orchestrator Test streams exporter that fetches data from the
+// https://leaderboard-serverless.vercel.app/api/raw_stats API endpoint and exposes data about the orchestrators test
+// streams via Prometheus metrics.
 package orch_test_streams_exporter
 
 import (
