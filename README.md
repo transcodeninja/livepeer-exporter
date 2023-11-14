@@ -1,6 +1,6 @@
 # Livepeer Exporter
 
-Livepeer Exporter is a Prometheus exporter for [Livepeer](https://livepeer.org/) metrics. It fetches various metrics from different Livepeer endpoints and exposes them via an HTTP server for Prometheus to scrape.
+Livepeer Exporter is a lightweight tool designed to enhance the monitoring capabilities of [Livepeer](https://livepeer.org/). As a Prometheus exporter, it fetches various metrics from different Livepeer endpoints and exposes them via an HTTP server, ready for Prometheus to scrape. This tool is the perfect companion to the [Livepeer monitoring service](https://docs.livepeer.org/orchestrators/guides/monitor-metrics), extending the range of Livepeer metrics that can be monitored. By providing deeper insights into Livepeer's performance, Livepeer Exporter helps users optimize their streaming workflows and ensure reliable service delivery.
 
 ## Metrics
 
@@ -83,7 +83,7 @@ The exporter is configured via environment variables:
 - `ORCHESTRATOR_ADDRESS`: Address of the orchestrator to fetch data from. **Required**
 - `ORCHESTRATOR_ADDRESS_SECONDARY`: Address of the secondary orchestrator to fetch data from. This is used to calculate the `livepeer_orch_stake` metric. **Optional**
 - `FETCH_INTERVAL`: How often to fetch data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `5m`)
-- `FETCH_TEST_STREAMS_INTERVAL`: How often to fetch test streams data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch test data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `5m`)
+- `FETCH_TEST_STREAMS_INTERVAL`: How often to fetch test streams data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch test data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `15n`)
 - `UPDATE_INTERVAL`: How often to update metrics. For example, if this is set to `5m`, the exporter will update metrics every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `30s`)
 
 ## Usage
