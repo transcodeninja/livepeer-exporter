@@ -97,13 +97,14 @@ Fetches and exposes ticket transaction information for each orchestrator from th
   
 ## Configuration
 
-The exporter is configured via environment variables:
+The exporter is configured using the following environment variables:
 
-- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS`: Address of the orchestrator to fetch data from. **Required**
-- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY`: Address of the secondary orchestrator to fetch data from. This is used to calculate the `livepeer_orch_stake` metric. **Optional**
-- `LIVEPEER_EXPORTER_FETCH_INTERVAL`: How often to fetch data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `5m`)
-- `LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL`: How often to fetch test streams data from the orchestrator. For example, if this is set to `5m`, the exporter will fetch test data from the orchestrator every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `15n`)
-- `LIVEPEER_EXPORTER_UPDATE_INTERVAL`: How often to update metrics. For example, if this is set to `5m`, the exporter will update metrics every 5 minutes. See https://pkg.go.dev/time#ParseDuration for more information about the accepted format. **Optional** (default: `30s`)
+- **LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS (Required):** Address of the primary orchestrator to fetch data for.
+- **LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY (Optional):** Address of the secondary orchestrator to fetch data for. This is used to calculate the `livepeer_orch_stake` metric.
+- **LIVEPEER_EXPORTER_FETCH_INTERVAL (Optional, default: 5m):** How often to fetch general orchestrator data. For example, if set to `5m`, the exporter fetches data every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+- **LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL (Optional, default: 15m):** How often to fetch test streams data for the orchestrator. For example, if set to `5m`, the exporter fetches test data every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+- **LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL (Optional, default: 5m):** How often to fetch ticket data for the orchestrator. For example, if set to `5m`, the exporter fetches ticket data every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+- **LIVEPEER_EXPORTER_UPDATE_INTERVAL (Optional, default: 30s):** How often to update Prometheus metrics. For example, if set to `5m`, the exporter updates metrics every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
 
 ## Usage
 
@@ -118,6 +119,7 @@ export LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS=your-orchestrator-address
 export LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY=your-secondary-orchestrator-address
 export LIVEPEER_EXPORTER_FETCH_INTERVAL=your-fetch-interval
 export LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL=your-test-streams-fetch-interval
+export LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL=your-tickets-fetch-interval
 export LIVEPEER_EXPORTER_UPDATE_INTERVAL=your-update-interval
 go run main.go
 ```
