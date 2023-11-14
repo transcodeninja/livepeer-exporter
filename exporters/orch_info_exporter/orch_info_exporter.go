@@ -81,7 +81,7 @@ type OrchInfo struct {
 }
 
 // DelegationInfoResponse represents the structure of the data returned by the Livepeer delegator info API. This is used to fetch extra delegation
-// data for the orchestrator when the `ORCHESTRATOR_ADDRESS_SECONDARY` environment variable is set.
+// data for the orchestrator when the `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY` environment variable is set.
 type DelegationInfoResponse struct {
 	Mutex sync.Mutex
 
