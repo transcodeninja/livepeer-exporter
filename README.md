@@ -46,9 +46,9 @@ Fetches metrics about the Livepeer orchestrator from the [Livepeer Orchestrator 
 - `livepeer_orch_ninety_day_volume_eth`: 90-day volume of ETH.
 - `livepeer_orch_thirty_day_volume_eth`: 30-day volume of ETH.
 - `livepeer_orch_total_volume_eth`: Total volume of ETH.
-- `livepeer_orch_total_reward`: Total reward of the orchestrator.
 - `livepeer_orch_stake`: Stake provided by the orchestrator.
 - `livepeer_orch_reward_call_ratio`: Ratio of reward calls to total active rounds.
+- `livepeer_orch_total_reward`: Total reward of the orchestrator.
 
 ### orch_score_exporter
 

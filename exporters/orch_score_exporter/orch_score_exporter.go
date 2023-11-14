@@ -1,4 +1,5 @@
-// Package orch_score_exporter implements a Livepeer Orchestrator Score exporter that fetches data from the Livepeer orchestrator score API and exposes orchestrator score data via Prometheus metrics.
+// Package orch_score_exporter implements a Livepeer Orchestrator Score exporter that fetches data from the Livepeer orchestrator
+// score API and exposes orchestrator score data via Prometheus metrics.
 package orch_score_exporter
 
 import (

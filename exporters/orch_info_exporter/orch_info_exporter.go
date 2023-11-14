@@ -1,12 +1,11 @@
-// Package orch_info_exporter implements a Livepeer Orchestrator Info exporter that fetches data from Livepeer's orchestrator info API and exposes info about the orchestrator via Prometheus metrics.
+// Package orch_info_exporter implements a Livepeer Orchestrator Info exporter that fetches data from Livepeer's orchestrator info API and exposes
+// info about the orchestrator via Prometheus metrics.
 package orch_info_exporter
 
 import (
 	"fmt"
 	"livepeer-exporter/fetcher"
 	"livepeer-exporter/util"
-	"log"
-	"strconv"
 	"sync"
 	"time"
 
@@ -18,8 +17,8 @@ var (
 	delegatingInfoEndpointTemplate = "https://explorer.livepeer.org/_next/data/xe8lg6V7gubXcRErA1lxB/accounts/%s/delegating.json?account=%s"
 )
 
-// OrchInfo represents the structure of the data returned by the Livepeer orchestrator info API.
-type OrchInfo struct {
+// OrchInfoResponse represents the structure of the data returned by the Livepeer orchestrator info API.
+type OrchInfoResponse struct {
 	Mutex sync.Mutex
 
 	// Response data.
@@ -60,9 +59,30 @@ type OrchInfo struct {
 	}
 }
 
-// DelegatingInfo represents the structure of the data returned by the Livepeer delegator info API.
-// This is used to fetch extra delegation data for the orchestrator when the `ORCHESTRATOR_ADDRESS_SECONDARY` environment variable is set.
-type DelegatingInfo struct {
+// OrchInfo represents the parsed data from the Livepeer orchestrator info API.
+type OrchInfo struct {
+	BondedAmount       float64
+	TotalStake         float64
+	LastClaimRound     float64
+	StartRound         float64
+	WithdrawnFees      float64
+	CurrentRound       float64
+	ActivationRound    float64
+	Active             float64
+	FeeCut             float64
+	RewardCut          float64
+	LastRewardRound    float64
+	NinetyDayVolumeETH float64
+	ThirtyDayVolumeETH float64
+	TotalVolumeETH     float64
+	TotalReward        float64
+	OrchStake          float64
+	RewardCallRatio    float64
+}
+
+// DelegationInfoResponse represents the structure of the data returned by the Livepeer delegator info API. This is used to fetch extra delegation
+// data for the orchestrator when the `ORCHESTRATOR_ADDRESS_SECONDARY` environment variable is set.
+type DelegationInfoResponse struct {
 	Mutex sync.Mutex
 
 	// Response data.
@@ -104,8 +124,9 @@ type OrchInfoExporter struct {
 	delegatingInfoEndpoint string        // The endpoint to fetch extra delegation data from.
 
 	// Data.
-	orchInfo       *OrchInfo       // The data returned by the orchestrator API.
-	delegatingInfo *DelegatingInfo // The data returned by the delegation API.
+	orchInfoResponse       *OrchInfoResponse       // The data returned by the orchestrator API.
+	delegatingInfoResponse *DelegationInfoResponse // The data returned by the delegation API.
+	orchInfo               *OrchInfo               // The data returned by the orchestrator API, parsed into a struct.
 
 	// Fetchers.
 	orchInfoFetcher       fetcher.Fetcher
@@ -198,12 +219,6 @@ func (m *OrchInfoExporter) initMetrics() {
 			Help: "The total volume of ETH.",
 		},
 	)
-	m.TotalReward = prometheus.NewGauge(
-		prometheus.GaugeOpts{
-			Name: "livepeer_orch_total_reward",
-			Help: "The total reward of the orchestrator.",
-		},
-	)
 	m.OrchStake = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_stake",
@@ -214,6 +229,12 @@ func (m *OrchInfoExporter) initMetrics() {
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_reward_call_ratio",
 			Help: "Ratio of reward calls to total active rounds.",
+		},
+	)
+	m.TotalReward = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_total_reward",
+			Help: "The total reward of the orchestrator.",
 		},
 	)
 }
@@ -235,80 +256,76 @@ func (m *OrchInfoExporter) registerMetrics() {
 		m.NinetyDayVolumeETH,
 		m.ThirtyDayVolumeETH,
 		m.TotalVolumeETH,
-		m.TotalReward,
 		m.OrchStake,
 		m.RewardCallRatio,
+		m.TotalReward,
 	)
+}
+
+// parseMetrics parses the metrics from the orchInfoResponse and delegatingInfoResponse and populates the orchInfo struct.
+func (m *OrchInfoExporter) parseMetrics() {
+	// Parse and set the orchestrator info.
+	util.SetFloatFromStr(&m.orchInfo.BondedAmount, m.orchInfoResponse.PageProps.Account.Delegator.BondedAmount, -1)
+	util.SetFloatFromStr(&m.orchInfo.TotalStake, m.orchInfoResponse.PageProps.Account.Delegator.Delegate.TotalStake, -1)
+	util.SetFloatFromStr(&m.orchInfo.LastClaimRound, m.orchInfoResponse.PageProps.Account.Delegator.LastClaimRound.Id, -1)
+	util.SetFloatFromStr(&m.orchInfo.StartRound, m.orchInfoResponse.PageProps.Account.Delegator.StartRound, -1)
+	util.SetFloatFromStr(&m.orchInfo.WithdrawnFees, m.orchInfoResponse.PageProps.Account.Delegator.WithdrawnFees, -1)
+	util.SetFloatFromStr(&m.orchInfo.CurrentRound, m.orchInfoResponse.PageProps.Account.Protocol.CurrentRound.Id, -1)
+	util.SetFloatFromStr(&m.orchInfo.ActivationRound, m.orchInfoResponse.PageProps.Account.Transcoder.ActivationRound, -1)
+	m.orchInfo.Active = util.BoolToFloat64(m.orchInfoResponse.PageProps.Account.Transcoder.Active)
+	util.SetFloatFromStr(&m.orchInfo.FeeCut, m.orchInfoResponse.PageProps.Account.Transcoder.FeeShare, 2)
+	util.SetFloatFromStr(&m.orchInfo.RewardCut, m.orchInfoResponse.PageProps.Account.Transcoder.RewardCut, 2)
+	util.SetFloatFromStr(&m.orchInfo.LastRewardRound, m.orchInfoResponse.PageProps.Account.Transcoder.LastRewardRound.Id, -1)
+	util.SetFloatFromStr(&m.orchInfo.NinetyDayVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.NinetyDayVolumeETH, -1)
+	util.SetFloatFromStr(&m.orchInfo.ThirtyDayVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.ThirtyDayVolumeETH, -1)
+	util.SetFloatFromStr(&m.orchInfo.TotalVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.TotalVolumeETH, -1)
+
+	// Calculate and set the orchestrator stake.
+	// NOTE: If the orchestrator has a secondary address, we need to add the stake from the secondary address to the stake from the primary address.
+	util.SetFloatFromStr(&m.orchInfo.OrchStake, m.orchInfoResponse.PageProps.Account.Delegator.BondedAmount, -1)
+	if m.orchAddressSecondary != "" {
+		var secondaryStake float64
+		util.SetFloatFromStr(&secondaryStake, m.delegatingInfoResponse.PageProps.Account.Delegator.BondedAmount, -1)
+		m.orchInfo.OrchStake += secondaryStake
+	}
+
+	// Calculate and set the total reward and reward call ratio.
+	totalReward := 0.0
+	for _, pool := range m.orchInfoResponse.PageProps.Account.Transcoder.Pools {
+		rewardTokens, err := util.StringToFloat64(pool.RewardTokens)
+		if err == nil {
+			totalReward += rewardTokens
+		}
+	}
+	m.orchInfo.TotalReward = totalReward
+	if m.orchInfo.CurrentRound > m.orchInfo.ActivationRound {
+		m.orchInfo.RewardCallRatio = float64(len(m.orchInfoResponse.PageProps.Account.Transcoder.Pools)) / float64(int(m.orchInfo.CurrentRound-m.orchInfo.ActivationRound))
+	}
 }
 
 // updateMetrics updates the metrics with the data fetched from the Livepeer orchestrator info API.
 func (m *OrchInfoExporter) updateMetrics() {
-	// Parse and set the current round and activation round.
-	currentRound, err := util.StringToFloat64(m.orchInfo.PageProps.Account.Protocol.CurrentRound.Id)
-	if err != nil {
-		log.Printf("Error parsing CurrentRound: %v", err)
-	}
-	activationRound, err := util.StringToFloat64(m.orchInfo.PageProps.Account.Transcoder.ActivationRound)
-	if err != nil {
-		log.Printf("Error parsing Active: %v", err)
-	}
-	m.CurrentRound.Set(currentRound)
-	m.ActivationRound.Set(activationRound)
+	// Parse the metrics from the response data.
+	m.parseMetrics()
 
-	// Convert the fee cut and reward cut to fractions.
-	feeCut, err := strconv.ParseFloat(m.orchInfo.PageProps.Account.Transcoder.FeeShare, 64)
-	if err != nil {
-		log.Printf("Error parsing FeeShare: %v", err)
-	}
-	rewardCut, err := strconv.ParseFloat(m.orchInfo.PageProps.Account.Transcoder.RewardCut, 64)
-	if err != nil {
-		log.Printf("Error parsing RewardCut: %v", err)
-	}
-	m.FeeCut.Set(util.Round(1-feeCut*1e-6, 2))
-	m.RewardCut.Set(util.Round(rewardCut*1e-6, 2))
-
-	// Calculate and set the total LPT reward received by the orchestrator.
-	totalReward := 0.0
-	for _, pool := range m.orchInfo.PageProps.Account.Transcoder.Pools {
-		rewardTokens, err := strconv.ParseFloat(pool.RewardTokens, 64)
-		if err != nil {
-			log.Printf("Error parsing RewardTokens: %v", err)
-			continue
-		}
-		totalReward += rewardTokens
-	}
-	m.TotalReward.Set(totalReward)
-
-	// Calculate the orchestrator's reward call ratio.
-	rewardCallRatio := len(m.orchInfo.PageProps.Account.Transcoder.Pools) / int(currentRound-activationRound)
-	m.RewardCallRatio.Set(float64(rewardCallRatio))
-
-	// Calculate the total LPT that is staked by the orchestrator.
-	// NOTE: This uses the orchestrator bonded amount and the secondary orchestrator bonded amount.
-	orchBondedAmount, err := strconv.ParseFloat(m.orchInfo.PageProps.Account.Delegator.BondedAmount, 64)
-	if err != nil {
-		log.Printf("Error parsing OrchBondedAmount: %v", err)
-	}
-	var orchSecondaryBondedAmount float64
-	if m.orchAddressSecondary != "" {
-		orchSecondaryBondedAmount, err = strconv.ParseFloat(m.delegatingInfo.PageProps.Account.Delegator.BondedAmount, 64)
-		if err != nil {
-			log.Printf("Error parsing OrchSecondaryBondedAmount: %v", err)
-		}
-	}
-	m.OrchStake.Set(orchBondedAmount + orchSecondaryBondedAmount)
-
-	// Update other metrics.
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.BondedAmount, m.BondedAmount)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.Delegate.TotalStake, m.TotalStake)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.LastClaimRound.Id, m.LastClaimRound)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.StartRound, m.StartRound)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Delegator.WithdrawnFees, m.WithdrawnFees)
-	m.Active.Set(util.BoolToFloat64(m.orchInfo.PageProps.Account.Transcoder.Active))
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.LastRewardRound.Id, m.LastRewardRound)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.NinetyDayVolumeETH, m.NinetyDayVolumeETH)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.ThirtyDayVolumeETH, m.ThirtyDayVolumeETH)
-	util.ParseFloatAndSetGauge(m.orchInfo.PageProps.Account.Transcoder.TotalVolumeETH, m.TotalVolumeETH)
+	// Set the metrics.
+	m.BondedAmount.Set(m.orchInfo.BondedAmount)
+	m.TotalStake.Set(m.orchInfo.TotalStake)
+	m.LastClaimRound.Set(m.orchInfo.LastClaimRound)
+	m.StartRound.Set(m.orchInfo.StartRound)
+	m.WithdrawnFees.Set(m.orchInfo.WithdrawnFees)
+	m.CurrentRound.Set(m.orchInfo.CurrentRound)
+	m.ActivationRound.Set(m.orchInfo.ActivationRound)
+	m.Active.Set(m.orchInfo.Active)
+	m.FeeCut.Set(m.orchInfo.FeeCut)
+	m.RewardCut.Set(m.orchInfo.RewardCut)
+	m.LastRewardRound.Set(m.orchInfo.LastRewardRound)
+	m.NinetyDayVolumeETH.Set(m.orchInfo.NinetyDayVolumeETH)
+	m.ThirtyDayVolumeETH.Set(m.orchInfo.ThirtyDayVolumeETH)
+	m.TotalVolumeETH.Set(m.orchInfo.TotalVolumeETH)
+	m.OrchStake.Set(m.orchInfo.OrchStake)
+	m.RewardCallRatio.Set(m.orchInfo.RewardCallRatio)
+	m.TotalReward.Set(m.orchInfo.TotalReward)
 }
 
 // NewOrchInfoExporter creates a new OrchInfoExporter.
@@ -319,19 +336,20 @@ func NewOrchInfoExporter(orchAddress string, fetchInterval time.Duration, update
 		orchAddressSecondary:   orchAddrSecondary,
 		orchInfoEndpoint:       fmt.Sprintf(orchInfoEndpointTemplate, orchAddress, orchAddress),
 		delegatingInfoEndpoint: fmt.Sprintf(delegatingInfoEndpointTemplate, orchAddrSecondary, orchAddrSecondary),
+		orchInfoResponse:       &OrchInfoResponse{},
+		delegatingInfoResponse: &DelegationInfoResponse{},
 		orchInfo:               &OrchInfo{},
-		delegatingInfo:         &DelegatingInfo{},
 	}
 
 	// Initialize fetcher.
 	exporter.orchInfoFetcher = fetcher.Fetcher{
 		URL:  exporter.orchInfoEndpoint,
-		Data: exporter.orchInfo,
+		Data: exporter.orchInfoResponse,
 	}
 	if orchAddrSecondary != "" {
 		exporter.delegatingInfoFetcher = fetcher.Fetcher{
 			URL:  exporter.delegatingInfoEndpoint,
-			Data: exporter.delegatingInfo,
+			Data: exporter.delegatingInfoResponse,
 		}
 	}
 
@@ -357,13 +375,13 @@ func (m *OrchInfoExporter) Start() {
 		defer ticker.Stop()
 
 		for range ticker.C {
-			m.orchInfo.Mutex.Lock()
+			m.orchInfoResponse.Mutex.Lock()
 			m.orchInfoFetcher.FetchData()
-			m.orchInfo.Mutex.Unlock()
+			m.orchInfoResponse.Mutex.Unlock()
 			if m.orchAddressSecondary != "" {
-				m.delegatingInfo.Mutex.Lock()
+				m.delegatingInfoResponse.Mutex.Lock()
 				m.delegatingInfoFetcher.FetchData()
-				m.delegatingInfo.Mutex.Unlock()
+				m.delegatingInfoResponse.Mutex.Unlock()
 			}
 		}
 	}()
