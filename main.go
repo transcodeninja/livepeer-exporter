@@ -18,7 +18,7 @@ import (
 	"livepeer-exporter/exporters/orch_info_exporter"
 	"livepeer-exporter/exporters/orch_score_exporter"
 	"livepeer-exporter/exporters/orch_test_streams_exporter"
-	"livepeer-exporter/exporters/orch_tickets_exporter.go"
+	"livepeer-exporter/exporters/orch_tickets_exporter"
 	"log"
 	"net/http"
 	"os"
