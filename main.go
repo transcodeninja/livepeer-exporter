@@ -18,6 +18,7 @@ import (
 	"livepeer-exporter/exporters/orch_info_exporter"
 	"livepeer-exporter/exporters/orch_score_exporter"
 	"livepeer-exporter/exporters/orch_test_streams_exporter"
+	"livepeer-exporter/exporters/orch_tickets_exporter.go"
 	"log"
 	"net/http"
 	"os"
@@ -92,6 +93,7 @@ func main() {
 	orchScoreExporter := orch_score_exporter.NewOrchScoreExporter(orchAddr, fetchInterval, updateInterval)
 	orchDelegatorsExporter := orch_delegators_exporter.NewOrchDelegatorsExporter(orchAddr, fetchInterval, updateInterval)
 	orchTestStreamsExporter := orch_test_streams_exporter.NewOrchTestStreamsExporter(orchAddr, fetchTestStreamsInterval, updateInterval)
+	orchTicketsExporter := orch_tickets_exporter.NewOrchTicketsExporter(orchAddr, fetchInterval, updateInterval)
 
 	// Start sub-exporters.
 	log.Println("Starting sub exporters...")
@@ -99,6 +101,7 @@ func main() {
 	orchScoreExporter.Start()
 	orchDelegatorsExporter.Start()
 	orchTestStreamsExporter.Start()
+	orchTicketsExporter.Start()
 
 	// Expose the registered metrics via HTTP.
 	log.Println("Exposing metrics via HTTP on port 9153")
