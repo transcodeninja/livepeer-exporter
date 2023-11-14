@@ -97,14 +97,14 @@ func main() {
 
 	// Start sub-exporters.
 	log.Println("Starting sub exporters...")
-	orchInfoExporter.Start()
-	orchScoreExporter.Start()
-	orchDelegatorsExporter.Start()
-	orchTestStreamsExporter.Start()
-	orchTicketsExporter.Start()
+	go orchInfoExporter.Start()
+	go orchScoreExporter.Start()
+	go orchDelegatorsExporter.Start()
+	go orchTestStreamsExporter.Start()
+	go orchTicketsExporter.Start()
 
 	// Expose the registered metrics via HTTP.
 	log.Println("Exposing metrics via HTTP on port 9153")
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":9153", nil)
+	http.ListenAndServe(":9154", nil)
 }
