@@ -17,6 +17,7 @@ This exporter comprises the following sub-exporters, each responsible for fetchi
 - [orch_info_exporter](./exporters/orch_info_exporter/): Collects metrics pertaining to the Livepeer orchestrator.
 - [orch_score_exporter](./exporters/orch_score_exporter/): Retrieves metrics concerning the Livepeer orchestrator's score.
 - [orch_test_streams_exporter](./exporters/orch_test_streams_exporter/): Procures metrics about the Livepeer orchestrator's test streams.
+- [orch_tickets_exporter](./exporters/orch_tickets_exporter/): Fetches metrics about the Livepeer orchestrator's tickets.
 
 These sub-exporters operate concurrently in separate [goroutines](https://go.dev/tour/concurrency/1) for enhanced performance. They fetch metrics from various Livepeer endpoints and expose them via the `9153/metrics` endpoint. For detailed information about these sub-exporters and the metrics they provide, refer to the sections below.
 
@@ -83,6 +84,17 @@ Fetches metrics about the LivePeer orchestrator's test streams from the https://
 - `livepeer_orch_test_stream_transcode_time`: Transcode time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
 - `livepeer_orch_test_stream_round_trip_time`: Round trip time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
 
+### orch_tickets_exporter
+
+Fetches and exposes ticket transaction information for each orchestrator from the https://stronk.rocks/api/livepeer/getAllRedeemTicketEvents API endpoint. The exposed metrics include:
+
+**GaugeVec metrics:**
+
+- `livepeer_orch_winning_ticket_amount`: Fees won by each winning orchestrator ticket. It contains the label `id`, which represents the unique identifier of each ticket.
+- `livepeer_orch_winning_ticket_transaction_hash`: Transaction hash for each winning ticket. The `id` label is a unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_winning_ticket_block_number`: Block number for each winning ticket. The `id` label is a unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_winning_ticket_block_time`: Block time for each winning ticket. The `id` label is a unique identifier of the transaction in which the ticket was won.
+  
 ## Configuration
 
 The exporter is configured via environment variables:
@@ -126,7 +138,7 @@ docker run --name livepeer-exporter \
 This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. Additional environment variables can be passed to the exporter by adding them to the command above.
 
 > [!NOTE]
-> This repository provides a [Dockerfile](./Dockerfile) and a [docker-compose](./docker-compose.yml) file to facilitate running the exporter with Docker. To utilize these, ensure to first configure the necessary environment variables within the docker-compose file. Subsequently, initiate the exporter using the command `docker-compose up`.
+> This repository provides a [Dockerfile](./Dockerfile) and a [docker-compose](./docker-compose.yml) file to facilitate running the exporter with Docker. To utilize these, first configure the necessary environment variables within the docker-compose file. Subsequently, initiate the exporter using the command `docker-compose up`.
 
 ### Configure Prometheus
 

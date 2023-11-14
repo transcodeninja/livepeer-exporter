@@ -133,7 +133,7 @@ func NewOrchTestStreamsExporter(orchAddress string, fetchInterval time.Duration,
 	// Initialize fetcher.
 	exporter.orchTestStreamsFetcher = fetcher.Fetcher{
 		URL:  exporter.orchTestStreamsEndpoint,
-		Data: exporter.orchTestStreams,
+		Data: &exporter.orchTestStreams,
 	}
 
 	// Initialize metrics.

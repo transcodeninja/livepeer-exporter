@@ -120,7 +120,7 @@ func NewOrchScoreExporter(orchAddress string, fetchInterval time.Duration, updat
 	// Initialize fetcher.
 	exporter.orchScoreFetcher = fetcher.Fetcher{
 		URL:  exporter.orchInfoEndpoint,
-		Data: exporter.orchScore,
+		Data: &exporter.orchScore,
 	}
 
 	// Initialize metrics.

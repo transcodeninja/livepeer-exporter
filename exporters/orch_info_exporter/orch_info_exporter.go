@@ -357,12 +357,12 @@ func NewOrchInfoExporter(orchAddress string, fetchInterval time.Duration, update
 	// Initialize fetcher.
 	exporter.orchInfoFetcher = fetcher.Fetcher{
 		URL:  exporter.orchInfoEndpoint,
-		Data: exporter.orchInfoResponse,
+		Data: &exporter.orchInfoResponse,
 	}
 	if orchAddrSecondary != "" {
 		exporter.delegatingInfoFetcher = fetcher.Fetcher{
 			URL:  exporter.delegatingInfoEndpoint,
-			Data: exporter.delegatingInfoResponse,
+			Data: &exporter.delegatingInfoResponse,
 		}
 	}
 

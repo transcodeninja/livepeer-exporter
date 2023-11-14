@@ -109,7 +109,7 @@ func NewOrchDelegatorsExporter(orchAddress string, fetchInterval time.Duration, 
 	// Initialize fetcher.
 	exporter.orchDelegatorsFetcher = fetcher.Fetcher{
 		URL:  exporter.orchDelegatorsEndpoint,
-		Data: exporter.orchDelegators,
+		Data: &exporter.orchDelegators,
 	}
 
 	// Initialize metrics.
