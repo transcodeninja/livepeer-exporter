@@ -81,9 +81,9 @@ Fetches metrics about the Livepeer orchestrator's score from the [Livepeer Score
 
 **GaugeVec metrics:**
 
-- `livepeer_orch_success_rates`: Success rates per region. This GaugeVec contains the label `region`.
-- `livepeer_orch_round_trip_scores`: Round trip scores per region. This GaugeVec contains the label `region`.
-- `livepeer_orch_scores`: Scores per region. This GaugeVec contains the label `region`.
+- `livepeer_orch_success_rate`: Success rate per region. This GaugeVec contains the label `region`.
+- `livepeer_orch_round_trip_score`: Round trip score per region. This GaugeVec contains the label `region`.
+- `livepeer_orch_total_score`: Total score per region. This GaugeVec contains the label `region`.
 
 ### orch_test_streams_exporter
 

@@ -56,22 +56,22 @@ func (m *OrchScoreExporter) initMetrics() {
 	)
 	m.SuccessRates = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "livepeer_orch_success_rates",
-			Help: "The success rates per region.",
+			Name: "livepeer_orch_success_rate",
+			Help: "The success rate per region.",
 		},
 		[]string{"region"},
 	)
 	m.RoundTripScores = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "livepeer_orch_round_trip_scores",
-			Help: "The round trip scores per region.",
+			Name: "livepeer_orch_round_trip_score",
+			Help: "The round trip score per region.",
 		},
 		[]string{"region"},
 	)
 	m.Scores = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "livepeer_orch_scores",
-			Help: "The scores per region.",
+			Name: "livepeer_orch_total_score",
+			Help: "The total score per region.",
 		},
 		[]string{"region"},
 	)
@@ -99,12 +99,12 @@ func (m *OrchScoreExporter) updateMetrics() {
 
 	// Update the RoundTripScores metric
 	for region, score := range m.orchScore.RoundTripScores {
-		m.RoundTripScores.WithLabelValues(region).Set(score)
+		m.RoundTripScores.WithLabelValues(region).Set(score / 10)
 	}
 
 	// Update the Scores metric
 	for region, score := range m.orchScore.Scores {
-		m.Scores.WithLabelValues(region).Set(score)
+		m.Scores.WithLabelValues(region).Set(score / 10)
 	}
 }
 
