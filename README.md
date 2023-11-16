@@ -2,7 +2,7 @@
 [![Publish Docker image](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-publish.yml)
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/rickstaa/livepeer-exporter?logo=docker)
 ](https://hub.docker.com/r/rickstaa/livepeer-exporter)
-![Latest Release](https://img.shields.io/github/v/release/rickstaa/livepeer-exporter?label=latest%20release)
+[![Latest Release](https://img.shields.io/github/v/release/rickstaa/livepeer-exporter?label=latest%20release)](https://github.com/rickstaa/livepeer-exporter/releases)
 
 # Livepeer Exporter
 
