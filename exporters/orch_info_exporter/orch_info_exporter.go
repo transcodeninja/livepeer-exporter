@@ -76,7 +76,6 @@ type OrchInfo struct {
 	NinetyDayVolumeETH float64
 	ThirtyDayVolumeETH float64
 	TotalVolumeETH     float64
-	TotalReward        float64
 	OrchStake          float64
 	RewardCallRatio    float64
 }
@@ -113,7 +112,6 @@ type OrchInfoExporter struct {
 	NinetyDayVolumeETH prometheus.Gauge
 	ThirtyDayVolumeETH prometheus.Gauge
 	TotalVolumeETH     prometheus.Gauge
-	TotalReward        prometheus.Gauge
 	OrchStake          prometheus.Gauge
 	RewardCallRatio    prometheus.Gauge
 
@@ -232,12 +230,6 @@ func (m *OrchInfoExporter) initMetrics() {
 			Help: "How often an orchestrator claimed rewards in the last thirty rounds.",
 		},
 	)
-	m.TotalReward = prometheus.NewGauge(
-		prometheus.GaugeOpts{
-			Name: "livepeer_orch_total_rewards",
-			Help: "Total rewards claimed by the the orchestrator.",
-		},
-	)
 }
 
 // registerMetrics registers the orchestrator info metrics with Prometheus.
@@ -259,7 +251,6 @@ func (m *OrchInfoExporter) registerMetrics() {
 		m.TotalVolumeETH,
 		m.OrchStake,
 		m.RewardCallRatio,
-		m.TotalReward,
 	)
 }
 
@@ -302,21 +293,18 @@ func (m *OrchInfoExporter) parseMetrics() {
 		m.orchInfo.OrchStake += secondaryStake
 	}
 
-	// Calculate and set the total reward and reward call ratio.
-	totalReward := 0.0
+	// Calculate thirty day reward call ratio.
+	var poolsWithRewardTokens int
 	for _, pool := range m.orchInfoResponse.PageProps.Account.Transcoder.Pools {
-		rewardTokens, err := util.StringToFloat64(pool.RewardTokens)
-		if err == nil {
-			totalReward += rewardTokens
+		if pool.RewardTokens != "" {
+			poolsWithRewardTokens++
 		}
 	}
-	m.orchInfo.TotalReward = totalReward
-	if m.orchInfo.CurrentRound > m.orchInfo.ActivationRound {
-		m.orchInfo.RewardCallRatio = float64(len(m.orchInfoResponse.PageProps.Account.Transcoder.Pools)) / float64(int(m.orchInfo.CurrentRound-m.orchInfo.ActivationRound))
+	days := m.orchInfo.CurrentRound - m.orchInfo.ActivationRound
+	if days > 30 {
+		days = 30
 	}
-
-	// Calculate thirty day reward call ratio.
-
+	m.orchInfo.RewardCallRatio = float64(poolsWithRewardTokens) / float64(days)
 }
 
 // updateMetrics updates the metrics with the data fetched from the Livepeer orchestrator info API.
@@ -341,7 +329,6 @@ func (m *OrchInfoExporter) updateMetrics() {
 	m.TotalVolumeETH.Set(m.orchInfo.TotalVolumeETH)
 	m.OrchStake.Set(m.orchInfo.OrchStake)
 	m.RewardCallRatio.Set(m.orchInfo.RewardCallRatio)
-	m.TotalReward.Set(m.orchInfo.TotalReward)
 }
 
 // NewOrchInfoExporter creates a new OrchInfoExporter.
