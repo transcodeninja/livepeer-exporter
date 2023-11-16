@@ -1,5 +1,6 @@
-// Package crypto_prices_exporter implements a crypto prices exporter that fetches data from the https://api.coinbase.com/v2/exchange-rates?currency=USD API endpoint and exposes information about several crypto currencies that
-// are relevant to Livepeer.
+// Package crypto_prices_exporter implements a crypto prices exporter that fetches data from the
+// https://api.coinbase.com/v2/exchange-rates?currency=USD API endpoint and exposes information
+// about several crypto currencies that are relevant to Livepeer.
 package crypto_prices_exporter
 
 import (
@@ -16,8 +17,8 @@ var (
 	getCryptoPricesEndpoint = "https://api.coinbase.com/v2/exchange-rates?currency=USD"
 )
 
-// CryptoPricesResponse represents the structure of the data returned by the API.
-type CryptoPricesResponse struct {
+// cryptoPricesResponse represents the structure of the data returned by the API.
+type cryptoPricesResponse struct {
 	sync.Mutex
 
 	Data struct {
@@ -34,7 +35,7 @@ type cryptoPrices struct {
 	ETHEURPrice float64
 }
 
-// CryptoPricesExporter fetches data from the  API endpoint and exposes data about the crypto prices via Prometheus metrics.
+// CryptoPricesExporter fetches data from the API and exposes data about the crypto prices via Prometheus metrics.
 type CryptoPricesExporter struct {
 	// Metrics.
 	LPTPrice *prometheus.GaugeVec
@@ -46,7 +47,7 @@ type CryptoPricesExporter struct {
 	cryptoPricesEndpoint string        // The endpoint to fetch data from.
 
 	// Data.
-	cryptoPricesResponse *CryptoPricesResponse // The data returned by the API.
+	cryptoPricesResponse *cryptoPricesResponse // The data returned by the API.
 	cryptoPrices         *cryptoPrices         // The data returned by the  API, parsed into a struct.
 
 	// Fetchers.
@@ -102,7 +103,9 @@ func (m *CryptoPricesExporter) parseMetrics() {
 // updateMetrics updates the metrics with the data fetched from the Coinbase exchange-rates API.
 func (m *CryptoPricesExporter) updateMetrics() {
 	// Parse the metrics from the response data.
+	m.cryptoPricesResponse.Mutex.Lock()
 	m.parseMetrics()
+	m.cryptoPricesResponse.Mutex.Unlock()
 
 	// Set the metrics.
 	m.LPTPrice.WithLabelValues("USD").Set(m.cryptoPrices.LPTUSDPrice)
@@ -117,7 +120,7 @@ func NewCryptoPricesExporter(fetchInterval time.Duration, updateInterval time.Du
 		fetchInterval:        fetchInterval,
 		updateInterval:       updateInterval,
 		cryptoPricesEndpoint: getCryptoPricesEndpoint,
-		cryptoPricesResponse: &CryptoPricesResponse{},
+		cryptoPricesResponse: &cryptoPricesResponse{},
 		cryptoPrices:         &cryptoPrices{},
 	}
 

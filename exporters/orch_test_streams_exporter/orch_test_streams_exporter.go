@@ -1,4 +1,4 @@
-// Package orch_test_streams_exporter implements a Livepeer Orchestrator Test streams exporter that fetches data from the
+// Package orch_test_streams_exporter implements a Livepeer orchestrator test streams exporter that fetches data from the
 // https://leaderboard-serverless.vercel.app/api/raw_stats API endpoint and exposes data about the orchestrators test
 // streams via Prometheus metrics.
 package orch_test_streams_exporter
@@ -16,8 +16,8 @@ var (
 	orchDelegatorsEndpointTemplate = "https://leaderboard-serverless.vercel.app/api/raw_stats?orchestrator=%s"
 )
 
-// TestStreams represents the data structure of the test streams field contained in the API response.
-type TestStreams struct {
+// testStreams represents the data structure of the test streams field contained in the API response.
+type testStreams struct {
 	Region        string
 	Orchestrator  string
 	SuccessRate   float64 `json:"success_rate"`
@@ -27,22 +27,22 @@ type TestStreams struct {
 	RoundTripTime float64 `json:"round_trip_time"`
 }
 
-// OrchTestStreams represents the structure of the data returned by the  API.
-type OrchTestStreams struct {
+// orchTestStreams represents the structure of the data returned by the  API.
+type orchTestStreams struct {
 	sync.Mutex
 
 	// Response data.
-	FRA []TestStreams
-	LAX []TestStreams
-	LON []TestStreams
-	MDW []TestStreams
-	NYC []TestStreams
-	PRG []TestStreams
-	SAO []TestStreams
-	SIN []TestStreams
+	FRA []testStreams
+	LAX []testStreams
+	LON []testStreams
+	MDW []testStreams
+	NYC []testStreams
+	PRG []testStreams
+	SAO []testStreams
+	SIN []testStreams
 }
 
-// TestStreamsExporter fetches data from the API endpoint and exposes data about the orchestrator's test streams via Prometheus metrics.
+// TestStreamsExporter fetches data from the API and exposes orchestrator's test streams metrics via Prometheus.
 type TestStreamsExporter struct {
 	// Metrics.
 	SuccessRate   *prometheus.GaugeVec
@@ -57,7 +57,7 @@ type TestStreamsExporter struct {
 	orchTestStreamsEndpoint string        // The endpoint to fetch data from.
 
 	// Data.
-	orchTestStreams *OrchTestStreams // The data returned by the API.
+	orchTestStreams *orchTestStreams // The data returned by the API.
 
 	// Fetchers.
 	orchTestStreamsFetcher fetcher.Fetcher
@@ -102,7 +102,7 @@ func (m *TestStreamsExporter) registerMetrics() {
 func (m *TestStreamsExporter) updateMetrics() {
 	for _, regionData := range []struct {
 		Region      string
-		TestStreams []TestStreams
+		testStreams []testStreams
 	}{
 		{"FRA", m.orchTestStreams.FRA},
 		{"LAX", m.orchTestStreams.LAX},
@@ -113,7 +113,7 @@ func (m *TestStreamsExporter) updateMetrics() {
 		{"SAO", m.orchTestStreams.SAO},
 		{"SIN", m.orchTestStreams.SIN},
 	} {
-		for _, orchData := range regionData.TestStreams {
+		for _, orchData := range regionData.testStreams {
 			m.SuccessRate.WithLabelValues(regionData.Region, orchData.Orchestrator).Set(orchData.SuccessRate)
 			m.UploadTime.WithLabelValues(regionData.Region, orchData.Orchestrator).Set(orchData.UploadTime)
 			m.DownloadTime.WithLabelValues(regionData.Region, orchData.Orchestrator).Set(orchData.DownloadTime)
@@ -129,7 +129,7 @@ func NewOrchTestStreamsExporter(orchAddress string, fetchInterval time.Duration,
 		fetchInterval:           fetchInterval,
 		updateInterval:          updateInterval,
 		orchTestStreamsEndpoint: fmt.Sprintf(orchDelegatorsEndpointTemplate, orchAddress),
-		orchTestStreams:         &OrchTestStreams{},
+		orchTestStreams:         &orchTestStreams{},
 	}
 
 	// Initialize fetcher.
@@ -169,7 +169,9 @@ func (m *TestStreamsExporter) Start() {
 		defer ticker.Stop()
 
 		for range ticker.C {
+			m.orchTestStreams.Mutex.Lock()
 			m.updateMetrics()
+			m.orchTestStreams.Mutex.Unlock()
 		}
 	}()
 }

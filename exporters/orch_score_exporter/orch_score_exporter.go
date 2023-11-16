@@ -1,5 +1,5 @@
-// Package orch_score_exporter implements a Livepeer Orchestrator Score exporter that fetches data from the Livepeer orchestrator
-// score API and exposes orchestrator score data via Prometheus metrics.
+// Package orch_score_exporter implements a Livepeer orchestrator score exporter that fetches data
+// from the Livepeer orchestrator score API and exposes orchestrator score data via Prometheus metrics.
 package orch_score_exporter
 
 import (
@@ -15,8 +15,8 @@ var (
 	orchScoreEndpointTemplate = "https://explorer.livepeer.org/api/score/%s"
 )
 
-// OrchScore represents the structure of the data returned by the Livepeer orchestrator score API.
-type OrchScore struct {
+// orchScore represents the structure of the data returned by the Livepeer orchestrator score API.
+type orchScore struct {
 	Mutex sync.Mutex
 
 	// Response data.
@@ -40,7 +40,7 @@ type OrchScoreExporter struct {
 	orchInfoEndpoint string        // The endpoint to fetch data from.
 
 	// Data.
-	orchScore *OrchScore // The data returned by the API.
+	orchScore *orchScore // The data returned by the API.
 
 	// Fetchers.
 	orchScoreFetcher fetcher.Fetcher
@@ -114,7 +114,7 @@ func NewOrchScoreExporter(orchAddress string, fetchInterval time.Duration, updat
 		fetchInterval:    fetchInterval,
 		updateInterval:   updateInterval,
 		orchInfoEndpoint: fmt.Sprintf(orchScoreEndpointTemplate, orchAddress),
-		orchScore:        &OrchScore{},
+		orchScore:        &orchScore{},
 	}
 
 	// Initialize fetcher.
@@ -154,7 +154,9 @@ func (m *OrchScoreExporter) Start() {
 		defer ticker.Stop()
 
 		for range ticker.C {
+			m.orchScore.Mutex.Lock()
 			m.updateMetrics()
+			m.orchScore.Mutex.Unlock()
 		}
 	}()
 }

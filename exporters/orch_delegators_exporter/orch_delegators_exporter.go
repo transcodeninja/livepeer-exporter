@@ -1,4 +1,6 @@
-// Package orch_delegators_exporter implements a Livepeer Orchestrator Delegators exporter that fetches data from the https://stronk.rocks/api/livepeer/getOrchestrator/ API endpoint and exposes information about the orchestrator's delegators via Prometheus metrics.
+// Package orch_delegators_exporter implements a Livepeer orchestrator elegators exporter that
+// fetches data from the https://stronk.rocks/api/livepeer/getOrchestrator/ API endpoint and exposes
+// information about the orchestrator's delegators via Prometheus metrics.
 package orch_delegators_exporter
 
 import (
@@ -15,22 +17,22 @@ var (
 	orchDelegatorsEndpointTemplate = "https://stronk.rocks/api/livepeer/getOrchestrator/%s"
 )
 
-// Delegator represents the structure of the delegators field contained in the API response.
-type Delegator struct {
+// delegator represents the structure of the delegators field contained in the API response.
+type delegator struct {
 	ID           string
 	BondedAmount string
 	StartRound   string
 }
 
-// OrchDelegators represents the structure of the data returned by the API.
-type OrchDelegators struct {
+// orchDelegators represents the structure of the data returned by the API.
+type orchDelegators struct {
 	sync.Mutex
 
 	// Response data.
-	Delegators []Delegator
+	Delegators []delegator
 }
 
-// OrchDelegatorsExporter fetches data from the  API endpoint and exposes data about the orchestrator's delegators via Prometheus metrics.
+// OrchDelegatorsExporter fetches data from the API and exposes orchestrator's delegators metrics via Prometheus.
 type OrchDelegatorsExporter struct {
 	// Metrics.
 	BondedAmount   *prometheus.GaugeVec
@@ -43,7 +45,7 @@ type OrchDelegatorsExporter struct {
 	orchDelegatorsEndpoint string        // The endpoint to fetch data from.
 
 	// Data.
-	orchDelegators *OrchDelegators // The data returned by the API.
+	orchDelegators *orchDelegators // The data returned by the API.
 
 	// Fetchers.
 	orchDelegatorsFetcher fetcher.Fetcher
@@ -103,7 +105,7 @@ func NewOrchDelegatorsExporter(orchAddress string, fetchInterval time.Duration, 
 		fetchInterval:          fetchInterval,
 		updateInterval:         updateInterval,
 		orchDelegatorsEndpoint: fmt.Sprintf(orchDelegatorsEndpointTemplate, orchAddress),
-		orchDelegators:         &OrchDelegators{},
+		orchDelegators:         &orchDelegators{},
 	}
 
 	// Initialize fetcher.
@@ -143,7 +145,9 @@ func (m *OrchDelegatorsExporter) Start() {
 		defer ticker.Stop()
 
 		for range ticker.C {
+			m.orchDelegators.Mutex.Lock()
 			m.updateMetrics()
+			m.orchDelegators.Mutex.Unlock()
 		}
 	}()
 }
