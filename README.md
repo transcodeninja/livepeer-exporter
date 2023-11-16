@@ -41,11 +41,11 @@ All intervals are specified as a string representation of a duration, e.g., "5m"
 
 ## Usage
 
-This section explains how to run the Livepeer Exporter. You can run it locally on your own machine, or use Docker for easy setup and teardown.
+This section explains how to run the Livepeer Exporter. You can run it locally on your machine or use Docker for easy setup and teardown.
 
 ### Run exporter locally
 
-Running the exporter locally allows you to quickly start and stop it as needed. To do this, you'll need to set the necessary environment variables and then start the exporter. Replace `your-orchestrator-address`, with your own values:
+Running the exporter locally on your machine allows you to test out the exporter quickly. To do this, you must set the necessary environment variables and start the exporter. Replace `your-orchestrator-address`, with your values:
 
 ```bash
 export LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS=your-orchestrator-address
@@ -68,7 +68,7 @@ docker run --name livepeer-exporter \
 Replace `<your-orchestrator-address>` with the address of your orchestrator. This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. Additional environment variables can be passed to the exporter by adding them to the command above.
 
 > [!NOTE]\
->  This repository also contains a [DockerFile](./Dockerfile) and [docker-compose.yml](./docker-compose.yml) file. These files can be used to build and run the exporter locally. To do this, clone this repository and run `docker compose up` in the repository's root directory.
+> This repository also contains a [DockerFile](./Dockerfile) and [docker-compose.yml](./docker-compose.yml) file. These files can be used to build and run the exporter locally. To do this, clone this repository and run `docker compose up` in the repository's root directory.
 
 ### Configure Prometheus
 
