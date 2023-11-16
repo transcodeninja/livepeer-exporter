@@ -4,7 +4,9 @@ package util
 import (
 	"log"
 	"math"
+	"os"
 	"strconv"
+	"time"
 )
 
 // BoolToFloat64 converts a bool to a float64.
@@ -41,4 +43,17 @@ func SetFloatFromStr(dest *float64, source string) {
 		return
 	}
 	*dest = temp
+}
+
+// getEnvVarDuration retrieves a duration from an environment variable.
+func GetEnvDuration(key string, defaultValue time.Duration) time.Duration {
+	valueStr := os.Getenv(key)
+	if valueStr == "" {
+		return defaultValue
+	}
+	value, err := time.ParseDuration(valueStr)
+	if err != nil {
+		log.Fatalf("failed to parse '%s' environment variable: %v", key, err)
+	}
+	return value
 }

@@ -3,18 +3,22 @@
 // It fetches various Livepeer metrics from different endpoints and exposes them via an HTTP server.
 // The server provides a '8954/metrics' endpoint for Prometheus to scrape.
 //
-// The exporter has the following configuration environment variables.
+// The exporter has the following configuration environment variables:
 //   - LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS - The address of the orchestrator to fetch data from.
 //   - LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY - The address of the secondary orchestrator to fetch data from. Used to
 //     calculate the 'livepeer_orch_stake' metric. When set the LPT stake of this address is added to the LPT stake that is bonded by the orchestrator.
-//   - LIVEPEER_EXPORTER_FETCH_INTERVAL - How often to fetch data for the orchestrator.
-//   - LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL - How often to fetch test streams data for the orchestrator. Implemented as a separate interval because the
-//     test streams API takes a long time to respond.
-//   - LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL - How often to fetch tickets data for the orchestrator. Implemented as a separate interval because the tickets data
-//     is relatively large.
-//   - LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL - How often to fetch rewards data for the orchestrator. Implemented as a separate interval because the rewards data is
-//     relatively large and only changes once per day.
-//   - LIVEPEER_EXPORTER_UPDATE_INTERVAL - How often to update the prometheus metrics.
+//   - LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL - How often to fetch general orchestrator information.
+//   - LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL - How often to fetch score data for the orchestrator.
+//   - LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL - How often to fetch delegators data for the orchestrator.
+//   - LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL - How often to fetch the test streams data for the orchestrator.
+//   - LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL - How often to fetch tickets data for the orchestrator.
+//   - LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL - How often to fetch rewards data for the orchestrator.
+//   - LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL - How often to update the orchestrator info metrics.
+//   - LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL - How often to update the orchestrator score metrics.
+//   - LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL - How often to update the orchestrator delegators metrics.
+//   - LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL - How often to update the orchestrator test streams metrics.
+//   - LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL - How often to update the orchestrator tickets metrics.
+//   - LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL - How often to update the orchestrator rewards metrics.
 package main
 
 import (
@@ -24,6 +28,7 @@ import (
 	"livepeer-exporter/exporters/orch_score_exporter"
 	"livepeer-exporter/exporters/orch_test_streams_exporter"
 	"livepeer-exporter/exporters/orch_tickets_exporter"
+	"livepeer-exporter/util"
 	"log"
 	"net/http"
 	"os"
@@ -34,11 +39,13 @@ import (
 
 // Exporter default config values.
 var (
-	fetchIntervalDefault            = 1 * time.Minute
-	testStreamsFetchIntervalDefault = 15 * time.Minute
+	// Fetch intervals.
+	infoFetchIntevalDefault         = 1 * time.Minute
+	scoreFetchIntevalDefault        = 1 * time.Minute
+	delegatorsFetchIntevalDefault   = 5 * time.Minute
+	testStreamsFetchIntervalDefault = 1 * time.Hour
 	ticketsFetchIntervalDefault     = 1 * time.Hour
 	rewardsFetchIntervalDefault     = 12 * time.Hour
-	updateIntervalDefault           = 30 * time.Second
 )
 
 // Default config values.
@@ -54,81 +61,30 @@ func main() {
 	// Retrieve secondary orchestrator address.
 	orchAddrSecondary := os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY")
 
-	// Retrieve fetch interval.
-	fetchIntervalStr := os.Getenv("LIVEPEER_EXPORTER_FETCH_INTERVAL")
-	var fetchInterval time.Duration
-	if fetchIntervalStr == "" {
-		fetchInterval = fetchIntervalDefault
-	} else {
-		var err error
-		fetchInterval, err = time.ParseDuration(fetchIntervalStr)
-		if err != nil {
-			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_FETCH_INTERVAL' environment variable: %v", err)
-		}
-	}
+	// Retrieve fetch intervals.
+	infoFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL", infoFetchIntevalDefault)
+	scoreFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL", scoreFetchIntevalDefault)
+	delegatorsFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL", delegatorsFetchIntevalDefault)
+	testStreamFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL", testStreamsFetchIntervalDefault)
+	ticketsFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL", ticketsFetchIntervalDefault)
+	rewardsFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL", rewardsFetchIntervalDefault)
 
-	// Retrieve test stream fetch interval.
-	// NOTE: This is a separate interval because the test streams API takes a long time to respond.
-	fetchTestStreamsIntervalStr := os.Getenv("LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL")
-	var fetchTestStreamsInterval time.Duration
-	if fetchTestStreamsIntervalStr == "" {
-		fetchTestStreamsInterval = testStreamsFetchIntervalDefault
-	} else {
-		var err error
-		fetchTestStreamsInterval, err = time.ParseDuration(fetchTestStreamsIntervalStr)
-		if err != nil {
-			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL' environment variable: %v", err)
-		}
-	}
-
-	// Retrieve tickets fetch interval.
-	// NOTE: This is a separate interval because the tickets API response is relatively large.
-	ticketsFetchIntervalStr := os.Getenv("LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL")
-	var ticketsFetchInterval time.Duration
-	if ticketsFetchIntervalStr == "" {
-		ticketsFetchInterval = ticketsFetchIntervalDefault
-	} else {
-		var err error
-		ticketsFetchInterval, err = time.ParseDuration(ticketsFetchIntervalStr)
-		if err != nil {
-			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL' environment variable: %v", err)
-		}
-	}
-
-	// Retrieve rewards fetch interval.
-	rewardsFetchIntervalStr := os.Getenv("LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL")
-	var rewardsFetchInterval time.Duration
-	if rewardsFetchIntervalStr == "" {
-		rewardsFetchInterval = rewardsFetchIntervalDefault
-	} else {
-		var err error
-		rewardsFetchInterval, err = time.ParseDuration(rewardsFetchIntervalStr)
-		if err != nil {
-			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL' environment variable: %v", err)
-		}
-	}
-
-	// Retrieve update interval.
-	updateIntervalStr := os.Getenv("LIVEPEER_EXPORTER_UPDATE_INTERVAL")
-	var updateInterval time.Duration
-	if updateIntervalStr == "" {
-		updateInterval = updateIntervalDefault
-	} else {
-		var err error
-		updateInterval, err = time.ParseDuration(updateIntervalStr)
-		if err != nil {
-			log.Fatalf("failed to parse 'LIVEPEER_EXPORTER_UPDATE_INTERVAL' environment variable: %v", err)
-		}
-	}
+	// Retrieve update intervals.
+	infoUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL", infoFetchInterval)
+	scoreUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL", scoreFetchInterval)
+	delegatorsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL", delegatorsFetchInterval)
+	testStreamUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL", testStreamFetchInterval)
+	ticketsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL", ticketsFetchInterval)
+	rewardsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL", rewardsFetchInterval)
 
 	// Setup sub-exporters.
 	log.Println("Setting up sub exporters...")
-	orchInfoExporter := orch_info_exporter.NewOrchInfoExporter(orchAddr, fetchInterval, updateInterval, orchAddrSecondary)
-	orchScoreExporter := orch_score_exporter.NewOrchScoreExporter(orchAddr, fetchInterval, updateInterval)
-	orchDelegatorsExporter := orch_delegators_exporter.NewOrchDelegatorsExporter(orchAddr, fetchInterval, updateInterval)
-	orchTestStreamsExporter := orch_test_streams_exporter.NewOrchTestStreamsExporter(orchAddr, fetchTestStreamsInterval, updateInterval)
-	orchTicketsExporter := orch_tickets_exporter.NewOrchTicketsExporter(orchAddr, ticketsFetchInterval, updateInterval)
-	orchRewardsExporter := orch_rewards_exporter.NewOrchRewardsExporter(orchAddr, rewardsFetchInterval, updateInterval)
+	orchInfoExporter := orch_info_exporter.NewOrchInfoExporter(orchAddr, infoFetchInterval, infoUpdateInterval, orchAddrSecondary)
+	orchScoreExporter := orch_score_exporter.NewOrchScoreExporter(orchAddr, scoreFetchInterval, scoreUpdateInterval)
+	orchDelegatorsExporter := orch_delegators_exporter.NewOrchDelegatorsExporter(orchAddr, delegatorsFetchInterval, delegatorsUpdateInterval)
+	orchTestStreamsExporter := orch_test_streams_exporter.NewOrchTestStreamsExporter(orchAddr, testStreamFetchInterval, testStreamUpdateInterval)
+	orchTicketsExporter := orch_tickets_exporter.NewOrchTicketsExporter(orchAddr, ticketsFetchInterval, ticketsUpdateInterval)
+	orchRewardsExporter := orch_rewards_exporter.NewOrchRewardsExporter(orchAddr, rewardsFetchInterval, rewardsUpdateInterval)
 
 	// Start sub-exporters.
 	log.Println("Starting sub exporters...")
