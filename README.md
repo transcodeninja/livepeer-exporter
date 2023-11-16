@@ -8,147 +8,55 @@
 
 ![image](https://github.com/rickstaa/livepeer-exporter/assets/17570430/d168d3fc-4e58-4424-9836-d04e425d2991)
 
-Livepeer Exporter is a lightweight tool designed to enhance the monitoring capabilities of [Livepeer](https://livepeer.org/). As a Prometheus exporter, it fetches various metrics from different Livepeer endpoints and exposes them via an HTTP server, ready for Prometheus to scrape. This tool is the perfect companion to the [Livepeer monitoring service](https://docs.livepeer.org/orchestrators/guides/monitor-metrics), extending the range of Livepeer metrics that can be monitored. By providing deeper insights into Livepeer's performance, Livepeer Exporter helps users optimize their streaming workflows and ensure reliable service delivery.
-
-## Metrics
-
-This exporter comprises the following sub-exporters, each responsible for fetching specific metrics:
-
-- [orch_delegators_exporter](./exporters/orch_delegators_exporter/): Gathers metrics related to the delegators of the designated Livepeer orchestrator.
-- [orch_info_exporter](./exporters/orch_info_exporter/): Collects metrics pertaining to the Livepeer orchestrator.
-- [orch_reward_exporter](./exporters/orch_reward_exporter/): Retrieves metrics about the Livepeer orchestrator's rewards.
-- [orch_score_exporter](./exporters/orch_score_exporter/): Retrieves metrics concerning the Livepeer orchestrator's score.
-- [orch_test_streams_exporter](./exporters/orch_test_streams_exporter/): Procures metrics about the Livepeer orchestrator's test streams.
-- [orch_tickets_exporter](./exporters/orch_tickets_exporter/): Fetches metrics about the Livepeer orchestrator's tickets.
-
-These sub-exporters operate concurrently in separate [goroutines](https://go.dev/tour/concurrency/1) for enhanced performance. They fetch metrics from various Livepeer endpoints and expose them via the `9153/metrics` endpoint. For detailed information about these sub-exporters and the metrics they provide, refer to the sections below.
-
-### orch_delegators_exporter
-
-Fetches metrics about the delegators of the set Livepeer orchestrator from the https://stronk.rocks/api/livepeer/getOrchestrator/ endpoint. It exposes the following metrics:
-
-**Gauge metrics:**
-
-- `livepeer_orch_delegator_count`: Total number of delegators that stake with the Livepeer orchestrator.
-
-**GaugeVec metrics:**
-
-- `livepeer_orch_delegator_bonded_amount`: Bonded amount of a delegator address. This GaugeVec contains the label `id`.
-- `livepeer_orch_delegator_start_round`: Start round of a delegator address. This GaugeVec contains the label `id`.
-
-### orch_info_exporter
-
-Fetches metrics about the Livepeer orchestrator from the [Livepeer Orchestrator API](https://explorer.livepeer.org/_next/data/xe8lg6V7gubXcRErA1lxB/accounts/%s/orchestrating.json) and [Livepeer Delegating API](https://explorer.livepeer.org/_next/data/xe8lg6V7gubXcRErA1lxB/accounts/%s/delegating.json) endpoints. It exposes the following metrics:
-
-**Gauge metrics:**
-
-- `livepeer_orch_bonded_amount`: Amount of LPT bonded to the orchestrator.
-- `livepeer_orch_total_stake`: Total stake of the orchestrator in LPT.
-- `livepeer_orch_last_reward_claim_round`: Last round in which the orchestrator claimed the reward.
-- `livepeer_orch_start_round`: Round the orchestrator registered.
-- `livepeer_orch_withdrawn_fees`: Amount of fees the orchestrator has withdrawn.
-- `livepeer_orch_current_round`: Current round.
-- `livepeer_orch_activation_round`: Round the orchestrator activated.
-- `livepeer_orch_active`: Whether the orchestrator is active.
-- `livepeer_orch_fee_cut`: Proportion of the fees the orchestrator takes.
-- `livepeer_orch_reward_cut`: Proportion of the block reward the orchestrator takes.
-- `livepeer_orch_last_reward_round`: Last round the orchestrator received rewards while active.
-- `livepeer_orch_ninety_day_volume_eth`: 90-day volume of ETH.
-- `livepeer_orch_thirty_day_volume_eth`: 30-day volume of ETH.
-- `livepeer_orch_total_volume_eth`: Total volume of ETH.
-- `livepeer_orch_stake`: Stake provided by the orchestrator. Includes the orchestrator's bonded stake and the stake of the secondary orchestrator account (if provided).
-- `livepeer_orch_thirty_day_reward_claim_ratio`: How often an orchestrator claimed rewards in the last thirty rounds, or, if not active for 30 days, the reward claim ratio since activation.
-
-### orch_rewards_exporter
-
-Fetches reward data for the Livepeer orchestrator from the https://stronk.rocks/api/livepeer/getAllRewardEvents endpoint and filters it based on the orchestrator ID. It exposes the following metrics:
-
-**Gauge metrics:**
-
-- `livepeer_orch_total_claimed_rewards`: Total rewards claimed by the the orchestrator.
-
-**GaugeVector metrics:**
-
-- `livepeer_orch_reward_amount`: The amount of rewards earned by each transaction. The `id` label is a unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_reward_transaction_hash`: The transaction hash for each rewarded transaction. The `id` label is a unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_reward_block_number`: The block number for each rewarded transaction. The `id` label is a unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_reward_block_time`: The block time for each rewarded transaction. The `id` label is a unique identifier of the transaction in which the ticket was won.
-
-### orch_score_exporter
-
-Fetches metrics about the Livepeer orchestrator's score from the [Livepeer Score API](https://explorer.livepeer.org/api/score/) endpoint. It exposes the following metrics:
-
-**Gauge metrics:**
-
-- `livepeer_orch_price_per_pixel`: Price per pixel.
-
-**GaugeVec metrics:**
-
-- `livepeer_orch_success_rate`: Success rate per region. This GaugeVec contains the label `region`.
-- `livepeer_orch_round_trip_score`: Round trip score per region. This GaugeVec contains the label `region`.
-- `livepeer_orch_total_score`: Total score per region. This GaugeVec contains the label `region`.
-
-### orch_test_streams_exporter
-
-Fetches metrics about the LivePeer orchestrator's test streams from the https://leaderboard-serverless.vercel.app/api/raw_stats API endpoint. It exposes the following metrics:
-
-**GaugeVec metrics:**
-
-- `livepeer_orch_test_stream_success_rate`: Success rate per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_upload_time`: Two-segment upload time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_download_time`: Two-segment download time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_transcode_time`: Two-segment transcode time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_round_trip_time`: Two-segment round trip time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
-
-### orch_tickets_exporter
-
-Fetches and exposes ticket transaction information for each orchestrator from the https://stronk.rocks/api/livepeer/getAllRedeemTicketEvents API endpoint. The exposed metrics include:
-
-**GaugeVec metrics:**
-
-- `livepeer_orch_winning_ticket_amount`: Fees won by each winning orchestrator ticket. It contains the label `id`, which represents the unique identifier of each ticket.
-- `livepeer_orch_winning_ticket_transaction_hash`: Transaction hash for each winning ticket. The `id` label is a unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_winning_ticket_block_number`: Block number for each winning ticket. The `id` label is a unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_winning_ticket_block_time`: Block time for each winning ticket. The `id` label is a unique identifier of the transaction in which the ticket was won.
+Livepeer Exporter is a lightweight tool designed to enhance the monitoring capabilities of [Livepeer](https://livepeer.org/). As a Prometheus exporter, it fetches [various metrics](#metrics) from different Livepeer endpoints and exposes them via an HTTP server, ready for Prometheus to scrape. This tool is the perfect companion to the [Livepeer monitoring service](https://docs.livepeer.org/orchestrators/guides/monitor-metrics), extending the range of Livepeer metrics that can be monitored. By providing deeper insights into Livepeer's performance, Livepeer Exporter helps users optimize their streaming workflows and ensure reliable service delivery.
 
 ## Configuration
 
-The exporter is configured using the following environment variables:
+Before using the Livepeer Exporter, you must configure it using environment variables. These variables allow you to customize the behaviour of the exporter to suit your specific needs. Below, you'll find a list of all the environment variables you can set, a description of what they do, and their default values if they are not specified.
 
-- **LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS (Required):** Address of the primary orchestrator to fetch data for.
-- **LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY (Optional):** Address of the secondary orchestrator to fetch data for. This is used to calculate the `livepeer_orch_stake` metric.
-- **LIVEPEER_EXPORTER_FETCH_INTERVAL (Optional, default: 5m):** How often to fetch general orchestrator data. For example, if set to `5m`, the exporter fetches data every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
-- **LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL (Optional, default: 15m):** How often to fetch test streams data for the orchestrator. For example, if set to `15m`, the exporter fetches test data every 15 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
-- **LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL (Optional, default: 1h):** How often to fetch ticket data for the orchestrator. For example, if set to `1h`, the exporter fetches ticket data every hour. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
-- **LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL (Optional, default: 12h):** How often to fetch reward data for the orchestrator. For example, if set to `12h`, the exporter fetches reward data every 12 hours. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
-- **LIVEPEER_EXPORTER_UPDATE_INTERVAL (Optional, default: 30s):** How often to update Prometheus metrics. For example, if set to `5m`, the exporter updates metrics every 5 minutes. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+### Required environment variables
+
+- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS`: The address of the orchestrator to fetch data from.
+
+### Optional environment variables
+
+- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY`: The address of the secondary orchestrator to fetch data from. Used to calculate the 'livepeer_orch_stake' metric. When set, the LPT stake of this address is added to the LPT stake that the orchestrator bonds.
+- `LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL`: How often to fetch general orchestrator information. Defaults to `1m`.
+- `LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL`: How often to fetch score data for the orchestrator. Defaults to `1m`.
+- `LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL`: How often to fetch delegators data for the orchestrator. Defaults to `5m`.
+- `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`:How often to fetch the test streams data for the orchestrator. Defaults to `1h`.
+- `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`: How often to fetch ticket data for the orchestrator. Defaults to `1h`.
+- `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`: How often to fetch rewards data for the orchestrator. Defaults to `12h`.
+- `LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL`: How often to update the orchestrator info metrics. Defaults to the value of `LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL`.
+- `LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL`: How often to update the orchestrator score metrics. Defaults to the value of `LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL`.
+- `LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL`: How often to update the orchestrator delegators metrics. Defaults to the value of `LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL`.
+- `LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL`: How often to update the orchestrator test streams metrics. Defaults to the value of `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`.
+- `LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL`: How often to update the orchestrator tickets metrics. Defaults to the value of `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`.
+- `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics. Defaults to the value of `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`.
+
+All intervals are specified as a string representation of a duration, e.g., "5m" for 5 minutes, "2h" for 2 hours, etc. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
 
 > [!NOTE]\
-> The `LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL`, `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`, `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`, and `LIVEPEER_EXPORTER_UPDATE_INTERVAL` environment variables have higher default values. This adjustment is made considering the nature of the endpoints they fetch—they might be slow or return a substantial amount of data. By setting these values to a higher interval, you can effectively reduce the load on the exporter, ensuring optimal performance.
+> The `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`, `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`, and `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`environment variables have higher default values. This adjustment is made considering the nature of the endpoints they fetch—they might be slow or return a substantial amount of data. By setting these values to a higher interval, you can effectively reduce the load on the exporter, ensuring optimal performance.
 
 ## Usage
 
-### Run exporter
+This section explains how to run the Livepeer Exporter. You can run it locally on your own machine, or use Docker for easy setup and teardown.
 
-#### Run exporter locally
+### Run exporter locally
 
-To run the exporter, set the necessary environment variables and start the exporter:
+Running the exporter locally allows you to quickly start and stop it as needed. To do this, you'll need to set the necessary environment variables and then start the exporter. Replace `your-orchestrator-address`, with your own values:
 
 ```bash
 export LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS=your-orchestrator-address
-export LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY=your-secondary-orchestrator-address
-export LIVEPEER_EXPORTER_FETCH_INTERVAL=your-fetch-interval
-export LIVEPEER_EXPORTER_FETCH_TEST_STREAMS_INTERVAL=your-test-streams-fetch-interval
-export LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL=your-tickets-fetch-interval
-export LIVEPEER_EXPORTER_UPDATE_INTERVAL=your-update-interval
 go run main.go
 ```
 
-The exporter will be available on port `9153`.
+The exporter will be available on port `9153`. Additional [configuration](#configuration) environment variables can be passed to the exporter by adding them to the command above.
 
-#### Running the Exporter with Docker
+### Running the Exporter with Docker
 
-You can run the exporter using the Docker image available on [Docker Hub](https://hub.docker.com/r/rickstaa/livepeer-exporter).To pull and run the exporter from Docker Hub, use the following command:
+You can run the exporter using the Docker image available on [Docker Hub](https://hub.docker.com/r/rickstaa/livepeer-exporter). To pull and run the exporter from Docker Hub, use the following command:
 
 ```bash
 docker run --name livepeer-exporter \
@@ -157,10 +65,10 @@ docker run --name livepeer-exporter \
     rickstaa/livepeer-exporter:latest
 ```
 
-This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. Additional environment variables can be passed to the exporter by adding them to the command above.
+Replace `<your-orchestrator-address>` with the address of your orchestrator. This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. Additional environment variables can be passed to the exporter by adding them to the command above.
 
-> [!IMPORTANT]\
-> This repository provides a [Dockerfile](./Dockerfile) and a [docker-compose](./docker-compose.yml) file to facilitate running the exporter with Docker. To utilize these, first configure the necessary environment variables within the docker-compose file. Subsequently, initiate the exporter using the command `docker-compose up`.
+> [!NOTE]\
+>  This repository also contains a [DockerFile](./Dockerfile) and [docker-compose.yml](./docker-compose.yml) file. These files can be used to build and run the exporter locally. To do this, clone this repository and run `docker compose up` in the repository's root directory.
 
 ### Configure Prometheus
 
@@ -172,6 +80,111 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9153"]
 ```
+
+This configuration tells Prometheus to scrape metrics from the Livepeer Exporter running on localhost port `9153`.
+
+## Metrics
+
+This exporter comprises the following sub-exporters, each responsible for fetching specific metrics:
+
+| Sub-Exporter | Description |
+| --- | --- |
+| [orch_delegators_exporter](./exporters/orch_delegators_exporter/) | Gathers metrics related to the delegators of the designated Livepeer orchestrator. |
+| [orch_info_exporter](./exporters/orch_info_exporter/) | Collects metrics pertaining to the Livepeer orchestrator. |
+| [orch_reward_exporter](./exporters/orch_reward_exporter/) | Retrieves metrics about the Livepeer orchestrator's rewards. |
+| [orch_score_exporter](./exporters/orch_score_exporter/) | Retrieves metrics concerning the Livepeer orchestrator's score. |
+| [orch_test_streams_exporter](./exporters/orch_test_streams_exporter/) | Procures metrics about the Livepeer orchestrator's test streams. |
+| [orch_tickets_exporter](./exporters/orch_tickets_exporter/) | Fetches metrics about the Livepeer orchestrator's tickets. |
+
+For enhanced performance, these sub-exporters operate concurrently in separate [goroutines](https://go.dev/tour/concurrency/1). They fetch metrics from various Livepeer endpoints and expose them via the `9153/metrics` endpoint. For detailed information about these sub-exporters and the metrics they provide, refer to the sections below.
+
+### orch_delegators_exporter
+
+The `orch_delegators_exporter` fetches metrics about the delegators of the set Livepeer orchestrator from the `https://stronk.rocks/api/livepeer/getOrchestrator/` endpoint. These metrics provide insights into the number and behaviour of the delegators that stake with the orchestrator, including the total number of delegators, the bonded amount of each delegator, and the start round. They include:
+
+**Gauge metrics:**
+
+- `livepeer_orch_delegator_count`: This metric represents the total number of delegators that stake with the Livepeer orchestrator. It can be used to monitor the popularity and trustworthiness of the orchestrator.
+
+**GaugeVec metrics:**
+
+- `livepeer_orch_delegator_bonded_amount`: This metric represents the bonded amount of each delegator address. It can be used to understand the distribution of stakes among delegators. This GaugeVec includes the label `id`, representing the delegator's address.
+- `livepeer_orch_delegator_start_round`: This metric represents the start round for each delegator. It can be used to track the longevity and loyalty of delegators. This GaugeVec includes the label `id`, representing the delegator's address.
+
+### orch_info_exporter
+
+The `orch_info_exporter` fetches metrics about the Livepeer orchestrator from the [Livepeer Orchestrator API](https://explorer.livepeer.org/_next/data/xe8lg6V7gubXcRErA1lxB/accounts/%s/orchestrating.json) and [Livepeer Delegating API](https://explorer.livepeer.org/_next/data/xe8lg6V7gubXcRErA1lxB/accounts/%s/delegating.json) endpoints. These metrics provide insights into the orchestrator's performance and behaviour. They include:
+
+**Gauge metrics:**
+
+- `livepeer_orch_bonded_amount`: This metric represents the amount of LPT bonded to the orchestrator.
+- `livepeer_orch_total_stake`: This metric represents the total stake of the orchestrator in LPT.
+- `livepeer_orch_last_reward_claim_round`: This metric represents the last round in which the orchestrator claimed the reward.
+- `livepeer_orch_start_round`: This metric represents the round the orchestrator registered.
+- `livepeer_orch_withdrawn_fees`: This metric represents the fees the orchestrator has withdrawn.
+- `livepeer_orch_current_round`: This metric represents the current round.
+- `livepeer_orch_activation_round`: This metric represents the round the orchestrator activated.
+- `livepeer_orch_active`: This metric represents whether the orchestrator is active.
+- `livepeer_orch_fee_cut`: This metric represents the proportion of the fees the orchestrator takes.
+- `livepeer_orch_reward_cut`: This metric represents the proportion of the block reward the orchestrator takes.
+- `livepeer_orch_last_reward_round`: This metric represents the last round in which the orchestrator received rewards while active.
+- `livepeer_orch_ninety_day_volume_eth`: This metric represents the 90-day volume of ETH.
+- `livepeer_orch_thirty_day_volume_eth`: This metric represents the 30-day volume of ETH.
+- `livepeer_orch_total_volume_eth`: This metric represents the total volume of ETH.
+- `livepeer_orch_stake`: This metric represents the stake provided by the orchestrator. Includes the orchestrator's bonded stake and the stake of the secondary orchestrator account (if provided).
+- `livepeer_orch_thirty_day_reward_claim_ratio`: This metric represents how often an orchestrator claimed rewards in the last thirty rounds, or, if not active for 30 days, the reward claim ratio since activation.
+
+### orch_rewards_exporter
+
+The `orch_rewards_exporter` fetches reward data for the Livepeer orchestrator from the `https://stronk.rocks/api/livepeer/getAllRewardEvents` endpoint and filters it based on the orchestrator ID. These metrics provide insights into the rewards the orchestrator claims, including the total claimed rewards and details about each rewarded transaction. They include:
+
+**Gauge metrics:**
+
+- `livepeer_orch_total_claimed_rewards`: This metric represents the total rewards claimed by the orchestrator. It can be used to track the earnings of the orchestrator from rewards.
+
+**GaugeVec metrics:**
+
+- `livepeer_orch_reward_amount`: This metric represents the rewards earned by each transaction. It can be used to understand the distribution of rewards among transactions. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_transaction_hash`: This metric represents the hash of each rewarded transaction. It can track the transactions in which the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_block_number`: This metric represents the block number for each rewarded transaction. It can be used to track when the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_block_time`: This metric represents the block time for each rewarded transaction. It can be used to understand when the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+
+### orch_score_exporter
+
+The `orch_score_exporter` fetches metrics about the Livepeer orchestrator's score from the [Livepeer Score API](https://explorer.livepeer.org/api/score/) endpoint. These metrics provide insights into the performance of the orchestrator, including the price per pixel and success rate, round trip score, and total score per region. They include:
+
+**Gauge metrics:**
+
+- `livepeer_orch_price_per_pixel`: This metric represents the price per pixel. It can be used to understand the cost of using the orchestrator's services.
+
+**GaugeVec metrics:**
+
+- `livepeer_orch_success_rate`: This metric represents the success rate per region. It can monitor the reliability of the orchestrator's services in different regions. This GaugeVec includes the label `region`.
+- `livepeer_orch_round_trip_score`: This metric represents the round trip score per region. It can measure the latency of the orchestrator's services in different regions. This GaugeVec includes the label `region`.
+- `livepeer_orch_total_score`: This metric represents the total score per region. It can be used to evaluate the overall performance of the orchestrator in different regions. This GaugeVec includes the label `region`.
+
+### orch_test_streams_exporter
+
+The `orch_test_streams_exporter` fetches metrics about the Livepeer orchestrator's test streams from the `https://leaderboard-serverless.vercel.app/api/raw_stats` API endpoint. These metrics provide insights into the performance of the orchestrator's test streams in different regions, including success rate, upload time, download time, transcode time, and round trip time. They include:
+
+**GaugeVec metrics:**
+
+- `livepeer_orch_test_stream_success_rate`: This metric represents the success rate per region for test streams. It can monitor the reliability of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
+- `livepeer_orch_test_stream_upload_time`: This metric represents the two-segment upload time per region for test streams. It can measure the upload speed of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
+- `livepeer_orch_test_stream_download_time`: This metric represents the two-segment download time per region for test streams. It can measure the download speed of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
+- `livepeer_orch_test_stream_transcode_time`: This metric represents the two-segment transcode time per region for test streams. It can measure the transcoding speed of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
+- `livepeer_orch_test_stream_round_trip_time`: This metric represents the two-segment round trip time per region for test streams. It can measure the overall latency of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
+
+### orch_tickets_exporter
+
+The `orch_tickets_exporter` fetches and exposes ticket transaction information for each orchestrator from the `https://stronk.rocks/api/livepeer/getAllRedeemTicketEvents` API endpoint. These metrics provide insights into the winning tickets of the orchestrator, including the amount won, transaction hash, block number, and block time. They include:
+
+**GaugeVec metrics:**
+
+- `livepeer_orch_winning_ticket_amount`: This metric represents the fees won by each winning orchestrator ticket. It can be used to track the earnings of the orchestrator from winning tickets. This GaugeVec includes the label `id`, which represents the unique identifier of each ticket.
+- `livepeer_orch_winning_ticket_transaction_hash`: This metric represents the transaction hash for each winning ticket. It can track the transactions in which the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_winning_ticket_block_number`: This metric represents the block number for each winning ticket. It can be used to track when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_winning_ticket_block_time`: This metric represents the block time for each winning ticket. It can be used to understand when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 
 ## Contributing
 
