@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.0.0](https://github.com/rickstaa/livepeer-exporter/compare/v1.1.1...v2.0.0) (2023-11-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* improve environment variables ([#41](https://github.com/rickstaa/livepeer-exporter/issues/41))
+* fix total claimed rewards and reward call ratio ([#40](https://github.com/rickstaa/livepeer-exporter/issues/40))
+* change orchestrator score range ([#37](https://github.com/rickstaa/livepeer-exporter/issues/37))
+
+### Features
+
+* add crypto prices exporter ([#42](https://github.com/rickstaa/livepeer-exporter/issues/42)) ([08635d5](https://github.com/rickstaa/livepeer-exporter/commit/08635d570022341afbd893c42a64f860b06898c6))
+
+
+### Bug Fixes
+
+* fix total claimed rewards and reward call ratio ([#40](https://github.com/rickstaa/livepeer-exporter/issues/40)) ([2de5e5c](https://github.com/rickstaa/livepeer-exporter/commit/2de5e5c4ceb13382756688a0b8de8176efb2af05))
+
+
+### Code Refactoring
+
+* change orchestrator score range ([#37](https://github.com/rickstaa/livepeer-exporter/issues/37)) ([49b1594](https://github.com/rickstaa/livepeer-exporter/commit/49b159442bd0634dec418d031e60f9e3a1adb895))
+* improve environment variables ([#41](https://github.com/rickstaa/livepeer-exporter/issues/41)) ([9c71e16](https://github.com/rickstaa/livepeer-exporter/commit/9c71e16af89058cb7952993c43c01bf41dc1be1b))
+
 ## [1.1.1](https://github.com/rickstaa/livepeer-exporter/compare/v1.1.0...v1.1.1) (2023-11-14)
 
 
