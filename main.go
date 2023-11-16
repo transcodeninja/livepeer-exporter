@@ -48,6 +48,15 @@ var (
 	ticketsFetchIntervalDefault     = 1 * time.Hour
 	rewardsFetchIntervalDefault     = 12 * time.Hour
 	cryptoPricesFetchInterval       = 1 * time.Minute
+
+	// Update intervals.
+	infoUpdateIntervalDefault         = 30 * time.Second
+	scoreUpdateIntervalDefault        = 30 * time.Second
+	delegatorsUpdateIntervalDefault   = 30 * time.Second
+	testStreamsUpdateIntervalDefault  = 30 * time.Second
+	ticketsUpdateIntervalDefault      = 30 * time.Second
+	rewardsUpdateIntervalDefault      = 30 * time.Second
+	cryptoPricesUpdateIntervalDefault = 30 * time.Second
 )
 
 // Default config values.
@@ -73,13 +82,13 @@ func main() {
 	cryptoPricesFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_CRYPTO_PRICES_FETCH_INTERVAL", cryptoPricesFetchInterval)
 
 	// Retrieve update intervals.
-	infoUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL", infoFetchInterval)
-	scoreUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL", scoreFetchInterval)
-	delegatorsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL", delegatorsFetchInterval)
-	testStreamUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL", testStreamFetchInterval)
-	ticketsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL", ticketsFetchInterval)
-	rewardsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL", rewardsFetchInterval)
-	cryptoPricesUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_CRYPTO_PRICES_UPDATE_INTERVAL", cryptoPricesFetchInterval)
+	infoUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL", infoUpdateIntervalDefault)
+	scoreUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL", scoreUpdateIntervalDefault)
+	delegatorsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL", delegatorsUpdateIntervalDefault)
+	testStreamUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL", testStreamsUpdateIntervalDefault)
+	ticketsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL", ticketsUpdateIntervalDefault)
+	rewardsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL", rewardsUpdateIntervalDefault)
+	cryptoPricesUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_CRYPTO_PRICES_UPDATE_INTERVAL", cryptoPricesUpdateIntervalDefault)
 
 	// Setup sub-exporters.
 	log.Println("Setting up sub exporters...")

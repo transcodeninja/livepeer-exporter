@@ -28,13 +28,13 @@ Before using the Livepeer Exporter, you must configure it using environment vari
 - `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`: How often to fetch ticket data for the orchestrator. Defaults to `1h`.
 - `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`: How often to fetch rewards data for the orchestrator. Defaults to `12h`.
 - `CRYPTO_PRICES_EXPORTER_FETCH_INTERVAL`: How often to fetch the crypto prices. Defaults to `1m`.
-- `LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL`: How often to update the orchestrator info metrics. Defaults to the value of `LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL`.
-- `LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL`: How often to update the orchestrator score metrics. Defaults to the value of `LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL`.
-- `LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL`: How often to update the orchestrator delegators metrics. Defaults to the value of `LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL`.
-- `LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL`: How often to update the orchestrator test streams metrics. Defaults to the value of `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`.
-- `LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL`: How often to update the orchestrator tickets metrics. Defaults to the value of `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`.
-- `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics. Defaults to the value of `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`.
-- `CRYPTO_PRICES_EXPORTER_UPDATE_INTERVAL`: How often to update the crypto prices metrics. Defaults to the value of `CRYPTO_PRICES_EXPORTER_FETCH_INTERVAL`.
+- `LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL`: How often to update the orchestrator info metrics.  Defaults to `30s`.
+- `LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL`: How often to update the orchestrator score metrics. Defaults to `30s`.
+- `LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL`: How often to update the orchestrator delegators metrics.  Defaults to `30s`.
+- `LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL`: How often to update the orchestrator test streams metrics.  Defaults to `30s`.
+- `LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL`: How often to update the orchestrator tickets metrics. Defaults to `30s`.
+- `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics.  Defaults to `30s`.
+- `CRYPTO_PRICES_EXPORTER_UPDATE_INTERVAL`: How often to update the crypto prices metrics. Defaults to `30s`.
 
 All intervals are specified as a string representation of a duration, e.g., "5m" for 5 minutes, "2h" for 2 hours, etc. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
 
