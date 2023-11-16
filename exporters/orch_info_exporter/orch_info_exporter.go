@@ -1,5 +1,5 @@
-// Package orch_info_exporter implements a Livepeer Orchestrator Info exporter that fetches data from Livepeer's orchestrator info API and exposes
-// info about the orchestrator via Prometheus metrics.
+// Package orch_info_exporter implements a Livepeer orchestrator info exporter that fetches data
+// from Livepeer's orchestrator info API and exposes info about the orchestrator via Prometheus metrics.
 package orch_info_exporter
 
 import (
@@ -18,8 +18,8 @@ var (
 	delegatingInfoEndpointTemplate = "https://explorer.livepeer.org/_next/data/xe8lg6V7gubXcRErA1lxB/accounts/%s/delegating.json?account=%s"
 )
 
-// OrchInfoResponse represents the structure of the data returned by the Livepeer orchestrator info API.
-type OrchInfoResponse struct {
+// orchInfoResponse represents the structure of the data returned by the Livepeer orchestrator info API.
+type orchInfoResponse struct {
 	Mutex sync.Mutex
 
 	// Response data.
@@ -60,8 +60,8 @@ type OrchInfoResponse struct {
 	}
 }
 
-// OrchInfo represents the parsed data from the Livepeer orchestrator info API.
-type OrchInfo struct {
+// orchInfo represents the parsed data from the Livepeer orchestrator info API.
+type orchInfo struct {
 	BondedAmount       float64
 	TotalStake         float64
 	LastClaimRound     float64
@@ -80,9 +80,9 @@ type OrchInfo struct {
 	RewardCallRatio    float64
 }
 
-// DelegationInfoResponse represents the structure of the data returned by the Livepeer delegator info API. This is used to fetch extra delegation
+// delegationInfoResponse represents the structure of the data returned by the Livepeer delegator info API. This is used to fetch extra delegation
 // data for the orchestrator when the `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY` environment variable is set.
-type DelegationInfoResponse struct {
+type delegationInfoResponse struct {
 	Mutex sync.Mutex
 
 	// Response data.
@@ -95,7 +95,7 @@ type DelegationInfoResponse struct {
 	}
 }
 
-// OrchInfoExporter fetches data from the Livepeer orchestrator info API and exposes info about the orchestrator via Prometheus metrics.
+// OrchInfoExporter fetches data from the API and exposes orchestrator info via Prometheus.
 type OrchInfoExporter struct {
 	// Metrics.
 	BondedAmount       prometheus.Gauge
@@ -123,9 +123,9 @@ type OrchInfoExporter struct {
 	delegatingInfoEndpoint string        // The endpoint to fetch extra delegation data from.
 
 	// Data.
-	orchInfoResponse       *OrchInfoResponse       // The data returned by the orchestrator API.
-	delegatingInfoResponse *DelegationInfoResponse // The data returned by the delegation API.
-	orchInfo               *OrchInfo               // The data returned by the orchestrator API, parsed into a struct.
+	orchInfoResponse       *orchInfoResponse       // The data returned by the orchestrator API.
+	delegatingInfoResponse *delegationInfoResponse // The data returned by the delegation API.
+	orchInfo               *orchInfo               // The data returned by the orchestrator API, parsed into a struct.
 
 	// Fetchers.
 	orchInfoFetcher       fetcher.Fetcher
@@ -310,7 +310,9 @@ func (m *OrchInfoExporter) parseMetrics() {
 // updateMetrics updates the metrics with the data fetched from the Livepeer orchestrator info API.
 func (m *OrchInfoExporter) updateMetrics() {
 	// Parse the metrics from the response data.
+	m.orchInfoResponse.Mutex.Lock()
 	m.parseMetrics()
+	m.orchInfoResponse.Mutex.Unlock()
 
 	// Set the metrics.
 	m.BondedAmount.Set(m.orchInfo.BondedAmount)
@@ -339,9 +341,9 @@ func NewOrchInfoExporter(orchAddress string, fetchInterval time.Duration, update
 		orchAddressSecondary:   orchAddrSecondary,
 		orchInfoEndpoint:       fmt.Sprintf(orchInfoEndpointTemplate, orchAddress, orchAddress),
 		delegatingInfoEndpoint: fmt.Sprintf(delegatingInfoEndpointTemplate, orchAddrSecondary, orchAddrSecondary),
-		orchInfoResponse:       &OrchInfoResponse{},
-		delegatingInfoResponse: &DelegationInfoResponse{},
-		orchInfo:               &OrchInfo{},
+		orchInfoResponse:       &orchInfoResponse{},
+		delegatingInfoResponse: &delegationInfoResponse{},
+		orchInfo:               &orchInfo{},
 	}
 
 	// Initialize fetcher.

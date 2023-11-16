@@ -1,4 +1,6 @@
-// Package orch_rewards_exporter implements a Livepeer Orchestrator Rewards exporter that fetches data from the https://stronk.rocks/api/livepeer/getAllRewardEvents API endpoint and exposes information about the orchestrator's rewards via Prometheus metrics.
+// Package orch_rewards_exporter implements a Livepeer orchestrator rewards exporter that fetches
+// data from the https://stronk.rocks/api/livepeer/getAllRewardEvents API endpoint and exposes
+// information about the orchestrator's rewards via Prometheus metrics.
 package orch_rewards_exporter
 
 import (
@@ -14,8 +16,8 @@ var (
 	getRewardEventsEndpoint = "https://stronk.rocks/api/livepeer/getAllRewardEvents"
 )
 
-// RewardTransaction represents the structure of the reward transaction field contained in the API response.
-type RewardTransaction struct {
+// rewardTransaction represents the structure of the reward transaction field contained in the API response.
+type rewardTransaction struct {
 	Address         string
 	Amount          float64
 	TransactionHash string
@@ -23,15 +25,15 @@ type RewardTransaction struct {
 	BlockTime       int
 }
 
-// Rewards represents the structure of the data returned by the API.
-type Rewards struct {
+// rewards represents the structure of the data returned by the API.
+type rewards struct {
 	sync.Mutex
 
 	// Response data.
-	Transactions []RewardTransaction
+	Transactions []rewardTransaction
 }
 
-// OrchRewardsExporter fetches data from the API endpoint and exposes data about the orchestrator's rewards via Prometheus metrics.
+// OrchRewardsExporter fetches data from the API and exposes orchestrator's rewards metrics via Prometheus.
 type OrchRewardsExporter struct {
 	// Metrics.
 	RewardAmount          *prometheus.GaugeVec
@@ -47,7 +49,7 @@ type OrchRewardsExporter struct {
 	orchRewardsEndpoint string        // The endpoint to fetch data from.
 
 	// Data.
-	orchRewards *Rewards // The data returned by the API.
+	orchRewards *rewards // The data returned by the API.
 
 	// Fetchers.
 	orchRewardsFetcher fetcher.Fetcher
@@ -105,7 +107,7 @@ func (m *OrchRewardsExporter) registerMetrics() {
 // updateMetrics updates the metrics with the data fetched from the stronk.rocks rewards API.
 func (m *OrchRewardsExporter) updateMetrics() {
 	// Filter out rewards that are not for the configured orchestrator.
-	var rewards []RewardTransaction
+	var rewards []rewardTransaction
 	for _, reward := range m.orchRewards.Transactions {
 		if reward.Address == m.orchAddress {
 			rewards = append(rewards, reward)
@@ -138,7 +140,7 @@ func NewOrchRewardsExporter(orchAddress string, fetchInterval time.Duration, upd
 		fetchInterval:       fetchInterval,
 		updateInterval:      updateInterval,
 		orchRewardsEndpoint: getRewardEventsEndpoint,
-		orchRewards:         &Rewards{},
+		orchRewards:         &rewards{},
 	}
 
 	// Initialize fetcher.
@@ -178,7 +180,9 @@ func (m *OrchRewardsExporter) Start() {
 		defer ticker.Stop()
 
 		for range ticker.C {
+			m.orchRewards.Mutex.Lock()
 			m.updateMetrics()
+			m.orchRewards.Mutex.Unlock()
 		}
 	}()
 }

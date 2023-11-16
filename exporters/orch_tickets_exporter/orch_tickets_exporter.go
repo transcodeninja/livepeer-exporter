@@ -1,4 +1,6 @@
-// Package orch_tickets_exporter implements a Livepeer Orchestrator Tickets exporter that fetches data from the https://stronk.rocks/api/livepeer/getAllRedeemTicketEvents API endpoint and exposes information about the orchestrator's tickets via Prometheus metrics.
+// Package orch_tickets_exporter implements a Livepeer orchestrator tickets exporter that fetches data
+// from the https://stronk.rocks/api/livepeer/getAllRedeemTicketEvents API endpoint and exposes
+// information about the orchestrator's tickets via Prometheus metrics.
 package orch_tickets_exporter
 
 import (
@@ -14,8 +16,8 @@ var (
 	getRedeemedTicketsEndpoint = "https://stronk.rocks/api/livepeer/getAllRedeemTicketEvents"
 )
 
-// TicketTransaction represents the structure of the ticket transaction field contained in the API response.
-type TicketTransaction struct {
+// ticketTransaction represents the structure of the ticket transaction field contained in the API response.
+type ticketTransaction struct {
 	Address         string
 	Amount          float64
 	TransactionHash string
@@ -23,15 +25,15 @@ type TicketTransaction struct {
 	BlockTime       int
 }
 
-// Tickets represents the structure of the data returned by the API.
-type Tickets struct {
+// tickets represents the structure of the data returned by the API.
+type tickets struct {
 	sync.Mutex
 
 	// Response data.
-	Transactions []TicketTransaction
+	Transactions []ticketTransaction
 }
 
-// OrchTicketsExporter fetches data from the  API endpoint and exposes data about the orchestrator's tickets via Prometheus metrics.
+// OrchTicketsExporter fetches data from the API and exposes orchestrator's tickets metrics via Prometheus.
 type OrchTicketsExporter struct {
 	// Metrics.
 	WinningTicketAmount          *prometheus.GaugeVec
@@ -46,7 +48,7 @@ type OrchTicketsExporter struct {
 	orchTicketsEndpoint string        // The endpoint to fetch data from.
 
 	// Data.
-	orchTickets *Tickets // The data returned by the API.
+	orchTickets *tickets // The data returned by the API.
 
 	// Fetchers.
 	orchTicketsFetcher fetcher.Fetcher
@@ -97,7 +99,7 @@ func (m *OrchTicketsExporter) registerMetrics() {
 // updateMetrics updates the metrics with the data fetched from the stonk.rocks tickets API.
 func (m *OrchTicketsExporter) updateMetrics() {
 	// Filter out tickets that are not for the configured orchestrator.
-	var tickets []TicketTransaction
+	var tickets []ticketTransaction
 	for _, ticket := range m.orchTickets.Transactions {
 		if ticket.Address == m.orchAddress {
 			tickets = append(tickets, ticket)
@@ -123,7 +125,7 @@ func NewOrchTicketsExporter(orchAddress string, fetchInterval time.Duration, upd
 		fetchInterval:       fetchInterval,
 		updateInterval:      updateInterval,
 		orchTicketsEndpoint: getRedeemedTicketsEndpoint,
-		orchTickets:         &Tickets{},
+		orchTickets:         &tickets{},
 	}
 
 	// Initialize fetcher.
@@ -163,7 +165,9 @@ func (m *OrchTicketsExporter) Start() {
 		defer ticker.Stop()
 
 		for range ticker.C {
+			m.orchTickets.Mutex.Lock()
 			m.updateMetrics()
+			m.orchTickets.Mutex.Unlock()
 		}
 	}()
 }
