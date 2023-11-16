@@ -58,11 +58,14 @@ Fetches metrics about the Livepeer orchestrator from the [Livepeer Orchestrator 
 - `livepeer_orch_total_volume_eth`: Total volume of ETH.
 - `livepeer_orch_stake`: Stake provided by the orchestrator. Includes the orchestrator's bonded stake and the stake of the secondary orchestrator account (if provided).
 - `livepeer_orch_thirty_day_reward_claim_ratio`: How often an orchestrator claimed rewards in the last thirty rounds, or, if not active for 30 days, the reward claim ratio since activation.
-- `livepeer_orch_total_rewards`: Total rewards claimed by the the orchestrator.
 
 ### orch_rewards_exporter
 
 Fetches reward data for the Livepeer orchestrator from the https://stronk.rocks/api/livepeer/getAllRewardEvents endpoint and filters it based on the orchestrator ID. It exposes the following metrics:
+
+**Gauge metrics:**
+
+- `livepeer_orch_total_claimed_rewards`: Total rewards claimed by the the orchestrator.
 
 **GaugeVector metrics:**
 
@@ -107,7 +110,7 @@ Fetches and exposes ticket transaction information for each orchestrator from th
 - `livepeer_orch_winning_ticket_transaction_hash`: Transaction hash for each winning ticket. The `id` label is a unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_winning_ticket_block_number`: Block number for each winning ticket. The `id` label is a unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_winning_ticket_block_time`: Block time for each winning ticket. The `id` label is a unique identifier of the transaction in which the ticket was won.
-  
+
 ## Configuration
 
 The exporter is configured using the following environment variables:

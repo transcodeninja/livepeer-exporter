@@ -38,6 +38,7 @@ type OrchRewardsExporter struct {
 	RewardTransactionHash *prometheus.GaugeVec
 	RewardBlockNumber     *prometheus.GaugeVec
 	RewardBlockTime       *prometheus.GaugeVec
+	TotalReward           prometheus.Gauge
 
 	// Config settings.
 	orchAddress         string        // The orchestrator address to filter rewards by.
@@ -82,6 +83,12 @@ func (m *OrchRewardsExporter) initMetrics() {
 		},
 		[]string{"id"},
 	)
+	m.TotalReward = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_total_claimed_rewards",
+			Help: "Total rewards claimed by the the orchestrator.",
+		},
+	)
 }
 
 // registerMetrics registers the orchestrator rewards metrics with Prometheus.
@@ -91,6 +98,7 @@ func (m *OrchRewardsExporter) registerMetrics() {
 		m.RewardTransactionHash,
 		m.RewardBlockNumber,
 		m.RewardBlockTime,
+		m.TotalReward,
 	)
 }
 
@@ -114,6 +122,13 @@ func (m *OrchRewardsExporter) updateMetrics() {
 		m.RewardBlockNumber.WithLabelValues(reward.TransactionHash).Set(blockNumber)
 		m.RewardBlockTime.WithLabelValues(reward.TransactionHash).Set(blockTime * 1000) // Grafana expects milliseconds.
 	}
+
+	// Calculate the total rewards.
+	var total float64
+	for _, reward := range rewards {
+		total += reward.Amount
+	}
+	m.TotalReward.Set(total)
 }
 
 // NewOrchRewardsExporter creates a new OrchRewardsExporter.
