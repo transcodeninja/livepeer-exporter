@@ -68,7 +68,7 @@ func (m *OrchDelegatorsExporter) initMetrics() {
 	m.DelegatorCount = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_delegator_count",
-			Help: "The number of delegators for the orchestrator.",
+			Help: "The total number of delegators that are staked with the orchestrator.",
 		},
 	)
 }

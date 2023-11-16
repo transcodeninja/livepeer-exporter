@@ -67,23 +67,23 @@ type TestStreamsExporter struct {
 func (m *TestStreamsExporter) initMetrics() {
 	m.SuccessRate = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "livepeer_orch_test_stream_success_rate",
-		Help: "Success rate per region for test streams",
+		Help: "Test stream success rate per region.",
 	}, []string{"region", "orchestrator"})
 	m.UploadTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "livepeer_orch_test_stream_upload_time",
-		Help: "Upload time per region for test streams",
+		Help: "Test stream 2-segment upload time per region",
 	}, []string{"region", "orchestrator"})
 	m.DownloadTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "livepeer_orch_test_stream_download_time",
-		Help: "Download time per region for test streams",
+		Help: "Test stream 2-segment download time per region",
 	}, []string{"region", "orchestrator"})
 	m.TranscodeTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "livepeer_orch_test_stream_transcode_time",
-		Help: "Transcode time per region for test streams",
+		Help: "Test stream 2-segment transcode time per region",
 	}, []string{"region", "orchestrator"})
 	m.RoundTripTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "livepeer_orch_test_stream_round_trip_time",
-		Help: "Round trip time per region for test streams",
+		Help: "Test stream round trip time per region",
 	}, []string{"region", "orchestrator"})
 }
 

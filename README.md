@@ -44,7 +44,7 @@ Fetches metrics about the Livepeer orchestrator from the [Livepeer Orchestrator 
 
 - `livepeer_orch_bonded_amount`: Amount of LPT bonded to the orchestrator.
 - `livepeer_orch_total_stake`: Total stake of the orchestrator in LPT.
-- `livepeer_orch_last_claim_round`: Last round the orchestrator claimed fees.
+- `livepeer_orch_last_reward_claim_round`: Last round in which the orchestrator claimed the reward.
 - `livepeer_orch_start_round`: Round the orchestrator registered.
 - `livepeer_orch_withdrawn_fees`: Amount of fees the orchestrator has withdrawn.
 - `livepeer_orch_current_round`: Current round.
@@ -52,13 +52,13 @@ Fetches metrics about the Livepeer orchestrator from the [Livepeer Orchestrator 
 - `livepeer_orch_active`: Whether the orchestrator is active.
 - `livepeer_orch_fee_cut`: Proportion of the fees the orchestrator takes.
 - `livepeer_orch_reward_cut`: Proportion of the block reward the orchestrator takes.
-- `livepeer_orch_last_reward_round`: Last round the orchestrator received a reward.
+- `livepeer_orch_last_reward_round`: Last round the orchestrator received rewards while active.
 - `livepeer_orch_ninety_day_volume_eth`: 90-day volume of ETH.
 - `livepeer_orch_thirty_day_volume_eth`: 30-day volume of ETH.
 - `livepeer_orch_total_volume_eth`: Total volume of ETH.
-- `livepeer_orch_stake`: Stake provided by the orchestrator.
-- `livepeer_orch_reward_call_ratio`: Ratio of reward calls to total active rounds.
-- `livepeer_orch_total_reward`: Total reward of the orchestrator.
+- `livepeer_orch_stake`: Stake provided by the orchestrator. Includes the orchestrator's bonded stake and the stake of the secondary orchestrator account (if provided).
+- `livepeer_orch_thirty_day_reward_claim_ratio`: How often an orchestrator claimed rewards in the last thirty rounds, or, if not active for 30 days, the reward claim ratio since activation.
+- `livepeer_orch_total_rewards`: Total rewards claimed by the the orchestrator.
 
 ### orch_rewards_exporter
 
@@ -92,10 +92,10 @@ Fetches metrics about the LivePeer orchestrator's test streams from the https://
 **GaugeVec metrics:**
 
 - `livepeer_orch_test_stream_success_rate`: Success rate per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_upload_time`: Upload time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_download_time`: Download time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_transcode_time`: Transcode time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_round_trip_time`: Round trip time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
+- `livepeer_orch_test_stream_upload_time`: Two-segment upload time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
+- `livepeer_orch_test_stream_download_time`: Two-segment download time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
+- `livepeer_orch_test_stream_transcode_time`: Two-segment transcode time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
+- `livepeer_orch_test_stream_round_trip_time`: Two-segment round trip time per region for test streams. This GaugeVec contains the labels `region` and `orchestrator`.
 
 ### orch_tickets_exporter
 
