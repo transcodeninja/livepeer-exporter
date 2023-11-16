@@ -22,6 +22,7 @@
 package main
 
 import (
+	"livepeer-exporter/exporters/crypto_prices_exporter"
 	"livepeer-exporter/exporters/orch_delegators_exporter"
 	"livepeer-exporter/exporters/orch_info_exporter"
 	"livepeer-exporter/exporters/orch_rewards_exporter"
@@ -46,6 +47,7 @@ var (
 	testStreamsFetchIntervalDefault = 1 * time.Hour
 	ticketsFetchIntervalDefault     = 1 * time.Hour
 	rewardsFetchIntervalDefault     = 12 * time.Hour
+	cryptoPricesFetchInterval       = 1 * time.Minute
 )
 
 // Default config values.
@@ -68,6 +70,7 @@ func main() {
 	testStreamFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL", testStreamsFetchIntervalDefault)
 	ticketsFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL", ticketsFetchIntervalDefault)
 	rewardsFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL", rewardsFetchIntervalDefault)
+	cryptoPricesFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_CRYPTO_PRICES_FETCH_INTERVAL", cryptoPricesFetchInterval)
 
 	// Retrieve update intervals.
 	infoUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL", infoFetchInterval)
@@ -76,6 +79,7 @@ func main() {
 	testStreamUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL", testStreamFetchInterval)
 	ticketsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL", ticketsFetchInterval)
 	rewardsUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL", rewardsFetchInterval)
+	cryptoPricesUpdateInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_CRYPTO_PRICES_UPDATE_INTERVAL", cryptoPricesFetchInterval)
 
 	// Setup sub-exporters.
 	log.Println("Setting up sub exporters...")
@@ -85,6 +89,7 @@ func main() {
 	orchTestStreamsExporter := orch_test_streams_exporter.NewOrchTestStreamsExporter(orchAddr, testStreamFetchInterval, testStreamUpdateInterval)
 	orchTicketsExporter := orch_tickets_exporter.NewOrchTicketsExporter(orchAddr, ticketsFetchInterval, ticketsUpdateInterval)
 	orchRewardsExporter := orch_rewards_exporter.NewOrchRewardsExporter(orchAddr, rewardsFetchInterval, rewardsUpdateInterval)
+	cryptoPricesExporter := crypto_prices_exporter.NewCryptoPricesExporter(cryptoPricesFetchInterval, cryptoPricesUpdateInterval)
 
 	// Start sub-exporters.
 	log.Println("Starting sub exporters...")
@@ -94,6 +99,7 @@ func main() {
 	go orchTestStreamsExporter.Start()
 	go orchTicketsExporter.Start()
 	go orchRewardsExporter.Start()
+	go cryptoPricesExporter.Start()
 
 	// Expose the registered metrics via HTTP.
 	log.Println("Exposing metrics via HTTP on port 9153")
