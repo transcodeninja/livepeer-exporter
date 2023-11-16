@@ -36,7 +36,7 @@ Before using the Livepeer Exporter, you must configure it using environment vari
 - `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics.  Defaults to `30s`.
 - `CRYPTO_PRICES_EXPORTER_UPDATE_INTERVAL`: How often to update the crypto prices metrics. Defaults to `30s`.
 
-All intervals are specified as a string representation of a duration, e.g., "5m" for 5 minutes, "2h" for 2 hours, etc. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+All intervals are specified as a string representation of a duration, e.g., `5m`` for 5 minutes, `2h` for 2 hours, etc. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
 
 > [!NOTE]\
 > The `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`, `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`, and `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`environment variables have higher default values. This adjustment is made considering the nature of the endpoints they fetch—they might be slow or return a substantial amount of data. By setting these values to a higher interval, you can effectively reduce the load on the exporter, ensuring optimal performance.
