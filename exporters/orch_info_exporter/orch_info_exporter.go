@@ -254,7 +254,7 @@ func (m *OrchInfoExporter) registerMetrics() {
 	)
 }
 
-// parseMetrics parses the metrics from the orchInfoResponse and delegatingInfoResponse and populates the orchInfo struct.
+// parseMetrics parses the values from the orchInfoResponse and delegatingInfoResponse and populates the orchInfo struct.
 func (m *OrchInfoExporter) parseMetrics() {
 	// Parse and set the orchestrator info.
 	util.SetFloatFromStr(&m.orchInfo.BondedAmount, m.orchInfoResponse.PageProps.Account.Delegator.BondedAmount)

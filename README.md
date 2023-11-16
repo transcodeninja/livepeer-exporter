@@ -33,6 +33,8 @@ Before using the Livepeer Exporter, you must configure it using environment vari
 - `LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL`: How often to update the orchestrator test streams metrics. Defaults to the value of `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`.
 - `LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL`: How often to update the orchestrator tickets metrics. Defaults to the value of `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`.
 - `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics. Defaults to the value of `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`.
+- `CRYPTO_PRICES_EXPORTER_FETCH_INTERVAL`: How often to fetch the crypto prices. Defaults to `1m`.
+- `CRYPTO_PRICES_EXPORTER_UPDATE_INTERVAL`: How often to update the crypto prices metrics. Defaults to the value of `CRYPTO_PRICES_EXPORTER_FETCH_INTERVAL`.
 
 All intervals are specified as a string representation of a duration, e.g., "5m" for 5 minutes, "2h" for 2 hours, etc. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
 
@@ -87,16 +89,26 @@ This configuration tells Prometheus to scrape metrics from the Livepeer Exporter
 
 This exporter comprises the following sub-exporters, each responsible for fetching specific metrics:
 
-| Sub-Exporter | Description |
-| --- | --- |
-| [orch_delegators_exporter](./exporters/orch_delegators_exporter/) | Gathers metrics related to the delegators of the designated Livepeer orchestrator. |
-| [orch_info_exporter](./exporters/orch_info_exporter/) | Collects metrics pertaining to the Livepeer orchestrator. |
-| [orch_reward_exporter](./exporters/orch_reward_exporter/) | Retrieves metrics about the Livepeer orchestrator's rewards. |
-| [orch_score_exporter](./exporters/orch_score_exporter/) | Retrieves metrics concerning the Livepeer orchestrator's score. |
-| [orch_test_streams_exporter](./exporters/orch_test_streams_exporter/) | Procures metrics about the Livepeer orchestrator's test streams. |
-| [orch_tickets_exporter](./exporters/orch_tickets_exporter/) | Fetches metrics about the Livepeer orchestrator's tickets. |
+| Sub-Exporter                                                          | Description                                                                                            |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [crypto_prices_exporter](./exporters/crypto_prices_exporter/)         | Fetches and exposes the prices of different cryptocurrencies used in the Livepeer ecosystem. |
+| [orch_delegators_exporter](./exporters/orch_delegators_exporter/)     | Gathers metrics related to the delegators of the designated Livepeer orchestrator.                     |
+| [orch_info_exporter](./exporters/orch_info_exporter/)                 | Collects metrics pertaining to the Livepeer orchestrator.                                              |
+| [orch_reward_exporter](./exporters/orch_reward_exporter/)             | Retrieves metrics about the Livepeer orchestrator's rewards.                                           |
+| [orch_score_exporter](./exporters/orch_score_exporter/)               | Retrieves metrics concerning the Livepeer orchestrator's score.                                        |
+| [orch_test_streams_exporter](./exporters/orch_test_streams_exporter/) | Procures metrics about the Livepeer orchestrator's test streams.                                       |
+| [orch_tickets_exporter](./exporters/orch_tickets_exporter/)           | Fetches metrics about the Livepeer orchestrator's tickets.                                             |
 
 For enhanced performance, these sub-exporters operate concurrently in separate [goroutines](https://go.dev/tour/concurrency/1). They fetch metrics from various Livepeer endpoints and expose them via the `9153/metrics` endpoint. For detailed information about these sub-exporters and the metrics they provide, refer to the sections below.
+
+### Crypto Prices Exporter
+
+The `crypto_prices_exporter` fetches and exposes the prices of different cryptocurrencies used in the Livepeer ecosystem. They include:
+
+**GaugeVec metrics:**
+
+- `LPT_price`: This metric represents the current price of the LPT token. This GaugeVec includes the label `currency`, representing the currency of the price (e.g., `USD`, `EUR`, etc.)
+- `ETH_price`: This metric represents the current price of Ethereum. This GaugeVec includes the label `currency`, representing the currency of the price (e.g., `USD`, `EUR`, etc.)
 
 ### orch_delegators_exporter
 
