@@ -150,8 +150,8 @@ func (m *OrchInfoExporter) initMetrics() {
 	)
 	m.LastClaimRound = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name: "livepeer_orch_last_claim_round",
-			Help: "The last round the orchestrator claimed fees.",
+			Name: "livepeer_orch_last_reward_claim_round",
+			Help: "The last round in which the orchestrator claimed the reward.",
 		},
 	)
 	m.StartRound = prometheus.NewGauge(
@@ -199,7 +199,7 @@ func (m *OrchInfoExporter) initMetrics() {
 	m.LastRewardRound = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_last_reward_round",
-			Help: "The last round the orchestrator received a reward.",
+			Help: "The last round the orchestrator received rewards while active.",
 		},
 	)
 	m.NinetyDayVolumeETH = prometheus.NewGauge(
@@ -223,19 +223,19 @@ func (m *OrchInfoExporter) initMetrics() {
 	m.OrchStake = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_stake",
-			Help: "The stake provided by the orchestrator.",
+			Help: "The stake provided by the orchestrator .",
 		},
 	)
 	m.RewardCallRatio = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name: "livepeer_orch_reward_call_ratio",
-			Help: "Ratio of reward calls to total active rounds.",
+			Name: "livepeer_orch_thirty_day_reward_claim_ratio",
+			Help: "How often an orchestrator claimed rewards in the last thirty rounds.",
 		},
 	)
 	m.TotalReward = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name: "livepeer_orch_total_reward",
-			Help: "The total reward of the orchestrator.",
+			Name: "livepeer_orch_total_rewards",
+			Help: "Total rewards claimed by the the orchestrator.",
 		},
 	)
 }
@@ -314,6 +314,9 @@ func (m *OrchInfoExporter) parseMetrics() {
 	if m.orchInfo.CurrentRound > m.orchInfo.ActivationRound {
 		m.orchInfo.RewardCallRatio = float64(len(m.orchInfoResponse.PageProps.Account.Transcoder.Pools)) / float64(int(m.orchInfo.CurrentRound-m.orchInfo.ActivationRound))
 	}
+
+	// Calculate thirty day reward call ratio.
+
 }
 
 // updateMetrics updates the metrics with the data fetched from the Livepeer orchestrator info API.
