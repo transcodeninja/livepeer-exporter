@@ -113,5 +113,8 @@ func main() {
 	// Expose the registered metrics via HTTP.
 	log.Println("Exposing metrics via HTTP on port 9153")
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":9153", nil)
+	err := http.ListenAndServe(":9155", nil)
+	if err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
 }
