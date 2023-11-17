@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/rickstaa/livepeer-exporter/compare/v2.1.0...v2.1.1) (2023-11-17)
+
+
+### Bug Fixes
+
+* restore exposed port ([fb5b6a1](https://github.com/rickstaa/livepeer-exporter/commit/fb5b6a13f562f81020669c8fda1aec4455e0ceb1))
+
 ## [2.1.0](https://github.com/rickstaa/livepeer-exporter/compare/v2.0.0...v2.1.0) (2023-11-17)
 
 
