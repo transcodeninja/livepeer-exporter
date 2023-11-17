@@ -201,3 +201,7 @@ The `orch_tickets_exporter` fetches and exposes ticket transaction information f
 ## Contributing
 
 Feel free to open an issue if you have ideas on how to make this repository better or if you want to report a bug! All contributions are welcome. :rocket: Please consult the [contribution guidelines](CONTRIBUTING.md) for more information.
+
+## Shout-out
+
+🚀 **Stronk.rocks**: Special thanks to [@stonk-dev](https://github.com/stronk-dev/LivepeerEvents) for the API endpoints powering the `orch_delegators_exporter`, `orch_rewards_exporter`, and `orch_tickets_exporter` sub-exporters. Your contribution is greatly appreciated!
