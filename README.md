@@ -204,4 +204,4 @@ Feel free to open an issue if you have ideas on how to make this repository bett
 
 ## Shout-out
 
-🚀 **Stronk.rocks**: Special thanks to [@stonk-dev](https://github.com/stronk-dev/LivepeerEvents) for the API endpoints powering the `orch_delegators_exporter`, `orch_rewards_exporter`, and `orch_tickets_exporter` sub-exporters. Your contribution is greatly appreciated!
+🚀 **Stronk.rocks**: Special thanks to [@stonk-dev](https://github.com/stronk-dev) for the [API endpoints](https://github.com/stronk-dev/LivepeerEvents) powering the `orch_delegators_exporter`, `orch_rewards_exporter`, and `orch_tickets_exporter` sub-exporters. Your contribution is greatly appreciated!
