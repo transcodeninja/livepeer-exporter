@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.0](https://github.com/rickstaa/livepeer-exporter/compare/v2.0.0...v2.1.0) (2023-11-17)
+
+
+### Features
+
+* ctach http serve errors ([#46](https://github.com/rickstaa/livepeer-exporter/issues/46)) ([300c7b7](https://github.com/rickstaa/livepeer-exporter/commit/300c7b715481fc59c4063cf252fa6a4295a80016))
+* increase default update intervals ([#47](https://github.com/rickstaa/livepeer-exporter/issues/47)) ([ff6c721](https://github.com/rickstaa/livepeer-exporter/commit/ff6c7217ff7f926eb5022501c0644ffa18a3f462))
+* mitigate racing conditions ([#44](https://github.com/rickstaa/livepeer-exporter/issues/44)) ([9336d1c](https://github.com/rickstaa/livepeer-exporter/commit/9336d1cebc189c3d17b9b43a34eddb860c5347d0))
+
 ## [2.0.0](https://github.com/rickstaa/livepeer-exporter/compare/v1.1.1...v2.0.0) (2023-11-16)
 
 
