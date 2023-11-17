@@ -143,7 +143,7 @@ func (m *OrchInfoExporter) initMetrics() {
 	m.TotalStake = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_total_stake",
-			Help: "The total stake of the orchestrator in LPT.",
+			Help: "The total amount of LPT that is staked to the orchestrator.",
 		},
 	)
 	m.LastClaimRound = prometheus.NewGauge(
@@ -221,7 +221,7 @@ func (m *OrchInfoExporter) initMetrics() {
 	m.OrchStake = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_stake",
-			Help: "The stake provided by the orchestrator .",
+			Help: "The stake personally contributed by the orchestrator.",
 		},
 	)
 	m.RewardCallRatio = prometheus.NewGauge(

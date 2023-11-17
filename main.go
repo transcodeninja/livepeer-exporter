@@ -48,7 +48,7 @@ var (
 	delegatorsFetchIntevalDefault   = 5 * time.Minute
 	testStreamsFetchIntervalDefault = 1 * time.Hour
 	ticketsFetchIntervalDefault     = 1 * time.Hour
-	rewardsFetchIntervalDefault     = 12 * time.Hour
+	rewardsFetchIntervalDefault     = 1 * time.Hour
 	cryptoPricesFetchInterval       = 1 * time.Minute
 
 	// Update intervals.
@@ -57,7 +57,7 @@ var (
 	delegatorsUpdateIntervalDefault   = 5 * time.Minute
 	testStreamsUpdateIntervalDefault  = 1 * time.Hour
 	ticketsUpdateIntervalDefault      = 1 * time.Hour
-	rewardsUpdateIntervalDefault      = 12 * time.Hour
+	rewardsUpdateIntervalDefault      = 1 * time.Hour
 	cryptoPricesUpdateIntervalDefault = 1 * time.Minute
 )
 
