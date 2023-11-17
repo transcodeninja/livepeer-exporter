@@ -13,12 +13,14 @@
 //   - LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL - How often to fetch the test streams data for the orchestrator.
 //   - LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL - How often to fetch tickets data for the orchestrator.
 //   - LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL - How often to fetch rewards data for the orchestrator.
+//   - LIVEPEER_EXPORTER_CRYPTO_PRICES_FETCH_INTERVAL - How often to fetch crypto prices.
 //   - LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL - How often to update the orchestrator info metrics.
 //   - LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL - How often to update the orchestrator score metrics.
 //   - LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL - How often to update the orchestrator delegators metrics.
 //   - LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL - How often to update the orchestrator test streams metrics.
 //   - LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL - How often to update the orchestrator tickets metrics.
 //   - LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL - How often to update the orchestrator rewards metrics.
+//   - LIVEPEER_EXPORTER_CRYPTO_PRICES_UPDATE_INTERVAL - How often to update the crypto prices metrics.
 package main
 
 import (
@@ -50,13 +52,13 @@ var (
 	cryptoPricesFetchInterval       = 1 * time.Minute
 
 	// Update intervals.
-	infoUpdateIntervalDefault         = 30 * time.Second
-	scoreUpdateIntervalDefault        = 30 * time.Second
-	delegatorsUpdateIntervalDefault   = 30 * time.Second
-	testStreamsUpdateIntervalDefault  = 30 * time.Second
-	ticketsUpdateIntervalDefault      = 30 * time.Second
-	rewardsUpdateIntervalDefault      = 30 * time.Second
-	cryptoPricesUpdateIntervalDefault = 30 * time.Second
+	infoUpdateIntervalDefault         = 1 * time.Minute
+	scoreUpdateIntervalDefault        = 1 * time.Minute
+	delegatorsUpdateIntervalDefault   = 5 * time.Minute
+	testStreamsUpdateIntervalDefault  = 1 * time.Hour
+	ticketsUpdateIntervalDefault      = 1 * time.Hour
+	rewardsUpdateIntervalDefault      = 12 * time.Hour
+	cryptoPricesUpdateIntervalDefault = 1 * time.Minute
 )
 
 // Default config values.
