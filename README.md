@@ -26,17 +26,17 @@ Before using the Livepeer Exporter, you must configure it using environment vari
 - `LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL`: How often to fetch delegators data for the orchestrator. Defaults to `5m`.
 - `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`:How often to fetch the test streams data for the orchestrator. Defaults to `1h`.
 - `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`: How often to fetch ticket data for the orchestrator. Defaults to `1h`.
-- `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`: How often to fetch rewards data for the orchestrator. Defaults to `12h`.
+- `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`: How often to fetch rewards data for the orchestrator. Defaults to `1h`.
 - `LIVEPEER_EXPORTER_CRYPTO_PRICES_FETCH_INTERVAL`: How often to fetch the crypto prices. Defaults to `1m`.
 - `LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL`: How often to update the orchestrator info metrics.  Defaults to `1m`.
 - `LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL`: How often to update the orchestrator score metrics. Defaults to `1m`.
 - `LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL`: How often to update the orchestrator delegators metrics.  Defaults to `5m`.
 - `LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL`: How often to update the orchestrator test streams metrics.  Defaults to `1h`.
 - `LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL`: How often to update the orchestrator tickets metrics. Defaults to `1h`.
-- `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics.  Defaults to `12h`.
+- `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics.  Defaults to `1h`.
 - `LIVEPEER_EXPORTER_CRYPTO_PRICES_UPDATE_INTERVAL`: How often to update the crypto prices metrics. Defaults to `1m`.
 
-All intervals are specified as a string representation of a duration, e.g., `5m`` for 5 minutes, `2h` for 2 hours, etc. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
+All intervals are specified as a string representation of a duration, e.g., `5m` for 5 minutes, `2h` for 2 hours, etc. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
 
 > [!NOTE]\
 > The `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`, `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`, and `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`environment variables have higher default values. This adjustment is made considering the nature of the endpoints they fetch—they might be slow or return a substantial amount of data. By setting these values to a higher interval, you can effectively reduce the load on the exporter, ensuring optimal performance.
@@ -70,7 +70,7 @@ docker run --name livepeer-exporter \
 Replace `<your-orchestrator-address>` with the address of your orchestrator. This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. Additional environment variables can be passed to the exporter by adding them to the command above.
 
 > [!NOTE]\
->  This repository also contains a [DockerFile](./Dockerfile) and [docker-compose.yml](./docker-compose.yml) file. These files can be used to build and run the exporter locally. To do this, clone this repository and run `docker compose up` in the repository's root directory.
+> This repository also contains a [DockerFile](./Dockerfile) and [docker-compose.yml](./docker-compose.yml) file. These files can be used to build and run the exporter locally. To do this, clone this repository and run `docker compose up` in the repository's root directory.
 
 ### Configure Prometheus
 
@@ -130,7 +130,7 @@ The `orch_info_exporter` fetches metrics about the Livepeer orchestrator from th
 **Gauge metrics:**
 
 - `livepeer_orch_bonded_amount`: This metric represents the amount of LPT bonded to the orchestrator.
-- `livepeer_orch_total_stake`: This metric represents the total stake of the orchestrator in LPT.
+- `livepeer_orch_total_stake`: This metric represents the total amount of LPT that is staked with the orchestrator.
 - `livepeer_orch_last_reward_claim_round`: This metric represents the last round in which the orchestrator claimed the reward.
 - `livepeer_orch_start_round`: This metric represents the round the orchestrator registered.
 - `livepeer_orch_withdrawn_fees`: This metric represents the fees the orchestrator has withdrawn.
@@ -143,7 +143,7 @@ The `orch_info_exporter` fetches metrics about the Livepeer orchestrator from th
 - `livepeer_orch_ninety_day_volume_eth`: This metric represents the 90-day volume of ETH.
 - `livepeer_orch_thirty_day_volume_eth`: This metric represents the 30-day volume of ETH.
 - `livepeer_orch_total_volume_eth`: This metric represents the total volume of ETH.
-- `livepeer_orch_stake`: This metric represents the stake provided by the orchestrator. Includes the orchestrator's bonded stake and the stake of the secondary orchestrator account (if provided).
+- `livepeer_orch_stake`: This metric reflects the quantity of LPT personally contributed by the orchestrator, encompassing both the orchestrator's bonded stake and, if provided, the stake from the secondary orchestrator account.
 - `livepeer_orch_thirty_day_reward_claim_ratio`: This metric represents how often an orchestrator claimed rewards in the last thirty rounds, or, if not active for 30 days, the reward claim ratio since activation.
 
 ### orch_rewards_exporter
