@@ -113,13 +113,12 @@ func (m *TestStreamsExporter) updateMetrics() {
 		{"SAO", m.orchTestStreams.SAO},
 		{"SIN", m.orchTestStreams.SIN},
 	} {
-		for _, orchData := range regionData.testStreams {
-			m.SuccessRate.WithLabelValues(regionData.Region, orchData.Orchestrator).Set(orchData.SuccessRate)
-			m.UploadTime.WithLabelValues(regionData.Region, orchData.Orchestrator).Set(orchData.UploadTime)
-			m.DownloadTime.WithLabelValues(regionData.Region, orchData.Orchestrator).Set(orchData.DownloadTime)
-			m.TranscodeTime.WithLabelValues(regionData.Region, orchData.Orchestrator).Set(orchData.TranscodeTime)
-			m.RoundTripTime.WithLabelValues(regionData.Region, orchData.Orchestrator).Set(orchData.RoundTripTime)
-		}
+		// Only use the first test stream data since it is the most recent.
+		m.SuccessRate.WithLabelValues(regionData.Region, regionData.testStreams[0].Orchestrator).Set(regionData.testStreams[0].SuccessRate)
+		m.UploadTime.WithLabelValues(regionData.Region, regionData.testStreams[0].Orchestrator).Set(regionData.testStreams[0].UploadTime)
+		m.DownloadTime.WithLabelValues(regionData.Region, regionData.testStreams[0].Orchestrator).Set(regionData.testStreams[0].DownloadTime)
+		m.TranscodeTime.WithLabelValues(regionData.Region, regionData.testStreams[0].Orchestrator).Set(regionData.testStreams[0].TranscodeTime)
+		m.RoundTripTime.WithLabelValues(regionData.Region, regionData.testStreams[0].Orchestrator).Set(regionData.testStreams[0].RoundTripTime)
 	}
 }
 
