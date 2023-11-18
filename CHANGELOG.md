@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.3](https://github.com/rickstaa/livepeer-exporter/compare/v2.1.2...v2.1.3) (2023-11-18)
+
+
+### Bug Fixes
+
+* remove test stream update delay ([#52](https://github.com/rickstaa/livepeer-exporter/issues/52)) ([5d8b2d7](https://github.com/rickstaa/livepeer-exporter/commit/5d8b2d7b426b41244641afcc42faaeb2b8fc8bce))
+
 ## [2.1.1](https://github.com/rickstaa/livepeer-exporter/compare/v2.1.0...v2.1.1) (2023-11-17)
 
 
