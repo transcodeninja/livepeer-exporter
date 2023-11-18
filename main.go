@@ -43,9 +43,9 @@ import (
 // Exporter default config values.
 var (
 	// Fetch intervals.
-	infoFetchIntevalDefault         = 1 * time.Minute
-	scoreFetchIntevalDefault        = 1 * time.Minute
-	delegatorsFetchIntevalDefault   = 5 * time.Minute
+	infoFetchIntervalDefault        = 1 * time.Minute
+	scoreFetchIntervalDefault       = 1 * time.Minute
+	delegatorsFetchIntervalDefault  = 5 * time.Minute
 	testStreamsFetchIntervalDefault = 1 * time.Hour
 	ticketsFetchIntervalDefault     = 1 * time.Hour
 	rewardsFetchIntervalDefault     = 1 * time.Hour
@@ -75,9 +75,9 @@ func main() {
 	orchAddrSecondary := os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY")
 
 	// Retrieve fetch intervals.
-	infoFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL", infoFetchIntevalDefault)
-	scoreFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL", scoreFetchIntevalDefault)
-	delegatorsFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL", delegatorsFetchIntevalDefault)
+	infoFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL", infoFetchIntervalDefault)
+	scoreFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL", scoreFetchIntervalDefault)
+	delegatorsFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL", delegatorsFetchIntervalDefault)
 	testStreamFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL", testStreamsFetchIntervalDefault)
 	ticketsFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL", ticketsFetchIntervalDefault)
 	rewardsFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL", rewardsFetchIntervalDefault)
