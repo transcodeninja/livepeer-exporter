@@ -28,7 +28,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@051f7ea71b2d2fbe5b4893e33c4203f4bbbe1293
+        uses: docker/metadata-action@26b4721af7e42433d091d1c17de06a07d96a56ce
         with:
           images: transcodeninja/livepeer-exporter
 
