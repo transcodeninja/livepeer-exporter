@@ -2,10 +2,10 @@
 
 Your contributions mean the world to us! 🚀 We aim to keep the process transparent and straightforward, whether you're:
 
-- [Reporting a bug](https://github.com/rickstaa/livepeer-exporter/issues).
-- [Discussing the current code](https://github.com/rickstaa/livepeer-exporter/discussions).
-- [Submitting a fix](https://github.com/rickstaa/livepeer-exporter/pulls).
-- [Proposing new features](https://github.com/rickstaa/livepeer-exporter/issues).
+- [Reporting a bug](https://github.com/transcodeninja/livepeer-exporter/issues).
+- [Discussing the current code](https://github.com/transcodeninja/livepeer-exporter/discussions).
+- [Submitting a fix](https://github.com/transcodeninja/livepeer-exporter/pulls).
+- [Proposing new features](https://github.com/transcodeninja/livepeer-exporter/issues).
 - Thinking about becoming a maintainer.
 
 ## We Develop with Github
@@ -28,9 +28,9 @@ We stick to [Github Flow](https://docs.github.com/en/get-started/quickstart/gith
 
 Any contributions you make fall under the MIT Software License. Your submissions are covered by the same [MIT License](http://choosealicense.com/licenses/mit/) that protects the project. If you have concerns, reach out to the maintainers—they're here for you.
 
-## Report Bugs via [Github's issues](https://github.com/rickstaa/livepeer-exporter/issues)
+## Report Bugs via [Github's issues](https://github.com/transcodeninja/livepeer-exporter/issues)
 
-Help us keep track of bugs by [opening a new issue](https://github.com/rickstaa/livepeer-exporter/issues/new/choose); it's a breeze!
+Help us keep track of bugs by [opening a new issue](https://github.com/transcodeninja/livepeer-exporter/issues/new/choose); it's a breeze!
 
 ## Craft Bug Reports with Detail and Love
 

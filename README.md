@@ -1,12 +1,12 @@
-[![Docker Build](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-build.yml/badge.svg)](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-build.yml)
-[![Publish Docker image](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/rickstaa/livepeer-exporter/actions/workflows/docker-publish.yml)
-[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/rickstaa/livepeer-exporter?logo=docker)
-](https://hub.docker.com/r/rickstaa/livepeer-exporter)
-[![Latest Release](https://img.shields.io/github/v/release/rickstaa/livepeer-exporter?label=latest%20release)](https://github.com/rickstaa/livepeer-exporter/releases)
+[![Docker Build](https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-build.yml/badge.svg)](https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-build.yml)
+[![Publish Docker image](https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-publish.yml)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/transcodeninja/livepeer-exporter?logo=docker)
+](https://hub.docker.com/r/transcodeninja/livepeer-exporter)
+[![Latest Release](https://img.shields.io/github/v/release/transcodeninja/livepeer-exporter?label=latest%20release)](https://github.com/transcodeninja/livepeer-exporter/releases)
 
 # Livepeer Exporter
 
-![image](https://github.com/rickstaa/livepeer-exporter/assets/17570430/d168d3fc-4e58-4424-9836-d04e425d2991)
+![image](https://github.com/transcodeninja/livepeer-exporter/assets/17570430/d168d3fc-4e58-4424-9836-d04e425d2991)
 
 Livepeer Exporter is a lightweight tool designed to enhance the monitoring capabilities of [Livepeer](https://livepeer.org/). As a Prometheus exporter, it fetches [various metrics](#metrics) from different Livepeer endpoints and exposes them via an HTTP server, ready for Prometheus to scrape. This tool is the perfect companion to the [Livepeer monitoring service](https://docs.livepeer.org/orchestrators/guides/monitor-metrics), extending the range of Livepeer metrics that can be monitored. By providing deeper insights into Livepeer's performance, Livepeer Exporter helps users optimize their streaming workflows and ensure reliable service delivery. Witness it in action by exploring the Grafana dashboards of the [transcode.eth](https://dashboards.transcode.ninja/public-dashboards/f4292573a60f40ac875a7be12b0834d1?orgId=1) orchestrator.
 
@@ -58,13 +58,13 @@ The exporter will be available on port `9153`. Additional [configuration](#confi
 
 ### Running the Exporter with Docker
 
-You can run the exporter using the Docker image available on [Docker Hub](https://hub.docker.com/r/rickstaa/livepeer-exporter). To pull and run the exporter from Docker Hub, use the following command:
+You can run the exporter using the Docker image available on [Docker Hub](https://hub.docker.com/r/transcodeninja/livepeer-exporter). To pull and run the exporter from Docker Hub, use the following command:
 
 ```bash
 docker run --name livepeer-exporter \
     -e "LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS=<your-orchestrator-address>" \
     -p 9153:9153 \
-    rickstaa/livepeer-exporter:latest
+    transcodeninja/livepeer-exporter:latest
 ```
 
 Replace `<your-orchestrator-address>` with the address of your orchestrator. This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. This command will start the exporter and expose the metrics on port `9153` for Prometheus to scrape. Additional environment variables can be passed to the exporter by adding them to the command above.
