@@ -28,12 +28,12 @@ Before using the Livepeer Exporter, you must configure it using environment vari
 - `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`: How often to fetch ticket data for the orchestrator. Defaults to `1h`.
 - `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`: How often to fetch rewards data for the orchestrator. Defaults to `1h`.
 - `LIVEPEER_EXPORTER_CRYPTO_PRICES_FETCH_INTERVAL`: How often to fetch the crypto prices. Defaults to `1m`.
-- `LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL`: How often to update the orchestrator info metrics.  Defaults to `1m`.
+- `LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL`: How often to update the orchestrator info metrics. Defaults to `1m`.
 - `LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL`: How often to update the orchestrator score metrics. Defaults to `1m`.
-- `LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL`: How often to update the orchestrator delegators metrics.  Defaults to `5m`.
-- `LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL`: How often to update the orchestrator test streams metrics.  Defaults to `1h`.
+- `LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL`: How often to update the orchestrator delegators metrics. Defaults to `5m`.
+- `LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL`: How often to update the orchestrator test streams metrics. Defaults to `1h`.
 - `LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL`: How often to update the orchestrator tickets metrics. Defaults to `1h`.
-- `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics.  Defaults to `1h`.
+- `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics. Defaults to `1h`.
 - `LIVEPEER_EXPORTER_CRYPTO_PRICES_UPDATE_INTERVAL`: How often to update the crypto prices metrics. Defaults to `1m`.
 
 All intervals are specified as a string representation of a duration, e.g., `5m` for 5 minutes, `2h` for 2 hours, etc. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
@@ -43,11 +43,11 @@ All intervals are specified as a string representation of a duration, e.g., `5m`
 
 ## Usage
 
-This section explains how to run the Livepeer Exporter. You can run it locally on your own machine, or use Docker for easy setup and teardown.
+This section explains how to run the Livepeer Exporter. You can run it locally on your machine or use Docker for easy setup and teardown.
 
 ### Run exporter locally
 
-Running the exporter locally allows you to quickly start and stop it as needed. To do this, you'll need to set the necessary environment variables and then start the exporter. Replace `your-orchestrator-address`, with your own values:
+Running the exporter on your main OS allows you to test out the livepeer-exporter quickly. To do this, you must set the necessary environment variables and start the exporter. Replace `your-orchestrator-address` with your values:
 
 ```bash
 export LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS=your-orchestrator-address
@@ -130,7 +130,7 @@ The `orch_info_exporter` fetches metrics about the Livepeer orchestrator from th
 **Gauge metrics:**
 
 - `livepeer_orch_bonded_amount`: This metric represents the amount of LPT bonded to the orchestrator.
-- `livepeer_orch_total_stake`: This metric represents the total amount of LPT that is staked with the orchestrator.
+- `livepeer_orch_total_stake`: This metric represents the total amount of LPT staked with the orchestrator.
 - `livepeer_orch_last_reward_claim_round`: This metric represents the last round in which the orchestrator claimed the reward.
 - `livepeer_orch_start_round`: This metric represents the round the orchestrator registered.
 - `livepeer_orch_withdrawn_fees`: This metric represents the fees the orchestrator has withdrawn.
@@ -143,7 +143,7 @@ The `orch_info_exporter` fetches metrics about the Livepeer orchestrator from th
 - `livepeer_orch_ninety_day_volume_eth`: This metric represents the 90-day volume of ETH.
 - `livepeer_orch_thirty_day_volume_eth`: This metric represents the 30-day volume of ETH.
 - `livepeer_orch_total_volume_eth`: This metric represents the total volume of ETH.
-- `livepeer_orch_stake`: This metric reflects the quantity of LPT personally contributed by the orchestrator, encompassing both the orchestrator's bonded stake and, if provided, the stake from the secondary orchestrator account.
+- `livepeer_orch_stake`: This metric reflects the quantity of LPT personally contributed by the orchestrator, encompassing the orchestrator's bonded stake and, if provided, the stake from the secondary orchestrator account.
 - `livepeer_orch_thirty_day_reward_claim_ratio`: This metric represents how often an orchestrator claimed rewards in the last thirty rounds, or, if not active for 30 days, the reward claim ratio since activation.
 
 ### orch_rewards_exporter
@@ -171,9 +171,9 @@ The `orch_score_exporter` fetches metrics about the Livepeer orchestrator's scor
 
 **GaugeVec metrics:**
 
-- `livepeer_orch_success_rate`: This metric represents the success rate per region. It can monitor the reliability of the orchestrator's services in different regions. This GaugeVec includes the label `region`.
-- `livepeer_orch_round_trip_score`: This metric represents the round trip score per region. It can measure the latency of the orchestrator's services in different regions. This GaugeVec includes the label `region`.
-- `livepeer_orch_total_score`: This metric represents the total score per region. It can be used to evaluate the overall performance of the orchestrator in different regions. This GaugeVec includes the label `region`.
+- `livepeer_orch_success_rate`: This metric represents the success rate per region. It can monitor the reliability of the orchestrator's services in different areas. This GaugeVec includes the label `region`.
+- `livepeer_orch_round_trip_score`: This metric represents the round trip score per region. It can measure the latency of the orchestrator's services in different areas. This GaugeVec includes the label `region`.
+- `livepeer_orch_total_score`: This metric represents the total score per region. It can be used to evaluate the orchestrator's overall performance in different areas. This GaugeVec includes the label `region`.
 
 ### orch_test_streams_exporter
 
