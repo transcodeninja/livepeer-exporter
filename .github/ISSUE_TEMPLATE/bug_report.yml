@@ -22,8 +22,7 @@ body:
   - type: textarea
     attributes:
       label: Expected behaviour
-      description:
-        A clear and concise description of what you expected to happen.
+      description: A clear and concise description of what you expected to happen.
   - type: textarea
     attributes:
       label: Screenshots / Live demo link
@@ -36,8 +35,8 @@ body:
       description: "Please complete the following information."
       value: |
         - Run method: [e.g. local, docker]
-        - OS: [e.g. Windows, Mac, Linux, iOS, android]
-        - Version [e.g. 1.0.0]
+        - OS: [e.g. Windows, Mac, Linux]
+        - Exporter version: [e.g. 1.0.0]
   - type: textarea
     attributes:
       label: Additional context
