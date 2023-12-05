@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	orchInfoEndpointTemplate       = "https://explorer.livepeer.org/_next/data/xe8lg6V7gubXcRErA1lxB/accounts/%s/orchestrating.json?account=%s"
-	delegatingInfoEndpointTemplate = "https://explorer.livepeer.org/_next/data/xe8lg6V7gubXcRErA1lxB/accounts/%s/delegating.json?account=%s"
+	orchInfoEndpointTemplate       = "https://explorer.livepeer.org/_next/data/znvwPTH4EgK0TUtcIKe-0/accounts/%s/orchestrating.json?account=%s"
+	delegatingInfoEndpointTemplate = "https://explorer.livepeer.org/_next/data/znvwPTH4EgK0TUtcIKe-0/accounts/%s/delegating.json?account=%s"
 )
 
 // orchInfoResponse represents the structure of the data returned by the Livepeer orchestrator info API.
