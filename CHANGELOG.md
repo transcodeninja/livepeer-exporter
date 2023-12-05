@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.5](https://github.com/transcodeninja/livepeer-exporter/compare/v2.1.4...v2.1.5) (2023-12-05)
+
+
+### Bug Fixes
+
+* apply orch info endpoint hotfix ([#65](https://github.com/transcodeninja/livepeer-exporter/issues/65)) ([c27c3da](https://github.com/transcodeninja/livepeer-exporter/commit/c27c3da536d478da50090d31a391694798546cd9))
+
 ## [2.1.3](https://github.com/rickstaa/livepeer-exporter/compare/v2.1.2...v2.1.3) (2023-11-18)
 
 
