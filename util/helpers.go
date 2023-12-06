@@ -2,12 +2,20 @@
 package util
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
 	"log"
 	"math"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
 )
+
+const graphQLEndpoint = "https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one"
 
 // BoolToFloat64 converts a bool to a float64.
 // If the input bool is true, it returns 1.0; otherwise, it returns 0.0.
@@ -56,4 +64,98 @@ func GetEnvDuration(key string, defaultValue time.Duration) time.Duration {
 		log.Fatalf("failed to parse '%s' environment variable: %v", key, err)
 	}
 	return value
+}
+
+// graphQLRequest represents the structure of the GraphQL API request used in IsOrchestrator.
+type GraphQLRequest struct {
+	Query string `json:"query"`
+}
+
+// graphqlResponse represents the structure of the GraphQL API response used in IsOrchestrator.
+type graphQLResponse struct {
+	Data struct {
+		Transcoder struct {
+			Typename string `json:"__typename"`
+		}
+	}
+}
+
+// sendGraphQLRequest sends a GraphQL request and returns the response body.
+func sendGraphQLRequest(query string) ([]byte, error) {
+	request := GraphQLRequest{
+		Query: query,
+	}
+
+	body, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	resp, err := http.Post(graphQLEndpoint, "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		return nil, fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("received non-OK response from GraphQL endpoint")
+	}
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	return responseBody, nil
+}
+
+// IsOrchestrator checks if a given address is an Livepeer orchestrator.
+func IsOrchestrator(id string) (bool, error) {
+	query := fmt.Sprintf(`{
+        transcoder(id: "%s") {
+            __typename
+        }
+    }`, id)
+
+	responseBody, err := sendGraphQLRequest(query)
+	if err != nil {
+		return false, err
+	}
+
+	var response graphQLResponse
+	if err := json.Unmarshal(responseBody, &response); err != nil {
+		return false, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return response.Data.Transcoder.Typename == "Transcoder", nil
+}
+
+// delegatorRequest represents the structure of the GraphQL API request used in IsDelegator.
+type delegatorResponse struct {
+	Data struct {
+		Delegator struct {
+			Typename string `json:"__typename"`
+		}
+	}
+}
+
+// IsDelegator checks if a given address is an Livepeer delegator.
+func IsDelegator(id string) (bool, error) {
+	query := fmt.Sprintf(`{
+        delegator(id: "%s") {
+            __typename
+        }
+    }`, id)
+
+	responseBody, err := sendGraphQLRequest(query)
+	if err != nil {
+		return false, err
+	}
+
+	var response delegatorResponse
+	if err := json.Unmarshal(responseBody, &response); err != nil {
+		return false, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return response.Data.Delegator.Typename == "Delegator", nil
 }
