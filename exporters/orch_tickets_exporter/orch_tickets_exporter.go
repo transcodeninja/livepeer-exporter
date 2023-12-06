@@ -20,9 +20,7 @@ var (
 // graphqlQuery represents the GraphQL query to fetch data from the GraphQL API.
 const graphqlQueryTemplate = `
 {
-	winningTicketRedeemedEvents(
-		where: {recipient: "%s"}
-	) {
+	winningTicketRedeemedEvents(where: {recipient: "%s"}) {
 		transaction {
 			gasUsed
 			blockNumber

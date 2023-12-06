@@ -20,7 +20,7 @@ var (
 // graphqlQuery represents the GraphQL query to fetch data from the GraphQL API.
 const graphqlQueryTemplate = `
 {
-	delegators (where:{delegate:"%s"}){
+	delegators(where: {delegate: "%s"}) {
 		id
 		startRound
 		bondedAmount

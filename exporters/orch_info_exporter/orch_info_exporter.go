@@ -1,5 +1,5 @@
 // Package orch_info_exporter implements a Livepeer orchestrator info exporter that fetches data
-// from Livepeer's orchestrator info API and exposes info about the orchestrator via Prometheus metrics.
+// from the Livepeer subgraph GraphQL API endpoint and exposes info about the orchestrator via Prometheus metrics.
 package orch_info_exporter
 
 import (
@@ -7,6 +7,7 @@ import (
 	"livepeer-exporter/fetcher"
 	"livepeer-exporter/util"
 	"log"
+	"strconv"
 	"sync"
 	"time"
 
@@ -14,53 +15,104 @@ import (
 )
 
 var (
-	orchInfoEndpointTemplate       = "https://explorer.livepeer.org/_next/data/znvwPTH4EgK0TUtcIKe-0/accounts/%s/orchestrating.json?account=%s"
-	delegatingInfoEndpointTemplate = "https://explorer.livepeer.org/_next/data/znvwPTH4EgK0TUtcIKe-0/accounts/%s/delegating.json?account=%s"
+	orchInfoEndpoint = "https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one"
+
+	// Global variables to track whether a warning has already been logged for a invalid delegator address.
+	hasLoggedNoDelegator bool
 )
 
-// orchInfoResponse represents the structure of the data returned by the Livepeer orchestrator info API.
-type orchInfoResponse struct {
-	Mutex sync.Mutex
+// graphqlQuery represents the GraphQL query to fetch data from the GraphQL API.
+const graphqlQueryTemplate = `
+{
+	transcoder(id: "%s") {
+		delegator {
+			bondedAmount
+			withdrawnFees
+			lastClaimRound {
+			id
+			}
+			startRound
+		}
+		totalStake
+		lastRewardRound {
+			id
+		}
+		activationRound
+		active
+		feeShare
+		pools {
+			rewardTokens
+			round {
+				id
+			}
+		}
+		rewardCut
+		lastRewardRound {
+			id
+		}
+		ninetyDayVolumeETH
+		thirtyDayVolumeETH
+		totalVolumeETH
+		delegators (where:{id: "%s"}){
+			bondedAmount
+		}
+	}
+	protocol(id: "0") {
+		currentRound {
+			id
+		}
+	}
+}
+`
+
+// delegatingInfoResponse represents the structure of the pools field contained in the GraphQL API response.
+type pool struct {
+	RewardTokens string
+	Round        struct {
+		ID string
+	}
+}
+
+// transcoderResponse represents the structure of the GraphQL API response.
+type transcoderResponse struct {
+	sync.Mutex
 
 	// Response data.
-	PageProps struct {
-		Account struct {
+	Data struct {
+		Transcoder struct {
 			Delegator struct {
-				BondedAmount string
-				Delegate     struct {
-					TotalStake string
-				}
+				BondedAmount   string
+				WithdrawnFees  string
 				LastClaimRound struct {
-					Id string
+					ID string
 				}
-				StartRound    string
-				WithdrawnFees string
+				StartRound string
 			}
-			Protocol struct {
-				CurrentRound struct {
-					Id string
-				}
+			TotalStake      string
+			LastRewardRound struct {
+				ID string
 			}
-			Transcoder struct {
-				ActivationRound string
-				Active          bool
-				FeeShare        string
-				Pools           []struct {
-					RewardTokens string
-				}
-				RewardCut       string
-				LastRewardRound struct {
-					Id string
-				}
-				NinetyDayVolumeETH string
-				ThirtyDayVolumeETH string
-				TotalVolumeETH     string
+			ActivationRound    string
+			Active             bool
+			FeeShare           string
+			Pools              []pool
+			RewardCut          string
+			NinetyDayVolumeETH string
+			ThirtyDayVolumeETH string
+			TotalVolumeETH     string
+			Delegators         []struct {
+				BondedAmount string
+			}
+		}
+		Protocol struct {
+			CurrentRound struct {
+				ID string
 			}
 		}
 	}
 }
 
-// orchInfo represents the parsed data from the Livepeer orchestrator info API.
+// orchInfo represents the parsed data from the the Livepeer subgraph GraphQL API.
 type orchInfo struct {
 	BondedAmount       float64
 	TotalStake         float64
@@ -80,19 +132,34 @@ type orchInfo struct {
 	RewardCallRatio    float64
 }
 
-// delegationInfoResponse represents the structure of the data returned by the Livepeer delegator info API. This is used to fetch extra delegation
-// data for the orchestrator when the `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY` environment variable is set.
-type delegationInfoResponse struct {
-	Mutex sync.Mutex
+// getRewardCallRatio calculates the ratio of rounds in the last 30 days that the orchestrator claimed rewards.
+func getRewardCallRatio(pools []pool, currentRound, activationRound int) float64 {
+	// Calculate the round 30 days back
+	thirtyDaysBack := currentRound - 30
 
-	// Response data.
-	PageProps struct {
-		Account struct {
-			Delegator struct {
-				BondedAmount string
-			}
+	// If the activation round is less than 30 days back, use it instead
+	if activationRound > thirtyDaysBack {
+		thirtyDaysBack = activationRound
+	}
+
+	// Create a map of all round IDs in the pools
+	poolRounds := make(map[int]bool)
+	for _, pool := range pools {
+		roundID, _ := strconv.Atoi(pool.Round.ID)
+		poolRounds[roundID] = true
+	}
+
+	// Count the rounds from the current round to 30 days back that exist in the pools
+	rewardedRounds := 0
+	totalRounds := currentRound - thirtyDaysBack + 1
+	for round := currentRound; round >= thirtyDaysBack; round-- {
+		if poolRounds[round] {
+			rewardedRounds++
 		}
 	}
+
+	// Calculate and return the ratio
+	return float64(rewardedRounds) / float64(totalRounds)
 }
 
 // OrchInfoExporter fetches data from the API and exposes orchestrator info via Prometheus.
@@ -116,20 +183,18 @@ type OrchInfoExporter struct {
 	RewardCallRatio    prometheus.Gauge
 
 	// Config settings.
-	fetchInterval          time.Duration // How often to fetch data.
-	updateInterval         time.Duration // How often to update metrics.
-	orchAddressSecondary   string        // The secondary orchestrator address.
-	orchInfoEndpoint       string        // The endpoint to fetch data from.
-	delegatingInfoEndpoint string        // The endpoint to fetch extra delegation data from.
+	fetchInterval        time.Duration // How often to fetch data.
+	updateInterval       time.Duration // How often to update metrics.
+	orchAddressSecondary string        // The secondary orchestrator address.
+	orchInfoEndpoint     string        // The endpoint to fetch data from.
+	orchInfoGraphqlQuery string        // The GraphQL query to fetch data from the GraphQL API.
 
 	// Data.
-	orchInfoResponse       *orchInfoResponse       // The data returned by the orchestrator API.
-	delegatingInfoResponse *delegationInfoResponse // The data returned by the delegation API.
-	orchInfo               *orchInfo               // The data returned by the orchestrator API, parsed into a struct.
+	transcoderResponse *transcoderResponse // The data returned by the API.
+	orchInfo           *orchInfo           // The data returned by the orchestrator API, parsed into a struct.
 
 	// Fetchers.
-	orchInfoFetcher       fetcher.Fetcher
-	delegatingInfoFetcher fetcher.Fetcher
+	orchInfoFetcher fetcher.Fetcher
 }
 
 // initMetrics initializes the orchestrator info metrics.
@@ -254,30 +319,31 @@ func (m *OrchInfoExporter) registerMetrics() {
 	)
 }
 
-// parseMetrics parses the values from the orchInfoResponse and delegatingInfoResponse and populates the orchInfo struct.
+// parseMetrics parses the values from the transcoderResponse and delegatingInfoResponse and populates the orchInfo struct.
 func (m *OrchInfoExporter) parseMetrics() {
 	// Parse and set the orchestrator info.
-	util.SetFloatFromStr(&m.orchInfo.BondedAmount, m.orchInfoResponse.PageProps.Account.Delegator.BondedAmount)
-	util.SetFloatFromStr(&m.orchInfo.TotalStake, m.orchInfoResponse.PageProps.Account.Delegator.Delegate.TotalStake)
-	util.SetFloatFromStr(&m.orchInfo.LastClaimRound, m.orchInfoResponse.PageProps.Account.Delegator.LastClaimRound.Id)
-	util.SetFloatFromStr(&m.orchInfo.StartRound, m.orchInfoResponse.PageProps.Account.Delegator.StartRound)
-	util.SetFloatFromStr(&m.orchInfo.WithdrawnFees, m.orchInfoResponse.PageProps.Account.Delegator.WithdrawnFees)
-	util.SetFloatFromStr(&m.orchInfo.CurrentRound, m.orchInfoResponse.PageProps.Account.Protocol.CurrentRound.Id)
-	util.SetFloatFromStr(&m.orchInfo.ActivationRound, m.orchInfoResponse.PageProps.Account.Transcoder.ActivationRound)
-	m.orchInfo.Active = util.BoolToFloat64(m.orchInfoResponse.PageProps.Account.Transcoder.Active)
-	util.SetFloatFromStr(&m.orchInfo.LastRewardRound, m.orchInfoResponse.PageProps.Account.Transcoder.LastRewardRound.Id)
-	util.SetFloatFromStr(&m.orchInfo.NinetyDayVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.NinetyDayVolumeETH)
-	util.SetFloatFromStr(&m.orchInfo.ThirtyDayVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.ThirtyDayVolumeETH)
-	util.SetFloatFromStr(&m.orchInfo.TotalVolumeETH, m.orchInfoResponse.PageProps.Account.Transcoder.TotalVolumeETH)
+	util.SetFloatFromStr(&m.orchInfo.BondedAmount, m.transcoderResponse.Data.Transcoder.Delegator.BondedAmount)
+	util.SetFloatFromStr(&m.orchInfo.TotalStake, m.transcoderResponse.Data.Transcoder.TotalStake)
+	util.SetFloatFromStr(&m.orchInfo.LastClaimRound, m.transcoderResponse.Data.Transcoder.Delegator.LastClaimRound.ID)
+	util.SetFloatFromStr(&m.orchInfo.StartRound, m.transcoderResponse.Data.Transcoder.Delegator.StartRound)
+	util.SetFloatFromStr(&m.orchInfo.WithdrawnFees, m.transcoderResponse.Data.Transcoder.Delegator.WithdrawnFees)
+	util.SetFloatFromStr(&m.orchInfo.CurrentRound, m.transcoderResponse.Data.Protocol.CurrentRound.ID)
+	util.SetFloatFromStr(&m.orchInfo.ActivationRound, m.transcoderResponse.Data.Transcoder.ActivationRound)
+	m.orchInfo.Active = util.BoolToFloat64(m.transcoderResponse.Data.Transcoder.Active)
+	util.SetFloatFromStr(&m.orchInfo.LastRewardRound, m.transcoderResponse.Data.Transcoder.LastRewardRound.ID)
+	util.SetFloatFromStr(&m.orchInfo.NinetyDayVolumeETH, m.transcoderResponse.Data.Transcoder.NinetyDayVolumeETH)
+	util.SetFloatFromStr(&m.orchInfo.ThirtyDayVolumeETH, m.transcoderResponse.Data.Transcoder.ThirtyDayVolumeETH)
+	util.SetFloatFromStr(&m.orchInfo.TotalVolumeETH, m.transcoderResponse.Data.Transcoder.TotalVolumeETH)
+	m.orchInfo.RewardCallRatio = getRewardCallRatio(m.transcoderResponse.Data.Transcoder.Pools, int(m.orchInfo.CurrentRound), int(m.orchInfo.ActivationRound))
 
 	// Calculate and set reward and fee cut proportions.
-	feeShare, err := util.StringToFloat64(m.orchInfoResponse.PageProps.Account.Transcoder.FeeShare)
+	feeShare, err := util.StringToFloat64(m.transcoderResponse.Data.Transcoder.FeeShare)
 	if err != nil {
 		log.Printf("Error parsing fee share: %v", err)
 	} else {
 		m.orchInfo.FeeCut = util.Round(1-feeShare*1e-6, 2)
 	}
-	rewardCut, err := util.StringToFloat64(m.orchInfoResponse.PageProps.Account.Transcoder.RewardCut)
+	rewardCut, err := util.StringToFloat64(m.transcoderResponse.Data.Transcoder.RewardCut)
 	if err != nil {
 		log.Printf("Error parsing reward cut: %v", err)
 	} else {
@@ -286,33 +352,28 @@ func (m *OrchInfoExporter) parseMetrics() {
 
 	// Calculate and set the orchestrator stake.
 	// NOTE: If the orchestrator has a secondary address, we need to add the stake from the secondary address to the stake from the primary address.
-	util.SetFloatFromStr(&m.orchInfo.OrchStake, m.orchInfoResponse.PageProps.Account.Delegator.BondedAmount)
+	util.SetFloatFromStr(&m.orchInfo.OrchStake, m.transcoderResponse.Data.Transcoder.Delegator.BondedAmount)
 	if m.orchAddressSecondary != "" {
 		var secondaryStake float64
-		util.SetFloatFromStr(&secondaryStake, m.delegatingInfoResponse.PageProps.Account.Delegator.BondedAmount)
+		if len(m.transcoderResponse.Data.Transcoder.Delegators) > 0 {
+			util.SetFloatFromStr(&secondaryStake, m.transcoderResponse.Data.Transcoder.Delegators[0].BondedAmount)
+		} else {
+			secondaryStake = 0
+			if !hasLoggedNoDelegator {
+				log.Printf("No delegator account found for secondary address '%s'", m.orchAddressSecondary)
+				hasLoggedNoDelegator = true
+			}
+		}
 		m.orchInfo.OrchStake += secondaryStake
 	}
-
-	// Calculate thirty day reward call ratio.
-	var poolsWithRewardTokens int
-	for _, pool := range m.orchInfoResponse.PageProps.Account.Transcoder.Pools {
-		if pool.RewardTokens != "" {
-			poolsWithRewardTokens++
-		}
-	}
-	days := m.orchInfo.CurrentRound - m.orchInfo.ActivationRound
-	if days > 30 {
-		days = 30
-	}
-	m.orchInfo.RewardCallRatio = float64(poolsWithRewardTokens) / float64(days)
 }
 
-// updateMetrics updates the metrics with the data fetched from the Livepeer orchestrator info API.
+// updateMetrics updates the metrics with the data fetched from the Livepeer subgraph GraphQL API.
 func (m *OrchInfoExporter) updateMetrics() {
 	// Parse the metrics from the response data.
-	m.orchInfoResponse.Mutex.Lock()
+	m.transcoderResponse.Mutex.Lock()
 	m.parseMetrics()
-	m.orchInfoResponse.Mutex.Unlock()
+	m.transcoderResponse.Mutex.Unlock()
 
 	// Set the metrics.
 	m.BondedAmount.Set(m.orchInfo.BondedAmount)
@@ -336,26 +397,19 @@ func (m *OrchInfoExporter) updateMetrics() {
 // NewOrchInfoExporter creates a new OrchInfoExporter.
 func NewOrchInfoExporter(orchAddress string, fetchInterval time.Duration, updateInterval time.Duration, orchAddrSecondary string) *OrchInfoExporter {
 	exporter := &OrchInfoExporter{
-		fetchInterval:          fetchInterval,
-		updateInterval:         updateInterval,
-		orchAddressSecondary:   orchAddrSecondary,
-		orchInfoEndpoint:       fmt.Sprintf(orchInfoEndpointTemplate, orchAddress, orchAddress),
-		delegatingInfoEndpoint: fmt.Sprintf(delegatingInfoEndpointTemplate, orchAddrSecondary, orchAddrSecondary),
-		orchInfoResponse:       &orchInfoResponse{},
-		delegatingInfoResponse: &delegationInfoResponse{},
-		orchInfo:               &orchInfo{},
+		fetchInterval:        fetchInterval,
+		updateInterval:       updateInterval,
+		orchAddressSecondary: orchAddrSecondary,
+		orchInfoEndpoint:     orchInfoEndpoint,
+		orchInfoGraphqlQuery: fmt.Sprintf(graphqlQueryTemplate, orchAddress, orchAddrSecondary),
+		transcoderResponse:   &transcoderResponse{},
+		orchInfo:             &orchInfo{},
 	}
 
 	// Initialize fetcher.
 	exporter.orchInfoFetcher = fetcher.Fetcher{
 		URL:  exporter.orchInfoEndpoint,
-		Data: &exporter.orchInfoResponse,
-	}
-	if orchAddrSecondary != "" {
-		exporter.delegatingInfoFetcher = fetcher.Fetcher{
-			URL:  exporter.delegatingInfoEndpoint,
-			Data: &exporter.delegatingInfoResponse,
-		}
+		Data: &exporter.transcoderResponse,
 	}
 
 	// Initialize metrics.
@@ -368,10 +422,7 @@ func NewOrchInfoExporter(orchAddress string, fetchInterval time.Duration, update
 // Start starts the OrchInfoExporter.
 func (m *OrchInfoExporter) Start() {
 	// Fetch initial data and update metrics.
-	m.orchInfoFetcher.FetchData()
-	if m.orchAddressSecondary != "" {
-		m.delegatingInfoFetcher.FetchData()
-	}
+	m.orchInfoFetcher.FetchGraphQLData(m.orchInfoGraphqlQuery)
 	m.updateMetrics()
 
 	// Start fetchers in a goroutine.
@@ -380,14 +431,9 @@ func (m *OrchInfoExporter) Start() {
 		defer ticker.Stop()
 
 		for range ticker.C {
-			m.orchInfoResponse.Mutex.Lock()
-			m.orchInfoFetcher.FetchData()
-			m.orchInfoResponse.Mutex.Unlock()
-			if m.orchAddressSecondary != "" {
-				m.delegatingInfoResponse.Mutex.Lock()
-				m.delegatingInfoFetcher.FetchData()
-				m.delegatingInfoResponse.Mutex.Unlock()
-			}
+			m.transcoderResponse.Mutex.Lock()
+			m.orchInfoFetcher.FetchGraphQLData(m.orchInfoGraphqlQuery)
+			m.transcoderResponse.Mutex.Unlock()
 		}
 	}()
 
