@@ -162,6 +162,9 @@ The `orch_rewards_exporter` fetches reward data for the Livepeer orchestrator fr
 - `livepeer_orch_reward_block_time`: This metric represents the block time for each reward transaction. It can be used to understand when the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_reward_round`: This metric represents the round in which each reward transaction was claimed. It can be used to track the rounds in which the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 
+> [!NOTE]\
+> Due to an upstream bug the `livepeer_orch_reward_gas_used` metric currently shows the gas limit instead (see [this upstream issue](https://github.com/livepeer/subgraph/issues/27)). This will be fixed once the upstream issue is resolved.
+
 ### orch_score_exporter
 
 The `orch_score_exporter` fetches metrics about the Livepeer orchestrator's score from the [Livepeer Score API](https://explorer.livepeer.org/api/score/) endpoint. These metrics provide insights into the performance of the orchestrator, including the price per pixel and success rate, round trip score, and total score per region. They include:
@@ -199,6 +202,9 @@ The `orch_tickets_exporter` fetches and exposes winning ticket transaction infor
 - `livepeer_orch_winning_ticket_block_number`: This metric represents the block number for each winning ticket. It can be used to track when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_winning_ticket_block_time`: This metric represents the block time for each winning ticket. It can be used to understand when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_winning_ticket_round`: This metric represents the round in which each winning ticket was won. It can be used to track the rounds in which the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+
+> [!NOTE]\
+> Due to an upstream bug the `livepeer_orch_winning_ticket_gas_used` metric currently shows the gas limit instead (see [this upstream issue](https://github.com/livepeer/subgraph/issues/27)). This will be fixed once the upstream issue is resolved.
 
 ## Contributing
 
