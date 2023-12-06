@@ -8,7 +8,7 @@
 
 ![image](https://github.com/transcodeninja/livepeer-exporter/assets/17570430/d168d3fc-4e58-4424-9836-d04e425d2991)
 
-Livepeer Exporter is a lightweight tool designed to enhance the monitoring capabilities of [Livepeer](https://livepeer.org/). As a Prometheus exporter, it fetches [various metrics](#metrics) from different Livepeer endpoints and exposes them via an HTTP server, ready for Prometheus to scrape. This tool is the perfect companion to the [Livepeer monitoring service](https://docs.livepeer.org/orchestrators/guides/monitor-metrics), extending the range of Livepeer metrics that can be monitored. By providing deeper insights into Livepeer's performance, Livepeer Exporter helps users optimize their streaming workflows and ensure reliable service delivery. Witness it in action by exploring the Grafana dashboards of the [transcode.eth](https://dashboards.transcode.ninja/public-dashboards/f4292573a60f40ac875a7be12b0834d1?orgId=1) orchestrator.
+Livepeer Exporter is a lightweight tool designed to enhance the monitoring capabilities of [Livepeer](https://livepeer.org/). As a Prometheus exporter, it fetches [various metrics](#metrics) from different Livepeer endpoints and exposes them via an HTTP server, ready for Prometheus to scrape. It streamlines the Prometheus scraping process by eliminating the sluggish data extraction through Grafana plugins like [marcusolsson-json-datasource](https://grafana.com/grafana/plugins/marcusolsson-json-datasource/) and [yesoreyeram-infinity-datasource](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/). This makes it the perfect companion to the [Livepeer monitoring service](https://docs.livepeer.org/orchestrators/guides/monitor-metrics), extending the range of Livepeer metrics that can be monitored. By providing deeper insights into Livepeer's performance, Livepeer Exporter helps users optimize their streaming workflows and ensure reliable service delivery. Witness it in action by exploring the Grafana dashboards of the [transcode.eth](https://dashboards.transcode.ninja/public-dashboards/f4292573a60f40ac875a7be12b0834d1?orgId=1) orchestrator.
 
 ## Configuration
 
@@ -189,14 +189,16 @@ The `orch_test_streams_exporter` fetches metrics about the Livepeer orchestrator
 
 ### orch_tickets_exporter
 
-The `orch_tickets_exporter` fetches and exposes ticket transaction information for each orchestrator from the `https://stronk.rocks/api/livepeer/getAllRedeemTicketEvents` API endpoint. These metrics provide insights into the winning tickets of the orchestrator, including the amount won, transaction hash, block number, and block time. They include:
+The `orch_tickets_exporter` fetches and exposes winning ticket transaction information from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql). These metrics provide insights into the winning tickets of the orchestrator, including the amount won, gas used, transaction hash, block number, block time, and protocol round. They include:
 
 **GaugeVec metrics:**
 
 - `livepeer_orch_winning_ticket_amount`: This metric represents the fees won by each winning orchestrator ticket. It can be used to track the earnings of the orchestrator from winning tickets. This GaugeVec includes the label `id`, which represents the unique identifier of each ticket.
+- `livepeer_orch_winning_ticket_gas_used`: This metric represents the gas used in redeeming each winning ticket. It can be used to understand the gas cost of winning tickets. This GaugeVec includes the label `id`, which represents the unique identifier of each ticket.
 - `livepeer_orch_winning_ticket_transaction_hash`: This metric represents the transaction hash for each winning ticket. It can track the transactions in which the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_winning_ticket_block_number`: This metric represents the block number for each winning ticket. It can be used to track when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_winning_ticket_block_time`: This metric represents the block time for each winning ticket. It can be used to understand when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_winning_ticket_round`: This metric represents the round in which each winning ticket was won. It can be used to track the rounds in which the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 
 ## Contributing
 
@@ -204,4 +206,4 @@ Feel free to open an issue if you have ideas on how to make this repository bett
 
 ## Shout-out
 
-🚀 **Stronk.rocks**: Special thanks to [@stonk-dev](https://github.com/stronk-dev) for the [API endpoints](https://github.com/stronk-dev/LivepeerEvents) powering the `orch_delegators_exporter`, `orch_rewards_exporter`, and `orch_tickets_exporter` sub-exporters. Your contribution is greatly appreciated!
+🚀 **Stronk.rocks**: Special thanks to [@stonk-dev](https://github.com/stronk-dev) for pointing me to the needed [API endpoints](https://github.com/stronk-dev/LivepeerEvents) needed to implement this exporter.
