@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.2.0...v2.3.0) (2023-12-06)
+
+
+### Features
+
+* add orch address validation ([#75](https://github.com/transcodeninja/livepeer-exporter/issues/75)) ([286e03d](https://github.com/transcodeninja/livepeer-exporter/commit/286e03da3a04b1e25b80c6655c9fa8b84e13d8c1))
+* **info_exporter:** migrate to Livepeer subgraph ([#73](https://github.com/transcodeninja/livepeer-exporter/issues/73)) ([7e94f65](https://github.com/transcodeninja/livepeer-exporter/commit/7e94f65160717f1d90c5a7cd592f3eee57598e37))
+
 ## [2.2.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.1.5...v2.2.0) (2023-12-06)
 
 
