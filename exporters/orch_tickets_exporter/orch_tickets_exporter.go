@@ -4,6 +4,7 @@
 package orch_tickets_exporter
 
 import (
+	"fmt"
 	"livepeer-exporter/fetcher"
 	"strconv"
 	"sync"
@@ -17,20 +18,19 @@ var (
 )
 
 // graphqlQuery represents the GraphQL query to fetch data from the GraphQL API.
-const graphqlQuery = `
+const graphqlQueryTemplate = `
 {
 	winningTicketRedeemedEvents(
-		where: {recipient: "0x5bdeedca9c6346b0ce6b17ffa8227a4dace37039"}
+		where: {recipient: "%s"}
 	) {
 		transaction {
-		gasUsed
-		blockNumber
-		timestamp
-		id
+			gasUsed
+			blockNumber
+			timestamp
+			id
 		}
-		timestamp
 		round {
-		id
+			id
 		}
 		faceValue
 	}
@@ -45,8 +45,7 @@ type winningTicketRedeemedEvent struct {
 		Timestamp   int
 		ID          string
 	}
-	Timestamp int
-	Round     struct {
+	Round struct {
 		ID string
 	}
 	FaceValue string
@@ -65,18 +64,18 @@ type winningTicketRedeemedResponse struct {
 // OrchTicketsExporter fetches data from the API and exposes orchestrator's tickets metrics via Prometheus.
 type OrchTicketsExporter struct {
 	// Metrics.
-	WinningTicketAmount          *prometheus.GaugeVec
-	WinningTicketGasUsed         *prometheus.GaugeVec
-	WinningTicketTransactionHash *prometheus.GaugeVec
-	WinningTicketBlockNumber     *prometheus.GaugeVec
-	WinningTicketBlockTime       *prometheus.GaugeVec
-	WinningTicketRound           *prometheus.GaugeVec
+	WinningTicketAmount      *prometheus.GaugeVec
+	WinningTicketGasUsed     *prometheus.GaugeVec
+	WinningTicketBlockNumber *prometheus.GaugeVec
+	WinningTicketBlockTime   *prometheus.GaugeVec
+	WinningTicketRound       *prometheus.GaugeVec
 
 	// Config settings.
-	orchAddress         string        // The orchestrator address to filter tickets by.
-	fetchInterval       time.Duration // How often to fetch data.
-	updateInterval      time.Duration // How often to update metrics.
-	orchTicketsEndpoint string        // The endpoint to fetch data from.
+	orchAddress             string        // The orchestrator address to filter tickets by.
+	fetchInterval           time.Duration // How often to fetch data.
+	updateInterval          time.Duration // How often to update metrics.
+	orchTicketsEndpoint     string        // The endpoint to fetch data from.
+	orchTicketsGraphqlQuery string        // The GraphQL query to fetch data from the GraphQL API.
 
 	// Data.
 	orchTickets *winningTicketRedeemedResponse // The data returned by the API.
@@ -98,13 +97,6 @@ func (m *OrchTicketsExporter) initMetrics() {
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_winning_ticket_gas_used",
 			Help: "The amount of gas used by each ticket.",
-		},
-		[]string{"id"},
-	)
-	m.WinningTicketTransactionHash = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "livepeer_orch_winning_ticket_transaction_hash",
-			Help: "The transaction hash for each winning ticket.",
 		},
 		[]string{"id"},
 	)
@@ -136,7 +128,6 @@ func (m *OrchTicketsExporter) registerMetrics() {
 	prometheus.MustRegister(
 		m.WinningTicketAmount,
 		m.WinningTicketGasUsed,
-		m.WinningTicketTransactionHash,
 		m.WinningTicketBlockNumber,
 		m.WinningTicketBlockTime,
 		m.WinningTicketRound,
@@ -150,7 +141,7 @@ func (m *OrchTicketsExporter) updateMetrics() {
 		amount, _ := strconv.ParseFloat(ticket.FaceValue, 64)
 		gasUsed, _ := strconv.ParseFloat(ticket.Transaction.GasUsed, 64)
 		blockNumber, _ := strconv.ParseFloat(ticket.Transaction.BlockNumber, 64)
-		blockTime, _ := strconv.ParseFloat(strconv.Itoa(ticket.Timestamp), 64)
+		blockTime, _ := strconv.ParseFloat(strconv.Itoa(ticket.Transaction.Timestamp), 64)
 		round, _ := strconv.ParseFloat(ticket.Round.ID, 64)
 
 		m.WinningTicketAmount.WithLabelValues(ticket.Transaction.ID).Set(amount)
@@ -164,11 +155,12 @@ func (m *OrchTicketsExporter) updateMetrics() {
 // NewOrchTicketsExporter creates a new OrchTicketsExporter.
 func NewOrchTicketsExporter(orchAddress string, fetchInterval time.Duration, updateInterval time.Duration) *OrchTicketsExporter {
 	exporter := &OrchTicketsExporter{
-		orchAddress:         orchAddress,
-		fetchInterval:       fetchInterval,
-		updateInterval:      updateInterval,
-		orchTicketsEndpoint: winningTicketRedeemedEventsEndpoint,
-		orchTickets:         &winningTicketRedeemedResponse{},
+		orchAddress:             orchAddress,
+		fetchInterval:           fetchInterval,
+		updateInterval:          updateInterval,
+		orchTicketsEndpoint:     winningTicketRedeemedEventsEndpoint,
+		orchTicketsGraphqlQuery: fmt.Sprintf(graphqlQueryTemplate, orchAddress),
+		orchTickets:             &winningTicketRedeemedResponse{},
 	}
 
 	// Initialize fetcher.
@@ -187,7 +179,7 @@ func NewOrchTicketsExporter(orchAddress string, fetchInterval time.Duration, upd
 // Start starts the OrchTicketsExporter.
 func (m *OrchTicketsExporter) Start() {
 	// Fetch initial data and update metrics.
-	m.orchTicketsFetcher.FetchGraphQLData(graphqlQuery)
+	m.orchTicketsFetcher.FetchGraphQLData(m.orchTicketsGraphqlQuery)
 	m.updateMetrics()
 
 	// Start fetcher in a goroutine.
@@ -197,7 +189,7 @@ func (m *OrchTicketsExporter) Start() {
 
 		for range ticker.C {
 			m.orchTickets.Mutex.Lock()
-			m.orchTicketsFetcher.FetchGraphQLData(graphqlQuery)
+			m.orchTicketsFetcher.FetchGraphQLData(m.orchTicketsGraphqlQuery)
 			m.orchTickets.Mutex.Unlock()
 		}
 	}()
