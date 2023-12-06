@@ -148,7 +148,7 @@ The `orch_info_exporter` fetches metrics about the Livepeer orchestrator from th
 
 ### orch_rewards_exporter
 
-The `orch_rewards_exporter` fetches reward data for the Livepeer orchestrator from the `https://stronk.rocks/api/livepeer/getAllRewardEvents` endpoint and filters it based on the orchestrator ID. These metrics provide insights into the rewards the orchestrator claims, including the total claimed rewards and details about each rewarded transaction. They include:
+The `orch_rewards_exporter` fetches reward data for the Livepeer orchestrator from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the rewards the orchestrator claims, including the total claimed rewards and details about each reward transaction. They include:
 
 **Gauge metrics:**
 
@@ -157,9 +157,10 @@ The `orch_rewards_exporter` fetches reward data for the Livepeer orchestrator fr
 **GaugeVec metrics:**
 
 - `livepeer_orch_reward_amount`: This metric represents the rewards earned by each transaction. It can be used to understand the distribution of rewards among transactions. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_reward_transaction_hash`: This metric represents the hash of each rewarded transaction. It can track the transactions in which the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_reward_block_number`: This metric represents the block number for each rewarded transaction. It can be used to track when the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_reward_block_time`: This metric represents the block time for each rewarded transaction. It can be used to understand when the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_gas_used`: This metric represents the gas used in each reward transaction. It can be used to understand the gas cost of reward transactions. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_block_number`: This metric represents the block number for each reward transaction. It can be used to track when the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_block_time`: This metric represents the block time for each reward transaction. It can be used to understand when the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_round`: This metric represents the round in which each reward transaction was claimed. It can be used to track the rounds in which the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 
 ### orch_score_exporter
 
@@ -189,13 +190,12 @@ The `orch_test_streams_exporter` fetches metrics about the Livepeer orchestrator
 
 ### orch_tickets_exporter
 
-The `orch_tickets_exporter` fetches and exposes winning ticket transaction information from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql). These metrics provide insights into the winning tickets of the orchestrator, including the amount won, gas used, transaction hash, block number, block time, and protocol round. They include:
+The `orch_tickets_exporter` fetches and exposes winning ticket transaction information from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the winning tickets of the orchestrator, including the amount won, gas used, transaction hash, block number, block time, and protocol round. They include:
 
 **GaugeVec metrics:**
 
 - `livepeer_orch_winning_ticket_amount`: This metric represents the fees won by each winning orchestrator ticket. It can be used to track the earnings of the orchestrator from winning tickets. This GaugeVec includes the label `id`, which represents the unique identifier of each ticket.
 - `livepeer_orch_winning_ticket_gas_used`: This metric represents the gas used in redeeming each winning ticket. It can be used to understand the gas cost of winning tickets. This GaugeVec includes the label `id`, which represents the unique identifier of each ticket.
-- `livepeer_orch_winning_ticket_transaction_hash`: This metric represents the transaction hash for each winning ticket. It can track the transactions in which the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_winning_ticket_block_number`: This metric represents the block number for each winning ticket. It can be used to track when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_winning_ticket_block_time`: This metric represents the block time for each winning ticket. It can be used to understand when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
 - `livepeer_orch_winning_ticket_round`: This metric represents the round in which each winning ticket was won. It can be used to track the rounds in which the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
