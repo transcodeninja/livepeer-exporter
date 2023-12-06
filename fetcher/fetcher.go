@@ -2,6 +2,7 @@
 package fetcher
 
 import (
+	"bytes"
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
@@ -80,6 +81,35 @@ func (f *Fetcher) FetchDataWithBody(data string) error {
 	dec := json.NewDecoder(gzipReader)
 	if err := dec.Decode(&f.Data); err != nil {
 		return fmt.Errorf("error decoding response body from '%s': %w", f.URL, err)
+	}
+
+	return nil
+}
+
+// FetchGraphQLData fetches GraphQL data from the Fetcher's URL with the provided query and unmarshals
+// it into the Fetcher's Data field. It returns an error if there was an issue fetching the data, if
+// the HTTP status code is not 200, or if there was an issue decoding the response body.
+func (f *Fetcher) FetchGraphQLData(query string) error {
+	requestBody, err := json.Marshal(map[string]string{
+		"query": query,
+	})
+	if err != nil {
+		return fmt.Errorf("error creating request body: %v", err)
+	}
+
+	resp, err := http.Post(f.URL, "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		return fmt.Errorf("error making GraphQL request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("non-OK response status: %s", resp.Status)
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&f.Data)
+	if err != nil {
+		return fmt.Errorf("error decoding JSON response: %v", err)
 	}
 
 	return nil
