@@ -112,7 +112,7 @@ The `crypto_prices_exporter` fetches and exposes the prices of different cryptoc
 
 ### orch_delegators_exporter
 
-The `orch_delegators_exporter` fetches metrics about the delegators of the set Livepeer orchestrator from the `https://stronk.rocks/api/livepeer/getOrchestrator/` endpoint. These metrics provide insights into the number and behaviour of the delegators that stake with the orchestrator, including the total number of delegators, the bonded amount of each delegator, and the start round. They include:
+The `orch_delegators_exporter` fetches metrics about the delegators of the set Livepeer orchestrator from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the number and behaviour of the delegators that stake with the orchestrator, including the total number of delegators, the bonded amount of each delegator, the start round, and the fees collected by each delegator. They include:
 
 **Gauge metrics:**
 
@@ -122,6 +122,7 @@ The `orch_delegators_exporter` fetches metrics about the delegators of the set L
 
 - `livepeer_orch_delegator_bonded_amount`: This metric represents the bonded amount of each delegator address. It can be used to understand the distribution of stakes among delegators. This GaugeVec includes the label `id`, representing the delegator's address.
 - `livepeer_orch_delegator_start_round`: This metric represents the start round for each delegator. It can be used to track the longevity and loyalty of delegators. This GaugeVec includes the label `id`, representing the delegator's address.
+- `livepeer_orch_delegator_collected_fees`: This metric represents the fees collected by each delegator. It can be used to track the earnings of delegators from fees. This GaugeVec includes the label `id`, representing the delegator's address.
 
 ### orch_info_exporter
 

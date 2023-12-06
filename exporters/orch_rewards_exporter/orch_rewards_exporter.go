@@ -1,5 +1,5 @@
 // Package orch_rewards_exporter implements a Livepeer orchestrator rewards exporter that fetches
-// data  Livepeer subgraph GraphQL API endpoint and exposes information about the orchestrator's rewards
+// data from the Livepeer subgraph GraphQL API endpoint and exposes information about the orchestrator's rewards
 // via Prometheus metrics.
 package orch_rewards_exporter
 
