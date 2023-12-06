@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.2.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.1.5...v2.2.0) (2023-12-06)
+
+
+### Features
+
+* **delegators_exporter:** migrate to Livepeer subgraph ([#72](https://github.com/transcodeninja/livepeer-exporter/issues/72)) ([d25dda8](https://github.com/transcodeninja/livepeer-exporter/commit/d25dda8bc9c9d8568d9565aab36d987734aa7b2d))
+* **rewards_exporter:** migrate to Livepeer subgraph ([#69](https://github.com/transcodeninja/livepeer-exporter/issues/69)) ([4eda8af](https://github.com/transcodeninja/livepeer-exporter/commit/4eda8af7f1179507a8193edce5caf37f078aeb54))
+* **tickets_exporter:** migrate to Livepeer subgraph ([#67](https://github.com/transcodeninja/livepeer-exporter/issues/67)) ([1d4d50e](https://github.com/transcodeninja/livepeer-exporter/commit/1d4d50ef1403477efd70fde92de0c9a67d8ca9a2))
+
+
+### Bug Fixes
+
+* **tickets_exporter:** ensures that the graphql query is dynamic ([#70](https://github.com/transcodeninja/livepeer-exporter/issues/70)) ([e0e36ac](https://github.com/transcodeninja/livepeer-exporter/commit/e0e36ac41d7bbaab840028884e7c433ab0fbfe78))
+
 ## [2.1.5](https://github.com/transcodeninja/livepeer-exporter/compare/v2.1.4...v2.1.5) (2023-12-05)
 
 
