@@ -35,6 +35,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -66,13 +67,13 @@ func main() {
 	log.Println("Starting Livepeer exporter...")
 
 	// Retrieve orchestrator address.
-	orchAddr := os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS")
+	orchAddr := strings.ToLower(os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS"))
 	if orchAddr == "" {
 		log.Fatal("'LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS' environment variable should be set")
 	}
 
 	// Retrieve secondary orchestrator address.
-	orchAddrSecondary := os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY")
+	orchAddrSecondary := strings.ToLower(os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY"))
 
 	// Retrieve fetch intervals.
 	infoFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL", infoFetchIntervalDefault)
