@@ -5,6 +5,7 @@ package orch_tickets_exporter
 
 import (
 	"fmt"
+	"livepeer-exporter/constants"
 	"livepeer-exporter/fetcher"
 	"strconv"
 	"sync"
@@ -14,7 +15,7 @@ import (
 )
 
 var (
-	winningTicketRedeemedEventsEndpoint = "https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one"
+	winningTicketRedeemedEventsEndpoint = constants.LivePeerSubgraphEndpoint
 )
 
 // graphqlQuery represents the GraphQL query to fetch data from the GraphQL API.

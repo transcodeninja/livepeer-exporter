@@ -4,6 +4,7 @@ package orch_info_exporter
 
 import (
 	"fmt"
+	"livepeer-exporter/constants"
 	"livepeer-exporter/fetcher"
 	"livepeer-exporter/util"
 	"log"
@@ -15,7 +16,7 @@ import (
 )
 
 var (
-	orchInfoEndpoint = "https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one"
+	orchInfoEndpoint = constants.LivePeerSubgraphEndpoint
 
 	// Global variables to track whether a warning has already been logged for a invalid delegator address.
 	hasLoggedNoDelegator bool

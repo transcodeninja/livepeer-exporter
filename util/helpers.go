@@ -13,9 +13,9 @@ import (
 	"os"
 	"strconv"
 	"time"
-)
 
-const graphQLEndpoint = "https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one"
+	"livepeer-exporter/constants"
+)
 
 // BoolToFloat64 converts a bool to a float64.
 // If the input bool is true, it returns 1.0; otherwise, it returns 0.0.
@@ -91,7 +91,7 @@ func sendGraphQLRequest(query string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	resp, err := http.Post(graphQLEndpoint, "application/json", bytes.NewBuffer(body))
+	resp, err := http.Post(constants.LivePeerSubgraphEndpoint, "application/json", bytes.NewBuffer(body))
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
