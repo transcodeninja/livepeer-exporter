@@ -66,14 +66,28 @@ var (
 func main() {
 	log.Println("Starting Livepeer exporter...")
 
-	// Retrieve orchestrator address.
+	// Retrieve orchestrator address and validate it.
 	orchAddr := strings.ToLower(os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS"))
 	if orchAddr == "" {
 		log.Fatal("'LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS' environment variable should be set")
 	}
+	isOrch, err := util.IsOrchestrator(orchAddr)
+	if err != nil {
+		log.Fatalf("Error checking if address %v is an orchestrator: %v", orchAddr, err)
+	}
+	if !isOrch {
+		log.Fatalf("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS '%v' is not a Livepeer orchestrator", orchAddr)
+	}
 
-	// Retrieve secondary orchestrator address.
+	// Retrieve secondary orchestrator address and validate it.
 	orchAddrSecondary := strings.ToLower(os.Getenv("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY"))
+	isDelegator, err := util.IsDelegator(orchAddrSecondary)
+	if err != nil {
+		log.Fatalf("Error checking if address %v is a delegator: %v", orchAddrSecondary, err)
+	}
+	if orchAddrSecondary != "" && !isDelegator {
+		log.Fatalf("LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY '%v' is not a valid Livepeer delegator", orchAddrSecondary)
+	}
 
 	// Retrieve fetch intervals.
 	infoFetchInterval := util.GetEnvDuration("LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL", infoFetchIntervalDefault)
@@ -116,7 +130,7 @@ func main() {
 	// Expose the registered metrics via HTTP.
 	log.Println("Exposing metrics via HTTP on port 9153")
 	http.Handle("/metrics", promhttp.Handler())
-	err := http.ListenAndServe(":9153", nil)
+	err = http.ListenAndServe(":9153", nil)
 	if err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
