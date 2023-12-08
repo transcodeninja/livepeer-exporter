@@ -21,25 +21,25 @@ Before using the Livepeer Exporter, you must configure it using environment vari
 ### Optional environment variables
 
 - `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY`: The address of the secondary orchestrator to fetch data from. Used to calculate the 'livepeer_orch_stake' metric. When set, the LPT stake of this address is added to the LPT stake that the orchestrator bonds.
-- `LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL`: How often to fetch general orchestrator information. Defaults to `1m`.
-- `LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL`: How often to fetch score data for the orchestrator. Defaults to `1m`.
-- `LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL`: How often to fetch delegators data for the orchestrator. Defaults to `5m`.
-- `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`:How often to fetch the test streams data for the orchestrator. Defaults to `1h`.
-- `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`: How often to fetch ticket data for the orchestrator. Defaults to `1h`.
-- `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`: How often to fetch rewards data for the orchestrator. Defaults to `1h`.
+- `LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL`: How often to fetch general orchestrator information. Defaults to `2m`.
+- `LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL`: How often to fetch score data for the orchestrator. Defaults to `15m`.
+- `LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL`: How often to fetch delegators data for the orchestrator. Defaults to `15m`.
+- `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`:How often to fetch the test streams data for the orchestrator. Defaults to `15m`.
+- `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`: How often to fetch ticket data for the orchestrator. Defaults to `15m`.
+- `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`: How often to fetch rewards data for the orchestrator. Defaults to `15m`.
 - `LIVEPEER_EXPORTER_CRYPTO_PRICES_FETCH_INTERVAL`: How often to fetch the crypto prices. Defaults to `1m`.
 - `LIVEPEER_EXPORTER_INFO_UPDATE_INTERVAL`: How often to update the orchestrator info metrics. Defaults to `1m`.
 - `LIVEPEER_EXPORTER_SCORE_UPDATE_INTERVAL`: How often to update the orchestrator score metrics. Defaults to `1m`.
-- `LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL`: How often to update the orchestrator delegators metrics. Defaults to `5m`.
-- `LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL`: How often to update the orchestrator test streams metrics. Defaults to `1h`.
-- `LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL`: How often to update the orchestrator tickets metrics. Defaults to `1h`.
-- `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics. Defaults to `1h`.
+- `LIVEPEER_EXPORTER_DELEGATORS_UPDATE_INTERVAL`: How often to update the orchestrator delegators metrics. Defaults to `1m`.
+- `LIVEPEER_EXPORTER_TEST_STREAMS_UPDATE_INTERVAL`: How often to update the orchestrator test streams metrics. Defaults to `1m`.
+- `LIVEPEER_EXPORTER_TICKETS_UPDATE_INTERVAL`: How often to update the orchestrator tickets metrics. Defaults to `1m`.
+- `LIVEPEER_EXPORTER_REWARDS_UPDATE_INTERVAL`: How often to update the orchestrator rewards metrics. Defaults to `1m`.
 - `LIVEPEER_EXPORTER_CRYPTO_PRICES_UPDATE_INTERVAL`: How often to update the crypto prices metrics. Defaults to `1m`.
 
 All intervals are specified as a string representation of a duration, e.g., `5m` for 5 minutes, `2h` for 2 hours, etc. See [time#ParseDuration](https://pkg.go.dev/time#ParseDuration) for format details.
 
-> [!NOTE]\
-> The `LIVEPEER_EXPORTER_TEST_STREAMS_FETCH_INTERVAL`, `LIVEPEER_EXPORTER_TICKETS_FETCH_INTERVAL`, and `LIVEPEER_EXPORTER_REWARDS_FETCH_INTERVAL`environment variables have higher default values. This adjustment is made considering the nature of the endpoints they fetch—they might be slow or return a substantial amount of data. By setting these values to a higher interval, you can effectively reduce the load on the exporter, ensuring optimal performance.
+> [!IMPORTANT]\
+> Please be respectful when setting the fetch intervals. Setting these values to low will cause unnecessary load on the Livepeer infrastructure. If you are unsure what values to use, please use the defaults. Thanks for your understanding ❤️!
 
 ## Usage
 

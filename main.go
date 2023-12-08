@@ -44,21 +44,21 @@ import (
 // Exporter default config values.
 var (
 	// Fetch intervals.
-	infoFetchIntervalDefault        = 1 * time.Minute
-	scoreFetchIntervalDefault       = 1 * time.Minute
-	delegatorsFetchIntervalDefault  = 5 * time.Minute
-	testStreamsFetchIntervalDefault = 1 * time.Hour
-	ticketsFetchIntervalDefault     = 1 * time.Hour
-	rewardsFetchIntervalDefault     = 1 * time.Hour
+	infoFetchIntervalDefault        = 2 * time.Minute
+	scoreFetchIntervalDefault       = 15 * time.Minute
+	delegatorsFetchIntervalDefault  = 15 * time.Minute
+	testStreamsFetchIntervalDefault = 15 * time.Minute
+	ticketsFetchIntervalDefault     = 15 * time.Minute
+	rewardsFetchIntervalDefault     = 15 * time.Minute
 	cryptoPricesFetchInterval       = 1 * time.Minute
 
 	// Update intervals.
 	infoUpdateIntervalDefault         = 1 * time.Minute
 	scoreUpdateIntervalDefault        = 1 * time.Minute
-	delegatorsUpdateIntervalDefault   = 5 * time.Minute
-	testStreamsUpdateIntervalDefault  = 1 * time.Hour
-	ticketsUpdateIntervalDefault      = 1 * time.Hour
-	rewardsUpdateIntervalDefault      = 1 * time.Hour
+	delegatorsUpdateIntervalDefault   = 1 * time.Minute
+	testStreamsUpdateIntervalDefault  = 1 * time.Minute
+	ticketsUpdateIntervalDefault      = 1 * time.Minute
+	rewardsUpdateIntervalDefault      = 1 * time.Minute
 	cryptoPricesUpdateIntervalDefault = 1 * time.Minute
 )
 
