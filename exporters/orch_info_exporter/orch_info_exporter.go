@@ -407,10 +407,16 @@ func NewOrchInfoExporter(orchAddress string, fetchInterval time.Duration, update
 		orchInfo:             &orchInfo{},
 	}
 
+	// Create request headers.
+	headers := map[string][]string{
+		"X-Device-ID": {fmt.Sprintf(constants.ClientIDTemplate, orchAddress)},
+	}
+
 	// Initialize fetcher.
 	exporter.orchInfoFetcher = fetcher.Fetcher{
-		URL:  exporter.orchInfoEndpoint,
-		Data: &exporter.transcoderResponse,
+		URL:     exporter.orchInfoEndpoint,
+		Data:    &exporter.transcoderResponse,
+		Headers: headers,
 	}
 
 	// Initialize metrics.

@@ -177,10 +177,16 @@ func NewOrchRewardsExporter(orchAddress string, fetchInterval time.Duration, upd
 		orchRewards:             &rewardEventResponse{},
 	}
 
+	// Create request headers.
+	headers := map[string][]string{
+		"X-Device-ID": {fmt.Sprintf(constants.ClientIDTemplate, orchAddress)},
+	}
+
 	// Initialize fetcher.
 	exporter.orchRewardsFetcher = fetcher.Fetcher{
-		URL:  exporter.orchRewardsEndpoint,
-		Data: &exporter.orchRewards,
+		URL:     exporter.orchRewardsEndpoint,
+		Data:    &exporter.orchRewards,
+		Headers: headers,
 	}
 
 	// Initialize metrics.

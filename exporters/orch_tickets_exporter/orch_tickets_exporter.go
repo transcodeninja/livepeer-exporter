@@ -162,10 +162,16 @@ func NewOrchTicketsExporter(orchAddress string, fetchInterval time.Duration, upd
 		orchTickets:             &winningTicketRedeemedResponse{},
 	}
 
+	// Create request headers.
+	headers := map[string][]string{
+		"X-Device-ID": {fmt.Sprintf(constants.ClientIDTemplate, orchAddress)},
+	}
+
 	// Initialize fetcher.
 	exporter.orchTicketsFetcher = fetcher.Fetcher{
-		URL:  exporter.orchTicketsEndpoint,
-		Data: &exporter.orchTickets,
+		URL:     exporter.orchTicketsEndpoint,
+		Data:    &exporter.orchTickets,
+		Headers: headers,
 	}
 
 	// Initialize metrics.

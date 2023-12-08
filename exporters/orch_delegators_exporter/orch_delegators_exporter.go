@@ -137,10 +137,16 @@ func NewOrchDelegatorsExporter(orchAddress string, fetchInterval time.Duration, 
 		orchDelegators:             &delegatorsResponse{},
 	}
 
+	// Create request headers.
+	headers := map[string][]string{
+		"X-Device-ID": {fmt.Sprintf(constants.ClientIDTemplate, orchAddress)},
+	}
+
 	// Initialize fetcher.
 	exporter.orchDelegatorsFetcher = fetcher.Fetcher{
-		URL:  exporter.orchDelegatorsEndpoint,
-		Data: &exporter.orchDelegators,
+		URL:     exporter.orchDelegatorsEndpoint,
+		Data:    &exporter.orchDelegators,
+		Headers: headers,
 	}
 
 	// Initialize metrics.

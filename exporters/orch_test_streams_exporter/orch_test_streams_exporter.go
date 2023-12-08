@@ -5,6 +5,7 @@ package orch_test_streams_exporter
 
 import (
 	"fmt"
+	"livepeer-exporter/constants"
 	"livepeer-exporter/fetcher"
 	"sync"
 	"time"
@@ -131,10 +132,16 @@ func NewOrchTestStreamsExporter(orchAddress string, fetchInterval time.Duration,
 		orchTestStreams:         &orchTestStreams{},
 	}
 
+	// Create request headers.
+	headers := map[string][]string{
+		"X-Device-ID": {fmt.Sprintf(constants.ClientIDTemplate, orchAddress)},
+	}
+
 	// Initialize fetcher.
 	exporter.orchTestStreamsFetcher = fetcher.Fetcher{
-		URL:  exporter.orchTestStreamsEndpoint,
-		Data: &exporter.orchTestStreams,
+		URL:     exporter.orchTestStreamsEndpoint,
+		Data:    &exporter.orchTestStreams,
+		Headers: headers,
 	}
 
 	// Initialize metrics.
