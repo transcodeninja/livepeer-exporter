@@ -4,6 +4,7 @@ package orch_score_exporter
 
 import (
 	"fmt"
+	"livepeer-exporter/constants"
 	"livepeer-exporter/fetcher"
 	"sync"
 	"time"
@@ -117,10 +118,16 @@ func NewOrchScoreExporter(orchAddress string, fetchInterval time.Duration, updat
 		orchScore:        &orchScore{},
 	}
 
+	// Create request headers.
+	headers := map[string][]string{
+		"X-Device-ID": {fmt.Sprintf(constants.ClientIDTemplate, orchAddress)},
+	}
+
 	// Initialize fetcher.
 	exporter.orchScoreFetcher = fetcher.Fetcher{
-		URL:  exporter.orchInfoEndpoint,
-		Data: &exporter.orchScore,
+		URL:     exporter.orchInfoEndpoint,
+		Data:    &exporter.orchScore,
+		Headers: headers,
 	}
 
 	// Initialize metrics.
