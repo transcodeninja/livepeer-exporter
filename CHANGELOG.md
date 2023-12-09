@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.6.0...v2.7.0) (2023-12-09)
+
+
+### Features
+
+* express gas cost in Gwei ([#86](https://github.com/transcodeninja/livepeer-exporter/issues/86)) ([486691e](https://github.com/transcodeninja/livepeer-exporter/commit/486691eb4ecf3e627a0c383b953d0d2546f8e14e))
+
 ## [2.6.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.5.0...v2.6.0) (2023-12-09)
 
 
