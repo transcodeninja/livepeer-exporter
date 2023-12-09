@@ -52,7 +52,7 @@ func (m *OrchScoreExporter) initMetrics() {
 	m.PricePerPixel = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_price_per_pixel",
-			Help: "The price per pixel.",
+			Help: "The price per pixel in Wei.",
 		},
 	)
 	m.SuccessRates = prometheus.NewGaugeVec(

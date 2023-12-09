@@ -92,7 +92,7 @@ func (m *OrchTicketsExporter) initMetrics() {
 	m.WinningTicketAmount = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_winning_ticket_amount",
-			Help: "The amount of fees won by each ticket.",
+			Help: "The amount of ETH fees won by each ticket.",
 		},
 		[]string{"id"},
 	)
@@ -106,14 +106,14 @@ func (m *OrchTicketsExporter) initMetrics() {
 	m.WinningTicketGasPrice = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_winning_ticket_gas_price",
-			Help: "The gas price for each ticket.",
+			Help: "The gas price for each ticket in Wei.",
 		},
 		[]string{"id"},
 	)
 	m.WinningTicketGasCost = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_winning_ticket_gas_cost",
-			Help: "The cost of gas used by each ticket.",
+			Help: "The cost of gas used by each ticket in Gwei.",
 		},
 		[]string{"id"},
 	)

@@ -88,7 +88,7 @@ func (m *OrchDelegatorsExporter) initMetrics() {
 	m.CollectedFees = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_delegator_collected_fees",
-			Help: "The amount of fees collected by each delegator.",
+			Help: "The amount of ETH fees collected by each delegator.",
 		},
 		[]string{"id"},
 	)

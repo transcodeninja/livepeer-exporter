@@ -227,7 +227,7 @@ func (m *OrchInfoExporter) initMetrics() {
 	m.WithdrawnFees = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_withdrawn_fees",
-			Help: "The amount of fees the orchestrator has withdrawn.",
+			Help: "The amount of ETH fees the orchestrator has withdrawn.",
 		},
 	)
 	m.CurrentRound = prometheus.NewGauge(
