@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.5.0...v2.6.0) (2023-12-09)
+
+
+### Features
+
+* add ticket and rewards gas cost ([#83](https://github.com/transcodeninja/livepeer-exporter/issues/83)) ([bdf28bf](https://github.com/transcodeninja/livepeer-exporter/commit/bdf28bfb9f958ec78bc23e9e2b03f1972ad96dcc))
+
 ## [2.5.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.4.0...v2.5.0) (2023-12-09)
 
 
