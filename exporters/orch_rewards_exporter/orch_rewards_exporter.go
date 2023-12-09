@@ -24,6 +24,7 @@ const graphqlQueryTemplate = `
 	rewardEvents(where: {delegate: "%s"}) {
 		transaction {
 			gasUsed
+			gasPrice
 			blockNumber
 			timestamp
 			id
@@ -40,6 +41,7 @@ const graphqlQueryTemplate = `
 type rewardEvent struct {
 	Transaction struct {
 		GasUsed     string
+		GasPrice    string
 		BlockNumber string
 		Timestamp   int
 		ID          string
@@ -65,6 +67,7 @@ type OrchRewardsExporter struct {
 	// Metrics.
 	RewardAmount      *prometheus.GaugeVec
 	RewardGasUsed     *prometheus.GaugeVec
+	RewardGasPrice    *prometheus.GaugeVec
 	RewardBlockNumber *prometheus.GaugeVec
 	RewardBlockTime   *prometheus.GaugeVec
 	TotalReward       prometheus.Gauge
@@ -97,6 +100,13 @@ func (m *OrchRewardsExporter) initMetrics() {
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_reward_gas_used",
 			Help: "The amount of gas used by each reward transaction.",
+		},
+		[]string{"id"},
+	)
+	m.RewardGasPrice = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_reward_gas_price",
+			Help: "The gas price for each reward transaction.",
 		},
 		[]string{"id"},
 	)
@@ -134,6 +144,7 @@ func (m *OrchRewardsExporter) registerMetrics() {
 	prometheus.MustRegister(
 		m.RewardAmount,
 		m.RewardGasUsed,
+		m.RewardGasPrice,
 		m.RewardBlockNumber,
 		m.RewardBlockTime,
 		m.TotalReward,
@@ -148,12 +159,14 @@ func (m *OrchRewardsExporter) updateMetrics() {
 	for _, reward := range m.orchRewards.Data.RewardEvents {
 		amount, _ := strconv.ParseFloat(reward.RewardTokens, 64)
 		gasUsed, _ := strconv.ParseFloat(reward.Transaction.GasUsed, 64)
+		gasPrice, _ := strconv.ParseFloat(reward.Transaction.GasPrice, 64)
 		blockNumber, _ := strconv.ParseFloat(reward.Transaction.BlockNumber, 64)
 		blockTime, _ := strconv.ParseFloat(strconv.Itoa(reward.Transaction.Timestamp), 64)
 		round, _ := strconv.ParseFloat(reward.Round.ID, 64)
 
 		m.RewardAmount.WithLabelValues(reward.Transaction.ID).Set(amount)
 		m.RewardGasUsed.WithLabelValues(reward.Transaction.ID).Set(gasUsed)
+		m.RewardGasPrice.WithLabelValues(reward.Transaction.ID).Set(gasPrice)
 		m.RewardBlockNumber.WithLabelValues(reward.Transaction.ID).Set(blockNumber)
 		m.RewardBlockTime.WithLabelValues(reward.Transaction.ID).Set(blockTime * 1000) // Grafana expects milliseconds.
 		m.RewardRound.WithLabelValues(reward.Transaction.ID).Set(round)
