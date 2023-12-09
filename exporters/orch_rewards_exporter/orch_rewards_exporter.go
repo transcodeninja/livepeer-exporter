@@ -68,6 +68,7 @@ type OrchRewardsExporter struct {
 	RewardAmount      *prometheus.GaugeVec
 	RewardGasUsed     *prometheus.GaugeVec
 	RewardGasPrice    *prometheus.GaugeVec
+	RewardGasCost     *prometheus.GaugeVec
 	RewardBlockNumber *prometheus.GaugeVec
 	RewardBlockTime   *prometheus.GaugeVec
 	TotalReward       prometheus.Gauge
@@ -110,6 +111,13 @@ func (m *OrchRewardsExporter) initMetrics() {
 		},
 		[]string{"id"},
 	)
+	m.RewardGasCost = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_reward_gas_cost",
+			Help: "The gas cost for each reward transaction.",
+		},
+		[]string{"id"},
+	)
 	m.RewardBlockNumber = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_reward_block_number",
@@ -145,6 +153,7 @@ func (m *OrchRewardsExporter) registerMetrics() {
 		m.RewardAmount,
 		m.RewardGasUsed,
 		m.RewardGasPrice,
+		m.RewardGasCost,
 		m.RewardBlockNumber,
 		m.RewardBlockTime,
 		m.TotalReward,
@@ -160,6 +169,7 @@ func (m *OrchRewardsExporter) updateMetrics() {
 		amount, _ := strconv.ParseFloat(reward.RewardTokens, 64)
 		gasUsed, _ := strconv.ParseFloat(reward.Transaction.GasUsed, 64)
 		gasPrice, _ := strconv.ParseFloat(reward.Transaction.GasPrice, 64)
+		gasCost := gasUsed * gasPrice
 		blockNumber, _ := strconv.ParseFloat(reward.Transaction.BlockNumber, 64)
 		blockTime, _ := strconv.ParseFloat(strconv.Itoa(reward.Transaction.Timestamp), 64)
 		round, _ := strconv.ParseFloat(reward.Round.ID, 64)
@@ -167,6 +177,7 @@ func (m *OrchRewardsExporter) updateMetrics() {
 		m.RewardAmount.WithLabelValues(reward.Transaction.ID).Set(amount)
 		m.RewardGasUsed.WithLabelValues(reward.Transaction.ID).Set(gasUsed)
 		m.RewardGasPrice.WithLabelValues(reward.Transaction.ID).Set(gasPrice)
+		m.RewardGasCost.WithLabelValues(reward.Transaction.ID).Set(gasCost)
 		m.RewardBlockNumber.WithLabelValues(reward.Transaction.ID).Set(blockNumber)
 		m.RewardBlockTime.WithLabelValues(reward.Transaction.ID).Set(blockTime * 1000) // Grafana expects milliseconds.
 		m.RewardRound.WithLabelValues(reward.Transaction.ID).Set(round)
