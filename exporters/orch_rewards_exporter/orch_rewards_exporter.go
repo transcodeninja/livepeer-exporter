@@ -107,14 +107,14 @@ func (m *OrchRewardsExporter) initMetrics() {
 	m.RewardGasPrice = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_reward_gas_price",
-			Help: "The gas price for each reward transaction.",
+			Help: "The gas price for each reward transaction in Wei.",
 		},
 		[]string{"id"},
 	)
 	m.RewardGasCost = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_reward_gas_cost",
-			Help: "The gas cost for each reward transaction.",
+			Help: "The gas cost for each reward transaction in Gwei.",
 		},
 		[]string{"id"},
 	)
