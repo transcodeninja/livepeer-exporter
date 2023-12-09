@@ -24,6 +24,7 @@ const graphqlQueryTemplate = `
 	winningTicketRedeemedEvents(where: {recipient: "%s"}) {
 		transaction {
 			gasUsed
+			gasPrice
 			blockNumber
 			timestamp
 			id
@@ -40,6 +41,7 @@ const graphqlQueryTemplate = `
 type winningTicketRedeemedEvent struct {
 	Transaction struct {
 		GasUsed     string
+		GasPrice    string
 		BlockNumber string
 		Timestamp   int
 		ID          string
@@ -65,6 +67,7 @@ type OrchTicketsExporter struct {
 	// Metrics.
 	WinningTicketAmount      *prometheus.GaugeVec
 	WinningTicketGasUsed     *prometheus.GaugeVec
+	WinningTicketGasPrice    *prometheus.GaugeVec
 	WinningTicketBlockNumber *prometheus.GaugeVec
 	WinningTicketBlockTime   *prometheus.GaugeVec
 	WinningTicketRound       *prometheus.GaugeVec
@@ -99,6 +102,13 @@ func (m *OrchTicketsExporter) initMetrics() {
 		},
 		[]string{"id"},
 	)
+	m.WinningTicketGasPrice = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_winning_ticket_gas_price",
+			Help: "The gas price for each ticket.",
+		},
+		[]string{"id"},
+	)
 	m.WinningTicketBlockNumber = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_winning_ticket_block_number",
@@ -127,6 +137,7 @@ func (m *OrchTicketsExporter) registerMetrics() {
 	prometheus.MustRegister(
 		m.WinningTicketAmount,
 		m.WinningTicketGasUsed,
+		m.WinningTicketGasPrice,
 		m.WinningTicketBlockNumber,
 		m.WinningTicketBlockTime,
 		m.WinningTicketRound,
@@ -139,12 +150,14 @@ func (m *OrchTicketsExporter) updateMetrics() {
 	for _, ticket := range m.orchTickets.Data.WinningTicketRedeemedEvents {
 		amount, _ := strconv.ParseFloat(ticket.FaceValue, 64)
 		gasUsed, _ := strconv.ParseFloat(ticket.Transaction.GasUsed, 64)
+		gasPrice, _ := strconv.ParseFloat(ticket.Transaction.GasPrice, 64)
 		blockNumber, _ := strconv.ParseFloat(ticket.Transaction.BlockNumber, 64)
 		blockTime, _ := strconv.ParseFloat(strconv.Itoa(ticket.Transaction.Timestamp), 64)
 		round, _ := strconv.ParseFloat(ticket.Round.ID, 64)
 
 		m.WinningTicketAmount.WithLabelValues(ticket.Transaction.ID).Set(amount)
 		m.WinningTicketGasUsed.WithLabelValues(ticket.Transaction.ID).Set(gasUsed)
+		m.WinningTicketGasPrice.WithLabelValues(ticket.Transaction.ID).Set(gasPrice)
 		m.WinningTicketBlockNumber.WithLabelValues(ticket.Transaction.ID).Set(blockNumber)
 		m.WinningTicketBlockTime.WithLabelValues(ticket.Transaction.ID).Set(blockTime * 1000) // Grafana expects milliseconds.
 		m.WinningTicketRound.WithLabelValues(ticket.Transaction.ID).Set(round)
