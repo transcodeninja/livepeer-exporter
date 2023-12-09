@@ -169,7 +169,7 @@ func (m *OrchRewardsExporter) updateMetrics() {
 		amount, _ := strconv.ParseFloat(reward.RewardTokens, 64)
 		gasUsed, _ := strconv.ParseFloat(reward.Transaction.GasUsed, 64)
 		gasPrice, _ := strconv.ParseFloat(reward.Transaction.GasPrice, 64)
-		gasCost := gasUsed * gasPrice
+		gasCost := (gasUsed * gasPrice) / 1e9
 		blockNumber, _ := strconv.ParseFloat(reward.Transaction.BlockNumber, 64)
 		blockTime, _ := strconv.ParseFloat(strconv.Itoa(reward.Transaction.Timestamp), 64)
 		round, _ := strconv.ParseFloat(reward.Round.ID, 64)

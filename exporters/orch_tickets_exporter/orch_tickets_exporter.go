@@ -160,7 +160,7 @@ func (m *OrchTicketsExporter) updateMetrics() {
 		amount, _ := strconv.ParseFloat(ticket.FaceValue, 64)
 		gasUsed, _ := strconv.ParseFloat(ticket.Transaction.GasUsed, 64)
 		gasPrice, _ := strconv.ParseFloat(ticket.Transaction.GasPrice, 64)
-		gasCost := gasUsed * gasPrice
+		gasCost := (gasUsed * gasPrice) / 1e9
 		blockNumber, _ := strconv.ParseFloat(ticket.Transaction.BlockNumber, 64)
 		blockTime, _ := strconv.ParseFloat(strconv.Itoa(ticket.Transaction.Timestamp), 64)
 		round, _ := strconv.ParseFloat(ticket.Round.ID, 64)

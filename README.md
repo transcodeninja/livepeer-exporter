@@ -120,9 +120,9 @@ The `orch_delegators_exporter` fetches metrics about the delegators of the set L
 
 **GaugeVec metrics:**
 
-- `livepeer_orch_delegator_bonded_amount`: This metric represents the bonded amount associated with each delegator. It includes the `id` label representing the delegator address.
+- `livepeer_orch_delegator_bonded_amount`: This metric represents the bonded LPT amount associated with each delegator. It includes the `id` label representing the delegator address.
 - `livepeer_orch_delegator_start_round`: This metric represents the start round for each delegator. It includes the `id` label representing the delegator's address.
-- `livepeer_orch_delegator_collected_fees`: This metric represents the fees collected by each delegator. It includes the `id` label representing the delegator address.
+- `livepeer_orch_delegator_collected_fees`: This metric represents the ETH fees collected by each delegator. It includes the `id` label representing the delegator address.
 
 ### orch_info_exporter
 
@@ -134,7 +134,7 @@ The `orch_info_exporter` fetches metrics about the Livepeer orchestrator from th
 - `livepeer_orch_total_stake`: This metric represents the total amount of LPT staked with the orchestrator.
 - `livepeer_orch_last_reward_claim_round`: This metric represents the last round in which the orchestrator claimed the reward.
 - `livepeer_orch_start_round`: This metric represents the round the orchestrator registered.
-- `livepeer_orch_withdrawn_fees`: This metric represents the fees the orchestrator has withdrawn.
+- `livepeer_orch_withdrawn_fees`: This metric represents the ETH fees the orchestrator has withdrawn.
 - `livepeer_orch_current_round`: This metric represents the current round.
 - `livepeer_orch_activation_round`: This metric represents the round the orchestrator activated.
 - `livepeer_orch_active`: This metric represents whether the orchestrator is active.
@@ -159,8 +159,8 @@ The `orch_rewards_exporter` fetches reward data for the Livepeer orchestrator fr
 
 - `livepeer_orch_reward_amount`: This metric represents the LPT rewards claimed in each reward transaction. It includes the `id` label representing the transaction hash.
 - `livepeer_orch_reward_gas_used`: This metric represents the gas used in each reward transaction. It includes the `id` label representing the transaction hash.
-- `livepeer_orch_reward_gas_price`: This metric represents the gas price used for executing the reward transaction. It includes the `id` label representing the transaction hash.
-- `livepeer_orch_reward_gas_cost`: This metric represents the gas cost of each reward transaction. It includes the `id` label representing the transaction hash.
+- `livepeer_orch_reward_gas_price`: This metric represents the gas price in Wei used for executing the reward transaction. It includes the `id` label representing the transaction hash.
+- `livepeer_orch_reward_gas_cost`: This metric represents the gas cost of each reward transaction in Gwei. It includes the `id` label representing the transaction hash.
 - `livepeer_orch_reward_block_number`: This metric denotes the block number in which each reward transaction was included. It includes the `id` label representing the transaction hash.
 - `livepeer_orch_reward_block_time`: This metric represents the block time of the block in which each reward transaction was included. It includes the `id` label representing the transaction hash.
 - `livepeer_orch_reward_round`: This metric represents the Livepeer protocol round in which each reward transaction was executed. It includes the `id` label representing the transaction hash.
@@ -174,7 +174,7 @@ The `orch_score_exporter` fetches metrics about the Livepeer orchestrator's scor
 
 **Gauge metrics:**
 
-- `livepeer_orch_price_per_pixel`: This metric represents the price per pixel.
+- `livepeer_orch_price_per_pixel`: This metric represents the price per pixel in Wei.
 
 **GaugeVec metrics:**
 
@@ -200,10 +200,10 @@ The `orch_tickets_exporter` fetches and exposes winning ticket transaction infor
 
 **GaugeVec metrics:**
 
-- `livepeer_orch_winning_ticket_amount`: This metric represents the fees won by each winning orchestrator ticket. It includes the `id` label representing the transaction hash of each ticket.
+- `livepeer_orch_winning_ticket_amount`: This metric represents the ETH fees won by each winning orchestrator ticket. It includes the `id` label representing the transaction hash of each ticket.
 - `livepeer_orch_winning_ticket_gas_used`: This metric represents the gas used in redeeming each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
-- `livepeer_orch_winning_ticket_gas_price`: This metric represents the gas price used in redeeming each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
-- `livepeer_orch_winning_ticket_gas_cost`: This metric represents the gas cost of redeeming each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
+- `livepeer_orch_winning_ticket_gas_price`: This metric represents the gas price in Wei used in redeeming each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
+- `livepeer_orch_winning_ticket_gas_cost`: This metric represents the gas cost in Gwei of redeeming each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
 - `livepeer_orch_winning_ticket_block_number`: This metric represents the block number for each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
 - `livepeer_orch_winning_ticket_block_time`: This metric represents the block time for each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
 - `livepeer_orch_winning_ticket_round`: This metric represents the round in which each winning ticket was won. It includes the `id` label representing the transaction hash of each ticket.
