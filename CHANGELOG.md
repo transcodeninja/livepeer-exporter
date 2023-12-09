@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.4.0...v2.5.0) (2023-12-09)
+
+
+### Features
+
+* add gas price metric ([#81](https://github.com/transcodeninja/livepeer-exporter/issues/81)) ([27237aa](https://github.com/transcodeninja/livepeer-exporter/commit/27237aac867e5e36c7ba2b90105a0050ada92d61))
+
 ## [2.4.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.3.0...v2.4.0) (2023-12-08)
 
 
