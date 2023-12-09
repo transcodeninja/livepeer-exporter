@@ -16,11 +16,11 @@ Before using the Livepeer Exporter, you must configure it using environment vari
 
 ### Required environment variables
 
-- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS`: The address of the orchestrator to fetch data from.
+- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS`: The address of the orchestrator to fetch data for.
 
 ### Optional environment variables
 
-- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY`: The address of the secondary orchestrator to fetch data from. Used to calculate the 'livepeer_orch_stake' metric. When set, the LPT stake of this address is added to the LPT stake that the orchestrator bonds.
+- `LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS_SECONDARY`: The address of the secondary orchestrator to include in the data fetching. Used to calculate the `livepeer_orch_stake` metric. When set, the LPT stake of this address is added to the LPT stake that the orchestrator bonds.
 - `LIVEPEER_EXPORTER_INFO_FETCH_INTERVAL`: How often to fetch general orchestrator information. Defaults to `2m`.
 - `LIVEPEER_EXPORTER_SCORE_FETCH_INTERVAL`: How often to fetch score data for the orchestrator. Defaults to `15m`.
 - `LIVEPEER_EXPORTER_DELEGATORS_FETCH_INTERVAL`: How often to fetch delegators data for the orchestrator. Defaults to `15m`.
@@ -47,7 +47,7 @@ This section explains how to run the Livepeer Exporter. You can run it locally o
 
 ### Run exporter locally
 
-Running the exporter on your main OS allows you to test out the livepeer-exporter quickly. To do this, you must set the necessary environment variables and start the exporter. Replace `your-orchestrator-address` with your values:
+Running the exporter on your main OS allows you to test out the livepeer-exporter quickly. You must set the necessary environment variables and start the exporter to do this. Replace `your-orchestrator-address` with your values:
 
 ```bash
 export LIVEPEER_EXPORTER_ORCHESTRATOR_ADDRESS=your-orchestrator-address
@@ -107,22 +107,22 @@ The `crypto_prices_exporter` fetches and exposes the prices of different cryptoc
 
 **GaugeVec metrics:**
 
-- `LPT_price`: This metric represents the current price of the LPT token. This GaugeVec includes the label `currency`, representing the currency of the price (e.g., `USD`, `EUR`, etc.)
-- `ETH_price`: This metric represents the current price of Ethereum. This GaugeVec includes the label `currency`, representing the currency of the price (e.g., `USD`, `EUR`, etc.)
+- `LPT_price`: This metric denotes the present value of the LPT token. It incorporates the `currency` label to denote the used currency (e.g., `USD`, `EUR`, etc.).
+- `ETH_price`: This metric denotes the current price of Ethereum. It incorporates the `currency` label to denote the used currency (e.g., `USD`, `EUR`, etc.).
 
 ### orch_delegators_exporter
 
-The `orch_delegators_exporter` fetches metrics about the delegators of the set Livepeer orchestrator from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the number and behaviour of the delegators that stake with the orchestrator, including the total number of delegators, the bonded amount of each delegator, the start round, and the fees collected by each delegator. They include:
+The `orch_delegators_exporter` fetches metrics about the delegators of the set Livepeer orchestrator from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the number and behaviour of the delegators that stake with the orchestrator. They include:
 
 **Gauge metrics:**
 
-- `livepeer_orch_delegator_count`: This metric represents the total number of delegators that stake with the Livepeer orchestrator. It can be used to monitor the popularity and trustworthiness of the orchestrator.
+- `livepeer_orch_delegator_count`: This metric represents the total number of delegators that stake with the Livepeer orchestrator.
 
 **GaugeVec metrics:**
 
-- `livepeer_orch_delegator_bonded_amount`: This metric represents the bonded amount of each delegator address. It can be used to understand the distribution of stakes among delegators. This GaugeVec includes the label `id`, representing the delegator's address.
-- `livepeer_orch_delegator_start_round`: This metric represents the start round for each delegator. It can be used to track the longevity and loyalty of delegators. This GaugeVec includes the label `id`, representing the delegator's address.
-- `livepeer_orch_delegator_collected_fees`: This metric represents the fees collected by each delegator. It can be used to track the earnings of delegators from fees. This GaugeVec includes the label `id`, representing the delegator's address.
+- `livepeer_orch_delegator_bonded_amount`: This metric represents the bonded amount associated with each delegator. It includes the `id` label representing the delegator address.
+- `livepeer_orch_delegator_start_round`: This metric represents the start round for each delegator. It includes the `id` label representing the delegator's address.
+- `livepeer_orch_delegator_collected_fees`: This metric represents the fees collected by each delegator. It includes the `id` label representing the delegator address.
 
 ### orch_info_exporter
 
@@ -149,64 +149,64 @@ The `orch_info_exporter` fetches metrics about the Livepeer orchestrator from th
 
 ### orch_rewards_exporter
 
-The `orch_rewards_exporter` fetches reward data for the Livepeer orchestrator from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the rewards the orchestrator claims, including the total claimed rewards and details about each reward transaction. They include:
+The `orch_rewards_exporter` fetches reward data for the Livepeer orchestrator from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the rewards the orchestrator claims. They include:
 
 **Gauge metrics:**
 
-- `livepeer_orch_total_claimed_rewards`: This metric represents the total rewards claimed by the orchestrator. It can be used to track the earnings of the orchestrator from rewards.
+- `livepeer_orch_total_claimed_rewards`: This metric represents the total rewards claimed by the orchestrator.
 
 **GaugeVec metrics:**
 
-- `livepeer_orch_reward_amount`: This metric represents the rewards earned by each transaction. It can be used to understand the distribution of rewards among transactions. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the reward was claimed.
-- `livepeer_orch_reward_gas_used`: This metric represents the gas used in each reward transaction. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the reward was claimed.
-- `livepeer_orch_reward_gas_price`: This metric represents the gas price used in each reward transaction. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the reward was claimed.
-- `livepeer_orch_reward_gas_cost`: This metric represents the gas cost of each reward transaction. It can be used to track the gas cost of reward transactions. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the reward was claimed.
-- `livepeer_orch_reward_block_number`: This metric represents the block number for each reward transaction. It can be used to track when the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_reward_block_time`: This metric represents the block time for each reward transaction. It can be used to understand when the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_reward_round`: This metric represents the round in which each reward transaction was claimed. It can be used to track the rounds in which the orchestrator claimed rewards. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_reward_amount`: This metric represents the LPT rewards claimed in each reward transaction. It includes the `id` label representing the transaction hash.
+- `livepeer_orch_reward_gas_used`: This metric represents the gas used in each reward transaction. It includes the `id` label representing the transaction hash.
+- `livepeer_orch_reward_gas_price`: This metric represents the gas price used for executing the reward transaction. It includes the `id` label representing the transaction hash.
+- `livepeer_orch_reward_gas_cost`: This metric represents the gas cost of each reward transaction. It includes the `id` label representing the transaction hash.
+- `livepeer_orch_reward_block_number`: This metric denotes the block number in which each reward transaction was included. It includes the `id` label representing the transaction hash.
+- `livepeer_orch_reward_block_time`: This metric represents the block time of the block in which each reward transaction was included. It includes the `id` label representing the transaction hash.
+- `livepeer_orch_reward_round`: This metric represents the Livepeer protocol round in which each reward transaction was executed. It includes the `id` label representing the transaction hash.
 
 > [!NOTE]\
-> Due to an upstream bug the `livepeer_orch_reward_gas_used` metric currently shows the gas limit instead (see [this upstream issue](https://github.com/livepeer/subgraph/issues/27)). This will be fixed once the upstream issue is resolved.
+> Due to an upstream bug, the `livepeer_orch_reward_gas_used` metric currently shows the gas limit instead (see [this upstream issue](https://github.com/livepeer/subgraph/issues/27)). This will be fixed once the upstream issue is resolved.
 
 ### orch_score_exporter
 
-The `orch_score_exporter` fetches metrics about the Livepeer orchestrator's score from the [Livepeer Score API](https://explorer.livepeer.org/api/score/) endpoint. These metrics provide insights into the performance of the orchestrator, including the price per pixel and success rate, round trip score, and total score per region. They include:
+The `orch_score_exporter` fetches metrics about the Livepeer orchestrator's score from the [Livepeer Score API](https://explorer.livepeer.org/api/score/) endpoint. These metrics provide insights into the performance of the orchestrator. They include:
 
 **Gauge metrics:**
 
-- `livepeer_orch_price_per_pixel`: This metric represents the price per pixel. It can be used to understand the cost of using the orchestrator's services.
+- `livepeer_orch_price_per_pixel`: This metric represents the price per pixel.
 
 **GaugeVec metrics:**
 
-- `livepeer_orch_success_rate`: This metric represents the success rate per region. It can monitor the reliability of the orchestrator's services in different areas. This GaugeVec includes the label `region`.
-- `livepeer_orch_round_trip_score`: This metric represents the round trip score per region. It can measure the latency of the orchestrator's services in different areas. This GaugeVec includes the label `region`.
-- `livepeer_orch_total_score`: This metric represents the total score per region. It can be used to evaluate the orchestrator's overall performance in different areas. This GaugeVec includes the label `region`.
+- `livepeer_orch_success_rate`: This metric represents the success rate per region. It can be used to monitor the reliability of the orchestrator in different areas. It includes the `region` label.
+- `livepeer_orch_round_trip_score`: This metric represents the round trip score per region. It can measure the latency of the orchestrator in different areas. It includes the `region` label.
+- `livepeer_orch_total_score`: This metric represents the total score per region. It can be used to evaluate the orchestrator's overall performance in different areas. It includes the `region` label.
 
 ### orch_test_streams_exporter
 
-The `orch_test_streams_exporter` fetches metrics about the Livepeer orchestrator's test streams from the `https://leaderboard-serverless.vercel.app/api/raw_stats` API endpoint. These metrics provide insights into the performance of the orchestrator's test streams in different regions, including success rate, upload time, download time, transcode time, and round trip time. They include:
+The `orch_test_streams_exporter` fetches metrics about the Livepeer orchestrator's test streams from the `https://leaderboard-serverless.vercel.app/api/raw_stats` API endpoint. These metrics provide insights into the performance of the orchestrator's test streams in different regions. They include:
 
 **GaugeVec metrics:**
 
-- `livepeer_orch_test_stream_success_rate`: This metric represents the success rate per region for test streams. It can monitor the reliability of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_upload_time`: This metric represents the two-segment upload time per region for test streams. It can measure the upload speed of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_download_time`: This metric represents the two-segment download time per region for test streams. It can measure the download speed of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_transcode_time`: This metric represents the two-segment transcode time per region for test streams. It can measure the transcoding speed of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
-- `livepeer_orch_test_stream_round_trip_time`: This metric represents the two-segment round trip time per region for test streams. It can measure the overall latency of the orchestrator's test streams in different regions. This GaugeVec includes the labels `region` and `orchestrator`.
+- `livepeer_orch_test_stream_success_rate`: This metric represents the success rate per region for test streams. It can monitor the reliability of the orchestrator in different regions. It includes the `region` and `orchestrator` labels.
+- `livepeer_orch_test_stream_upload_time`: This metric represents the two-segment upload time per region for test streams. It measures the upload speed of the orchestrator in different regions. It includes the `region` and `orchestrator` labels.
+- `livepeer_orch_test_stream_download_time`: This metric represents the two-segment download time per region for test streams. It measures the download speed of the orchestrator in different regions. It includes the `region` and `orchestrator` labels.
+- `livepeer_orch_test_stream_transcode_time`: This metric represents the two-segment transcode time per region for test stream. It measures the transcoding speed of the orchestrator in different regions. It includes the `region` and `orchestrator` labels.
+- `livepeer_orch_test_stream_round_trip_time`: This metric represents the two-segment round trip time per region for test streams. It measures the overall latency of the orchestrator in different regions. It includes the `region` and `orchestrator` labels.
 
 ### orch_tickets_exporter
 
-The `orch_tickets_exporter` fetches and exposes winning ticket transaction information from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the winning tickets of the orchestrator, including the amount won, gas used, transaction hash, block number, block time, and protocol round. They include:
+The `orch_tickets_exporter` fetches and exposes winning ticket transaction information from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the orchestrator's winning tickets. They include:
 
 **GaugeVec metrics:**
 
-- `livepeer_orch_winning_ticket_amount`: This metric represents the fees won by each winning orchestrator ticket. It can be used to track the earnings of the orchestrator from winning tickets. This GaugeVec includes the label `id`, which represents the unique identifier of each ticket.
-- `livepeer_orch_winning_ticket_gas_used`: This metric represents the gas used in redeeming each winning ticket. This GaugeVec includes the label `id`, which represents the unique identifier of each ticket.
-- `livepeer_orch_winning_ticket_gas_price`: This metric represents the gas price used in redeeming each winning ticket. This GaugeVec includes the label `id`, which represents the unique identifier of each ticket.
-- `livepeer_orch_winning_ticket_gas_codst`: This metric represents the gas cost of redeeming each winning ticket. It can be used to track the gas cost of winning tickets. This GaugeVec includes the label `id`, which represents the unique identifier of each ticket.
-- `livepeer_orch_winning_ticket_block_number`: This metric represents the block number for each winning ticket. It can be used to track when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_winning_ticket_block_time`: This metric represents the block time for each winning ticket. It can be used to understand when the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
-- `livepeer_orch_winning_ticket_round`: This metric represents the round in which each winning ticket was won. It can be used to track the rounds in which the orchestrator won tickets. This GaugeVec includes the label `id`, which represents the unique identifier of the transaction in which the ticket was won.
+- `livepeer_orch_winning_ticket_amount`: This metric represents the fees won by each winning orchestrator ticket. It includes the `id` label representing the transaction hash of each ticket.
+- `livepeer_orch_winning_ticket_gas_used`: This metric represents the gas used in redeeming each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
+- `livepeer_orch_winning_ticket_gas_price`: This metric represents the gas price used in redeeming each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
+- `livepeer_orch_winning_ticket_gas_cost`: This metric represents the gas cost of redeeming each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
+- `livepeer_orch_winning_ticket_block_number`: This metric represents the block number for each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
+- `livepeer_orch_winning_ticket_block_time`: This metric represents the block time for each winning ticket. It includes the `id` label representing the transaction hash of each ticket.
+- `livepeer_orch_winning_ticket_round`: This metric represents the round in which each winning ticket was won. It includes the `id` label representing the transaction hash of each ticket.
 
 > [!NOTE]\
 > Due to an upstream bug the `livepeer_orch_winning_ticket_gas_used` metric currently shows the gas limit instead (see [this upstream issue](https://github.com/livepeer/subgraph/issues/27)). This will be fixed once the upstream issue is resolved.
