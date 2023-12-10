@@ -74,14 +74,14 @@ type OrchRewardsExporter struct {
 	RewardRound       *prometheus.GaugeVec
 	DayRewards        prometheus.Gauge
 	WeekRewards       prometheus.Gauge
-	ThirtyDaysRewards prometheus.Gauge
-	NinetyDaysRewards prometheus.Gauge
+	ThirtyDayRewards  prometheus.Gauge
+	NinetyDayRewards  prometheus.Gauge
 	YearRewards       prometheus.Gauge
 	TotalRewards      prometheus.Gauge
 	DayGasCost        prometheus.Gauge
 	WeekGasCost       prometheus.Gauge
-	ThirtyDaysGasCost prometheus.Gauge
-	NinetyDaysGasCost prometheus.Gauge
+	ThirtyDayGasCost  prometheus.Gauge
+	NinetyDayGasCost  prometheus.Gauge
 	YearGasCost       prometheus.Gauge
 	TotalGasCost      prometheus.Gauge
 
@@ -162,13 +162,13 @@ func (m *OrchRewardsExporter) initMetrics() {
 			Help: "Total rewards claimed by the the orchestrator in the last 7 days.",
 		},
 	)
-	m.ThirtyDaysRewards = prometheus.NewGauge(
+	m.ThirtyDayRewards = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_thirty_day_rewards",
 			Help: "Total rewards claimed by the the orchestrator in the last 30 days.",
 		},
 	)
-	m.NinetyDaysRewards = prometheus.NewGauge(
+	m.NinetyDayRewards = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "livepeer_orch_ninety_day_rewards",
 			Help: "Total rewards claimed by the the orchestrator in the last 90 days.",
@@ -198,15 +198,15 @@ func (m *OrchRewardsExporter) initMetrics() {
 			Help: "Total gas cost for all reward transactions in the last 7 days in Gwei.",
 		},
 	)
-	m.ThirtyDaysGasCost = prometheus.NewGauge(
+	m.ThirtyDayGasCost = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name: "livepeer_orch_rewards_thirty_days_gas_cost",
+			Name: "livepeer_orch_rewards_thirty_day_gas_cost",
 			Help: "Total gas cost for all reward transactions in the last 30 days in Gwei.",
 		},
 	)
-	m.NinetyDaysGasCost = prometheus.NewGauge(
+	m.NinetyDayGasCost = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name: "livepeer_orch_rewards_ninety_days_gas_cost",
+			Name: "livepeer_orch_rewards_ninety_day_gas_cost",
 			Help: "Total gas cost for all reward transactions in the last 90 days in Gwei.",
 		},
 	)
@@ -235,14 +235,14 @@ func (m *OrchRewardsExporter) registerMetrics() {
 		m.RewardBlockTime,
 		m.DayRewards,
 		m.WeekRewards,
-		m.ThirtyDaysRewards,
-		m.NinetyDaysRewards,
+		m.ThirtyDayRewards,
+		m.NinetyDayRewards,
 		m.YearRewards,
 		m.TotalRewards,
 		m.DayGasCost,
 		m.WeekGasCost,
-		m.ThirtyDaysGasCost,
-		m.NinetyDaysGasCost,
+		m.ThirtyDayGasCost,
+		m.NinetyDayGasCost,
 		m.YearGasCost,
 		m.RewardRound,
 	)
@@ -260,8 +260,8 @@ func (m *OrchRewardsExporter) updateMetrics() {
 
 	// Set the metrics for each reward.
 	var totalRewards, totalGasCost float64
-	var dayRewards, weekRewards, ThirtyDaysRewards, ninetyDaysRewards, yearRewards float64
-	var dayGasCost, weekGasCost, monthGasCost, ninetyDaysGasCost, yearGasCost float64
+	var dayRewards, weekRewards, thirtyDayRewards, ninetyDayRewards, yearRewards float64
+	var dayGasCost, weekGasCost, thirtyDayGasCost, ninetyDayGasCost, yearGasCost float64
 	for _, reward := range m.orchRewards.Data.RewardEvents {
 		amount, _ := strconv.ParseFloat(reward.RewardTokens, 64)
 		gasUsed, _ := strconv.ParseFloat(reward.Transaction.GasUsed, 64)
@@ -289,12 +289,12 @@ func (m *OrchRewardsExporter) updateMetrics() {
 			weekGasCost += gasCost
 		}
 		if blockTime >= float64(ThirtyDaysAgo.Unix()) {
-			ThirtyDaysRewards += amount
-			monthGasCost += gasCost
+			thirtyDayRewards += amount
+			thirtyDayGasCost += gasCost
 		}
 		if blockTime >= float64(ninetyDaysAgo.Unix()) {
-			ninetyDaysRewards += amount
-			ninetyDaysGasCost += gasCost
+			ninetyDayRewards += amount
+			ninetyDayGasCost += gasCost
 		}
 		if blockTime >= float64(yearAgo.Unix()) {
 			yearRewards += amount
@@ -307,14 +307,14 @@ func (m *OrchRewardsExporter) updateMetrics() {
 	// Set the period rewards and gas costs.
 	m.DayRewards.Set(dayRewards)
 	m.WeekRewards.Set(weekRewards)
-	m.ThirtyDaysRewards.Set(ThirtyDaysRewards)
-	m.NinetyDaysRewards.Set(ninetyDaysRewards)
+	m.ThirtyDayRewards.Set(thirtyDayRewards)
+	m.NinetyDayRewards.Set(ninetyDayRewards)
 	m.YearRewards.Set(yearRewards)
 	m.TotalRewards.Set(totalRewards)
 	m.DayGasCost.Set(dayGasCost)
 	m.WeekGasCost.Set(weekGasCost)
-	m.ThirtyDaysGasCost.Set(monthGasCost)
-	m.NinetyDaysGasCost.Set(ninetyDaysGasCost)
+	m.ThirtyDayGasCost.Set(thirtyDayGasCost)
+	m.NinetyDayGasCost.Set(ninetyDayGasCost)
 	m.YearGasCost.Set(yearGasCost)
 	m.TotalGasCost.Set(totalGasCost)
 }
