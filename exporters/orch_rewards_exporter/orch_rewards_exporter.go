@@ -245,6 +245,7 @@ func (m *OrchRewardsExporter) registerMetrics() {
 		m.NinetyDayGasCost,
 		m.YearGasCost,
 		m.RewardRound,
+		m.TotalGasCost,
 	)
 }
 
