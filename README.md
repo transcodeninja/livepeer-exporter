@@ -153,7 +153,18 @@ The `orch_rewards_exporter` fetches reward data for the Livepeer orchestrator fr
 
 **Gauge metrics:**
 
-- `livepeer_orch_total_claimed_rewards`: This metric represents the total rewards claimed by the orchestrator.
+- `livepeer_orch_day_rewards`: This metric represents the LPT rewards claimed by the orchestrator in the last 24 hours.
+- `livepeer_orch_week_rewards`: This metric represents the LPT rewards claimed by the orchestrator in the last 7 days.
+- `livepeer_orch_thirty_day_rewards`: This metric represents the LPT rewards claimed by the orchestrator in the last 30 days.
+- `livepeer_orch_ninety_day_rewards`: This metric represents the LPT rewards claimed by the orchestrator in the last 90 days.
+- `livepeer_orch_year_rewards`: This metric represents the LPT rewards claimed by the orchestrator in the last 365 days.
+- `livepeer_orch_total_rewards`: This metric represents the total rewards claimed by the orchestrator.
+- `livepeer_orch_rewards_day_gas_cost`: This metric represents the gas cost of the reward transactions in the last 24 hours.
+- `livepeer_orch_rewards_week_gas_cost`: This metric represents the gas cost of the reward transactions in the last 7 days.
+- `livepeer_orch_rewards_thirty_day_gas_cost`: This metric represents the gas cost of the reward transactions in the last 30 days.
+- `livepeer_orch_rewards_ninety_day_gas_cost`: This metric represents the gas cost of the reward transactions in the last 90 days.
+- `livepeer_orch_rewards_year_gas_cost`: This metric represents the gas cost of the reward transactions in the last 365 days.
+- `livepeer_orch_rewards_total_gas_cost`: This metric represents the total gas cost of the reward transactions.
 
 **GaugeVec metrics:**
 
