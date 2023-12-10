@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.8.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.7.0...v2.8.0) (2023-12-10)
+
+
+### Features
+
+* **rewards_exporter:** add period rewards and gas costs ([#89](https://github.com/transcodeninja/livepeer-exporter/issues/89)) ([17a141f](https://github.com/transcodeninja/livepeer-exporter/commit/17a141fcdf8a1ed5981ab4e4766715b794f19965))
+* **tickets_exporter:** add period ticket fees and gas costs ([#92](https://github.com/transcodeninja/livepeer-exporter/issues/92)) ([aa1bf09](https://github.com/transcodeninja/livepeer-exporter/commit/aa1bf09a63dc4359fbdb65ddecf8a0c0c7013f37))
+
+
+### Bug Fixes
+
+* **rewards_exporter:** fix incorrect rewards metric names ([#91](https://github.com/transcodeninja/livepeer-exporter/issues/91)) ([77b6606](https://github.com/transcodeninja/livepeer-exporter/commit/77b6606f1c7fb531c282a292631f13d8e53e56ab))
+
 ## [2.7.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.6.0...v2.7.0) (2023-12-09)
 
 
