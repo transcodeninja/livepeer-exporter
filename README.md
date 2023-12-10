@@ -209,6 +209,21 @@ The `orch_test_streams_exporter` fetches metrics about the Livepeer orchestrator
 
 The `orch_tickets_exporter` fetches and exposes winning ticket transaction information from the [Livepeer subgraph](https://api.thegraph.com/subgraphs/name/livepeer/arbitrum-one/graphql) endpoint. These metrics provide insights into the orchestrator's winning tickets. They include:
 
+**Gauge metrics:**
+
+- `livepeer_orch_day_fees`: This metric represents the ETH fees won by the orchestrator in the last 24 hours.
+- `livepeer_orch_week_fees`: This metric represents the ETH fees won by the orchestrator in the last 7 days.
+- `livepeer_orch_thirty_day_fees`: This metric represents the ETH fees won by the orchestrator in the last 30 days.
+- `livepeer_orch_ninety_day_fees`: This metric represents the ETH fees won by the orchestrator in the last 90 days.
+- `livepeer_orch_year_fees`: This metric represents the ETH fees won by the orchestrator in the last 365 days.
+- `livepeer_orch_total_fees`: This metric represents the total ETH fees won by the orchestrator.
+- `livepeer_orch_tickets_day_gas_cost`: This metric represents the gas cost of the winning ticket transactions in the last 24 hours.
+- `livepeer_orch_tickets_week_gas_cost`: This metric represents the gas cost of the winning ticket transactions in the last 7 days.
+- `livepeer_orch_tickets_thirty_day_gas_cost`: This metric represents the gas cost of the winning ticket transactions in the last 30 days.
+- `livepeer_orch_tickets_ninety_day_gas_cost`: This metric represents the gas cost of the winning ticket transactions in the last 90 days.
+- `livepeer_orch_tickets_year_gas_cost`: This metric represents the gas cost of the winning ticket transactions in the last 365 days.
+- `livepeer_orch_tickets_total_gas_cost`: This metric represents the total gas cost of the winning ticket transactions.
+
 **GaugeVec metrics:**
 
 - `livepeer_orch_winning_ticket_amount`: This metric represents the ETH fees won by each winning orchestrator ticket. It includes the `id` label representing the transaction hash of each ticket.
