@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.1](https://github.com/transcodeninja/livepeer-exporter/compare/v2.8.0...v2.8.1) (2023-12-10)
+
+
+### Bug Fixes
+
+* **rewards_exporter:** fix total gas cost metric bug ([#93](https://github.com/transcodeninja/livepeer-exporter/issues/93)) ([875543c](https://github.com/transcodeninja/livepeer-exporter/commit/875543c944492cf18c93142cc6c8c75a9e51d4f4))
+
 ## [2.8.0](https://github.com/transcodeninja/livepeer-exporter/compare/v2.7.0...v2.8.0) (2023-12-10)
 
 
