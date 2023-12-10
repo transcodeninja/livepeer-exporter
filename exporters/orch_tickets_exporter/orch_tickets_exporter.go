@@ -72,6 +72,18 @@ type OrchTicketsExporter struct {
 	WinningTicketBlockNumber *prometheus.GaugeVec
 	WinningTicketBlockTime   *prometheus.GaugeVec
 	WinningTicketRound       *prometheus.GaugeVec
+	DayFees                  prometheus.Gauge
+	WeekFees                 prometheus.Gauge
+	ThirtyDayFees            prometheus.Gauge
+	NinetyDayFees            prometheus.Gauge
+	YearFees                 prometheus.Gauge
+	TotalFees                prometheus.Gauge
+	DayGasCost               prometheus.Gauge
+	WeekGasCost              prometheus.Gauge
+	ThirtyDayGasCost         prometheus.Gauge
+	NinetyDayGasCost         prometheus.Gauge
+	YearGasCost              prometheus.Gauge
+	TotalGasCost             prometheus.Gauge
 
 	// Config settings.
 	orchAddress             string        // The orchestrator address to filter tickets by.
@@ -138,6 +150,78 @@ func (m *OrchTicketsExporter) initMetrics() {
 		},
 		[]string{"id"},
 	)
+	m.DayFees = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_day_fees",
+			Help: "The amount of ETH fees won by the orchestrator in the last 24 hours.",
+		},
+	)
+	m.WeekFees = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_week_fees",
+			Help: "The amount of ETH fees won by the orchestrator in the last 7 days.",
+		},
+	)
+	m.ThirtyDayFees = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_thirty_day_fees",
+			Help: "The amount of ETH fees won by the orchestrator in the last 30 days.",
+		},
+	)
+	m.NinetyDayFees = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_ninety_day_fees",
+			Help: "The amount of ETH fees won by the orchestrator in the last 90 days.",
+		},
+	)
+	m.YearFees = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_year_fees",
+			Help: "The amount of ETH fees won by the orchestrator in the last 365 days.",
+		},
+	)
+	m.TotalFees = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_total_fees",
+			Help: "The total amount of ETH fees won by the orchestrator.",
+		},
+	)
+	m.DayGasCost = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_tickets_day_gas_cost",
+			Help: "The gas cost for all ticket redeem transactions in the last 24 hours.",
+		},
+	)
+	m.WeekGasCost = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_tickets_week_gas_cost",
+			Help: "The gas cost for all ticket redeem transactions in the last 7 days.",
+		},
+	)
+	m.ThirtyDayGasCost = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_tickets_thirty_day_gas_cost",
+			Help: "The gas cost for all ticket redeem transactions in the last 30 days.",
+		},
+	)
+	m.NinetyDayGasCost = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_tickets_ninety_day_gas_cost",
+			Help: "The gas cost for all ticket redeem transactions in the last 90 days.",
+		},
+	)
+	m.YearGasCost = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_tickets_year_gas_cost",
+			Help: "The gas cost for all ticket redeem transactions in the last 365 days.",
+		},
+	)
+	m.TotalGasCost = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "livepeer_orch_tickets_total_gas_cost",
+			Help: "The total gas cost for all ticket redeem transactions.",
+		},
+	)
 }
 
 // registerMetrics registers the orchestrator tickets metrics with Prometheus.
@@ -150,12 +234,35 @@ func (m *OrchTicketsExporter) registerMetrics() {
 		m.WinningTicketBlockNumber,
 		m.WinningTicketBlockTime,
 		m.WinningTicketRound,
+		m.DayFees,
+		m.WeekFees,
+		m.ThirtyDayFees,
+		m.NinetyDayFees,
+		m.YearFees,
+		m.TotalFees,
+		m.DayGasCost,
+		m.WeekGasCost,
+		m.ThirtyDayGasCost,
+		m.NinetyDayGasCost,
+		m.YearGasCost,
+		m.TotalGasCost,
 	)
 }
 
 // updateMetrics updates the metrics with the data fetched the Livepeer subgraph GraphQL API.
 func (m *OrchTicketsExporter) updateMetrics() {
+	// Create required Unix timestamps.
+	now := time.Now()
+	dayAgo := now.AddDate(0, 0, -1)
+	weekAgo := now.AddDate(0, 0, -7)
+	ThirtyDaysAgo := now.AddDate(0, -1, 0)
+	ninetyDaysAgo := now.AddDate(0, -3, 0)
+	yearAgo := now.AddDate(-1, 0, 0)
+
 	// Set the metrics for each ticket.
+	var totalFees, totalGasCost float64
+	var dayFees, weekFees, thirtyDayFees, ninetyDayFees, yearFees float64
+	var dayGasCost, weekGasCost, thirtyDayGasCost, ninetyDayGasCost, yearGasCost float64
 	for _, ticket := range m.orchTickets.Data.WinningTicketRedeemedEvents {
 		amount, _ := strconv.ParseFloat(ticket.FaceValue, 64)
 		gasUsed, _ := strconv.ParseFloat(ticket.Transaction.GasUsed, 64)
@@ -172,7 +279,45 @@ func (m *OrchTicketsExporter) updateMetrics() {
 		m.WinningTicketBlockNumber.WithLabelValues(ticket.Transaction.ID).Set(blockNumber)
 		m.WinningTicketBlockTime.WithLabelValues(ticket.Transaction.ID).Set(blockTime * 1000) // Grafana expects milliseconds.
 		m.WinningTicketRound.WithLabelValues(ticket.Transaction.ID).Set(round)
+
+		// Calculate the fees and gas costs for different periods.
+		if blockTime >= float64(dayAgo.Unix()) {
+			dayFees += amount
+			dayGasCost += gasCost
+		}
+		if blockTime >= float64(weekAgo.Unix()) {
+			weekFees += amount
+			weekGasCost += gasCost
+		}
+		if blockTime >= float64(ThirtyDaysAgo.Unix()) {
+			thirtyDayFees += amount
+			thirtyDayGasCost += gasCost
+		}
+		if blockTime >= float64(ninetyDaysAgo.Unix()) {
+			ninetyDayFees += amount
+			ninetyDayGasCost += gasCost
+		}
+		if blockTime >= float64(yearAgo.Unix()) {
+			yearFees += amount
+			yearGasCost += gasCost
+		}
+		totalFees += amount
+		totalGasCost += gasCost
 	}
+
+	// Set the period fees and gas costs.
+	m.DayFees.Set(dayFees)
+	m.WeekFees.Set(weekFees)
+	m.ThirtyDayFees.Set(thirtyDayFees)
+	m.NinetyDayFees.Set(ninetyDayFees)
+	m.YearFees.Set(yearFees)
+	m.TotalFees.Set(totalFees)
+	m.DayGasCost.Set(dayGasCost)
+	m.WeekGasCost.Set(weekGasCost)
+	m.ThirtyDayGasCost.Set(thirtyDayGasCost)
+	m.NinetyDayGasCost.Set(ninetyDayGasCost)
+	m.YearGasCost.Set(yearGasCost)
+	m.TotalGasCost.Set(totalGasCost)
 }
 
 // NewOrchTicketsExporter creates a new OrchTicketsExporter.
