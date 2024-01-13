@@ -1,8 +1,22 @@
-[![Docker Build](https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-build.yml/badge.svg)](https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-build.yml)
-[![Publish Docker image](https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-publish.yml)
-[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/transcodeninja/livepeer-exporter?logo=docker)
-](https://hub.docker.com/r/transcodeninja/livepeer-exporter)
-[![Latest Release](https://img.shields.io/github/v/release/transcodeninja/livepeer-exporter?label=latest%20release)](https://github.com/transcodeninja/livepeer-exporter/releases)
+<div align="center">
+    <a href="https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-build.yml"><img
+            src="https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-build.yml/badge.svg"
+            alt="Docker Build" /></a>
+    <a href="https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-publish.yml"><img
+            src="https://github.com/transcodeninja/livepeer-exporter/actions/workflows/docker-publish.yml/badge.svg"
+            alt="Publish Docker image" /></a>
+    <a href="https://hub.docker.com/r/transcodeninja/livepeer-exporter"><img
+            src="https://img.shields.io/docker/v/transcodeninja/livepeer-exporter?logo=docker"
+            alt="Docker Image Version (latest semver)" /></a>
+    <a href="https://github.com/transcodeninja/livepeer-exporter/releases"><img
+            src="https://img.shields.io/github/v/release/transcodeninja/livepeer-exporter?label=latest%20release"
+            alt="Latest Release" /></a>
+    <br/><br/>
+    <a href="https://livepeer.org">
+        <img
+            src="https://github.com/transcodeninja/livepeer-exporter/assets/17570430/d3f1c484-f1e4-4b6e-b476-bd70e669ec0e" />
+    </a>
+</div>
 
 # Livepeer Exporter
 
