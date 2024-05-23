@@ -11,7 +11,7 @@ COPY . /app
 RUN go build -o livepeer-exporter
 
 # Use a smaller base image for the final stage
-FROM alpine:3.19
+FROM alpine:3.20
 
 # Copy the livepeer-exporter binary from the build stage
 COPY --from=build /app/livepeer-exporter /usr/local/bin/
