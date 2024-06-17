@@ -33,7 +33,7 @@ jobs:
           images: transcodeninja/livepeer-exporter
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0
+        uses: docker/build-push-action@4367da978b557b70738a51fed31c93e6a240dfb3
         with:
           context: .
           file: ./Dockerfile
